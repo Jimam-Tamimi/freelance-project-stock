@@ -2,5 +2,3 @@
 /venv
 
 __pycache__
-core/db.sqlite3
-core/static
