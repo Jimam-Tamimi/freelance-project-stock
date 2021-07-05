@@ -71,7 +71,7 @@
   function buildList() {
     var listWrapper = document.getElementById('list-portfolio')
     listWrapper.innerHTML = ''
-    var URL = 'http://127.0.0.1:8000/api/portfolio-list/'
+    var URL = window.location.origin + '/api/portfolio-list/'
 
     fetch(URL, {
       headers:{
@@ -108,7 +108,7 @@
     e.preventDefault();
 
     console.log('Form Submitted')
-    var URL = 'http://127.0.0.1:8000/api/portfolio-create/' 
+    var URL = window.location.origin + '/api/portfolio-create/' 
 
     const data = new FormData(this)
     const searchParam = new URLSearchParams()
@@ -140,9 +140,8 @@
 
     .then(response => {
       buildList()
-      // document.getElementById('myform').reset()
-      // return response.JSON //Convert response to JSON
-    })
+      $('#modalPortfolio').modal('toggle');
+      })
     .then(data => {
       console.log(data)
       //Perform actions with the response data from the view
