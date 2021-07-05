@@ -39,7 +39,7 @@ def portfolioDetail(request, pk):
 @api_view(['POST'])
 def portfolioCreate(request):
     serializer = PortfolioSerializer(data=request.data)
-    print('API')
+    print('API CREATE')
     print(request.data)
     if serializer.is_valid():
         print('API VALID')
@@ -52,6 +52,8 @@ def portfolioCreate(request):
 def portfolioUpdate(request, pk):
     portfolio = Portfolio.objects.get(id=pk)
     serializer = PortfolioSerializer(instance=portfolio, data=request.data)
+    print('API UPDATE')
+    print(request.data)
     
     if serializer.is_valid():
         serializer.save()
@@ -60,7 +62,7 @@ def portfolioUpdate(request, pk):
 
 
 @api_view(['DELETE'])
-def portfolioUpdate(request, pk):
+def portfolioDelete(request, pk):
     portfolio = Portfolio.objects.get(id=pk)
     portfolio.delete()
         

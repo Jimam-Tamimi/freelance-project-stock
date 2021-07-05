@@ -17,9 +17,17 @@
     <link href="{% static 'lib/fontawesome-free/css/all.min.css' %}" rel="stylesheet">
     <link href="{% static 'lib/ionicons/css/ionicons.min.css' %}" rel="stylesheet">
     <link href="{% static 'lib/typicons.font/typicons.css' %}" rel="stylesheet">
-
+    
     <!-- azia CSS -->
     <link rel="stylesheet" href="{% static '/css/azia.css' %}">
+    <script src="{% static '/lib/ionicons/ionicons/ionicons.z18qlu2u.js' %}"></script>
+    <style>
+      .az-sidebar {
+        width: 340px;
+      }
+
+   
+    </style>
   </head>
   <body class="az-body az-body-sidebar az-light">
 
@@ -93,6 +101,24 @@
       </div><!-- az-content-header -->
       <div class="az-content-body">
 
+        <div class="pd-20 bg-gray-200">
+          <nav class="nav az-nav-line flex-column flex-md-row">
+            <a class="nav-link active" data-toggle="tab" href="#">Price</a>
+            <a class="nav-link" data-toggle="tab" href="#">Fundamentals</a>
+            <a class="nav-link" data-toggle="tab" href="#">Reports</a>
+            <a class="nav-link" data-toggle="tab" href="#">Buy</a>
+            <a class="nav-link" data-toggle="tab" href="#">Distribution</a>
+            <a class="nav-link" data-toggle="tab" href="#">Sell</a>
+            <a class="nav-link" data-toggle="tab" href="#">Other</a>
+            <a class="nav-link" data-toggle="tab" href="#">Details</a>
+            <a class="nav-link" data-toggle="tab" href="#">Alerts</a>
+            <a class="nav-link" data-toggle="tab" href="#">Get Quoes</a>
+            <a class="nav-link" data-toggle="tab" href="#">More</a>
+          </nav>
+        </div>
+
+        
+        
         {% block content %}
         {% endblock %}
 
@@ -108,6 +134,7 @@
     <script src="{% static '/lib/jquery/jquery.min.js' %}"></script>
     <script src="{% static '/lib/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
     <script src="{% static '/lib/ionicons/ionicons.js' %}"></script>
+    <script src="{% static '/lib/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
 
     <script src="{% static '/js/azia.js' %}"></script>
 
@@ -152,6 +179,20 @@
         })
 
 
+        new PerfectScrollbar('#list-portfolio', {
+          suppressScrollX: true
+        });
+
+        new PerfectScrollbar('.az-content-body-invoice', {
+          suppressScrollX: true
+        });
+
+        $('#list-portfolio .media').on('click', function(e){
+          $(this).addClass('selected');
+          $(this).siblings().removeClass('selected');
+
+          $('body').addClass('az-content-body-show');
+        });
       });
     </script>
 

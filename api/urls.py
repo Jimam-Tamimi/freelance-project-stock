@@ -8,5 +8,5 @@ urlpatterns = [
     path('portfolio-detail/<str:pk>/', views.portfolioDetail, name="portfolio-detail"),
     path('portfolio-create/', views.portfolioCreate, name="portfolio-create"),
     path('portfolio-update/<str:pk>/', views.portfolioUpdate, name="portfolio-update"),
-    path('portfolio-delete/<str:pk>/', views.portfolioDetail, name="portfolio-delete"),
+    path('portfolio-delete/<str:pk>/', views.portfolioDelete, name="portfolio-delete"),
 ]
