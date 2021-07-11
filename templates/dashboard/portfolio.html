@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block headers %}
+    <!-- XDSoft DateTimePicker -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" />
+  
+{% endblock %}
+
+
+{% block portfolio-name %}
+<h2 class="az-content-title mg-b-5 mg-b-lg-8">{{ portfolio.name }}</h2> 
+<h2 id="portfolio_id" class="az-content-title mg-b-5 mg-b-lg-8">{{ portfolio.id }}</h2> 
+{% endblock %}
+
+{% block content %}
+<!-- {{ portfolio }} -->
+
+    <div class="pd-20 bg-gray-200">
+        <nav class="nav az-nav-line flex-column flex-md-row">
+            <a class="nav-link active" data-toggle="tab" href="#">Price</a>
+            <a class="nav-link" data-toggle="tab" href="#">Fundamentals</a>
+            <a class="nav-link" data-toggle="tab" href="#">Reports</a>
+            <a class="nav-link" data-toggle="modal" data-target="#modalTransaction" href>Buy/Sell</a>
+            <a class="nav-link" data-toggle="tab" href="#">Distribution</a>
+            <a class="nav-link" data-toggle="tab" href="#">Other</a>
+            <a class="nav-link" data-toggle="tab" href="#">Details</a>
+            <a class="nav-link" data-toggle="tab" href="#">Alerts</a>
+            <a class="nav-link" data-toggle="tab" href="#">Get Quoes</a>
+            <a class="nav-link" data-toggle="tab" href="#">More</a>
+        </nav>
+
+        <div class="modal" id="modalTransaction">
+            <div class="modal-dialog"  role="document">
+              <div class="modal-content" id="modalForm">
+                <div class="modal-header">
+                  <h6 class="modal-title">Buy Stock</h6>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                  </button>
+                </div>
+                  <form id="myTransactionForm">
+                    <div class="modal-body">
+                      <h6>Let's get you all setup so you can begin tracking your investments.</h6>
+                      <p>Some Random Text.Someme Random Text.Some Random Text.Some RRandom Text.Some Random Text. </p>
+
+                      <!-- {% crispy form %} -->
+                      {{ form|crispy }}
+                    </div>
+                    <div class="modal-footer">
+                      <input type="submit" id="btn-transaction-submit" class="btn btn-indigo">
+                    </div>
+                  </form>
+              </div>
+            </div><!-- modal-dialog -->
+          </div>
+    </div>
+    <br/>
+
+    <div>
+      
+      
+        <h3>Transactions</h3>
+
+
+
+        <div class="dataTables_wrapper no-footer">
+          <table class="table table-striped"  >
+            <thead>
+                <tr>
+                    <th data-data="symbol">Symbol</th>                    
+                </tr>
+            </thead>
+            <tbody id="list-transaction">
+
+            </tbody>
+          </table>
+        </div>
+        <!-- {{ stock }} -->
+        <!-- <input id="datetimepicker" type="text"> -->
+
+        
+        
+    </div>
+
+
+        
+
+{% endblock %}  
+
+
+{% block javascript %}
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+
+  <script>
+    $(function () {
+      $("#id_purchase_date").datetimepicker();
+    });
+  </script>
+
+  <script>
+
+    updateTransactions()
+
+    //Making a GET request with fetch
+    function updateTransactions() {
+
+      console.log('Updating Trasnactions')
+
+      var listTransactionWrapper = document.getElementById('list-transaction')
+      listTransactionWrapper.innerHTML = ''
+
+      var portfolio_id = document.getElementById('portfolio_id').textContent
+      var URL = window.location.origin + '/api/portfolios/' + portfolio_id + '/transactions/'
+
+      fetch(URL, {
+        headers:{
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+        },
+      })
+      .then(response => {
+      
+        return response.json() //Convert response to JSON      
+      })
+      .then(data => {
+        //Perform actions with the response data from the view      
+        console.log('transaction Data: ', data.results)
+        var list = data.results
+        for (var i in list) {
+          console.log('New Data: ', list[i])
+          var totalSymbolsList = `
+          <tr>
+            <td>
+              ${list[i].symbol}
+            </td>
+          </tr>
+          `
+          listTransactionWrapper.innerHTML += totalSymbolsList
+        }
+        
+      })
+    }
+
+  //Making a POST/Update request with fetch
+  const transactionForm = document.getElementById('myTransactionForm')
+    
+  transactionForm.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    console.log('Submitting Transaction')
+
+    var portfolio_id = document.getElementById('portfolio_id').textContent
+    var URL = window.location.origin + '/api/portfolios/' + portfolio_id + '/transactions/'
+
+    const data = new FormData(this)
+    const searchParam = new URLSearchParams()
+    
+    for (const pair of data) {
+      searchParam.append(pair[0], pair[1])
+      console.log(pair[0], pair[1])
+    }
+
+    fetch(URL, {
+      method: 'POST',
+      headers:{
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+          'X-CSRFToken': csrftoken,
+      },
+      body: JSON.stringify({
+        'symbol': searchParam.get('symbol'),
+        'commissions': searchParam.get('commissions'),
+        'fees': searchParam.get('fees'),
+        'comments': searchParam.get('comments'),
+        'transaction_type': searchParam.get('transaction_type'),
+        'price': searchParam.get('price'),
+        'quantity': searchParam.get('quantity'),
+        'portfolio': portfolio_id,
+        'update_cash_balance': searchParam.get('update_cash_balance'),
+      }) //JavaScript object of data to POST
+    })
+
+    .then(response => {
+      document.getElementById('myTransactionForm').reset()
+      $('#modalTransaction').modal('toggle');
+    })
+    .then(data => {
+      console.log('POST DATA', data)
+      updateTransactions()
+      // $('#portfolio_table').DataTable().draw()
+      //Perform actions with the response data from the view
+    })
+    .catch(error => {
+      console.log('ERROR', error)
+    })
+    
+  });
+
+
+
+  </script>
+
+
+
+{% endblock %}

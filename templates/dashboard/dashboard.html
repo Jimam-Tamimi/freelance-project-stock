@@ -1,268 +1,36 @@
 {% extends "base.html" %}
-{% load crispy_forms_tags %}
 
-{% block portfolio %}
-<a href="" class="nav-link with-sub"><i class="typcn typcn-clipboard"></i>Portfolios</a>
-  <ul class="nav-sub list-group wd-md">
-    
-    <li class="nav-sub-item"><a href class="nav-sub-link" data-toggle="modal" data-target="#modalPortfolio" ><i class="fa fa-plus"></i>Create Portfolio</a></li>
-      <div id="list-portfolio" class="az-invoice-list ps az-content-left">
+{% block portfolio-name %}
+  <h2 class="az-content-title mg-b-5 mg-b-lg-8">Portfolios</h2> 
+{% endblock %}
 
-      </div>
-    
-  </ul>
-  
-  
+{% block content %}
 
-<div class="modal" id="modalPortfolio">
-  <div class="modal-dialog"  role="document">
-    <div class="modal-content" id="modalForm">
-      <div class="modal-header">
-        <h6 class="modal-title">Create Portfoliio</h6>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">×</span>
-        </button>
-      </div>
-        <form id="myForm">
-          <div class="modal-body">
-            <h6>Let's get you all setup so you can begin tracking your investments.</h6>
-            <p>Some Random Text.Someme Random Text.Some Random Text.Some RRandom Text.Some Random Text. </p>
-
-            <!-- <div class="form-group">
-              <input type="text" id="portfolio-name" class="form-control" placeholder="Portfolio Name">
-            </div> -->
-            {{ form|crispy }}
-          </div>
-          <div class="modal-footer">
-            <input type="submit" id="btn-portfolio-submit" class="btn btn-indigo">
-          </div>
-        </form>
-    </div>
-  </div><!-- modal-dialog -->
+<div class="dataTables_wrapper no-footer">
+  <table id="portfolio_table" class="table table-striped" data-server-side="true" data-ajax="/api/portfolios/?format=datatables">
+    <thead>
+        <tr>
+            <th data-data="name">Name</th>
+            <th data-data="description">Description</th>
+            <th data-data="live_quotes">Live Quotes</th>
+            <th data-data="update_every">Update Every</th>
+            <th data-data="default_commission">Default Commission</th>
+            <th data-data="cash">Cash</th>
+            <th data-data="include_cash_balance">Include Cash Balance</th>
+            <th data-data="update_cash_balance_with_transaction">Update Cash</th>
+            <th data-data="created">Created</th>
+            <th data-data="modified">Modified</th>
+        </tr>
+    </thead>
+  </table>
 </div>
-{% endblock %}    
 
-
-{% block javascript %}
-
-
-<script>
-
-  /*
-			KEY COMPONENTS:
-			"activeItem" = null until an edit button is clicked. Will contain object of item we are editing
-			
-			PROCESS:
-			1 - Fetch Data and build rows "buildList()"
-			2 - Create Item on form submit
-			3 - Edit Item click - Prefill form and change submit URL
-			4 - Delete Item - Send item id to delete URL
-			NOTES:
-			-- Add event handlers to "edit", "delete", "title"
-			-- Remove extra data on re-render
-			-- CSRF Token
-		*/
-
-
-  function getCookie(name) {
-      let cookieValue = null;
-      if (document.cookie && document.cookie !== '') {
-          const cookies = document.cookie.split(';');
-          for (let i = 0; i < cookies.length; i++) {
-              const cookie = cookies[i].trim();
-              // Does this cookie string begin with the name we want?
-              if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                  break;
-              }
-          }
-      }
-      return cookieValue;
-  }
-  const csrftoken = getCookie('csrftoken');
-
-
-  var activeItem = null
-
-  buildList()
-
-  //Making a GET request with fetch
-  function buildList() {
-    var listWrapper = document.getElementById('list-portfolio')
-    listWrapper.innerHTML = ''
-    var URL = window.location.origin + '/api/portfolio-list/'
-
-    fetch(URL, {
-      headers:{
-          'Accept': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
-      },
-    })
-    .then(response => {
-      return response.json() //Convert response to JSON
-    })
-    .then(data => {
-      //Perform actions with the response data from the view
-      console.log('Data: ', data)
-
-      var list = data
-      for (var i in list) {
-        // console.log('Each Data: ', list[i].name)
-        var item = `
-          
-          <li class="d-flex align-items-center nav-sub-item">
-            
-            <div>
-              <h6 class="tx-13 tx-inverse tx-semibold mg-b-0"><a href class="nav-sub-link">${list[i].name}</a></h6>
-              <span class="d-block tx-11 text-muted">Gain % - 122.05%</span>
-            </div>
-
-          </li>
-          `
-
-        var listItem = `
-            <div class="media">
-              <div class="media-icon"><i class="far fa-file-alt"></i></div>
-              <div class="media-body">
-                <h6>
-                  <span><a href class="nav-sub-link">${list[i].name}</a></span>
-                  <span>$25</span>
-                </h6>
-                <div>
-                  <p><span>Date:</span> Oct 25</p>
-                  <div class="ed-btn" style="display: block">
-                    <p><span><a href class="linkEdit" data-toggle="modal" data-target="#modalPortfolio"><i class="fas fa-edit fa-fw"></i></a>
-                      </span><a href class="linkDelete"><i class="fas fa-trash-alt fa-fw"></i></a>
-                    </p>                    
-                  </div>
-                </div>
-              </div><!-- media-body -->
-            </div>
-          `
-
+<hr/>
+<div>
+  <h2>
+    Charts
+  </h2>
+</div>
         
-        listWrapper.innerHTML += listItem
-
         
-
-      }
-
-      for (var i in list) {
-        var editItem = document.getElementsByClassName('linkEdit')[i]
-        var deleteItem = document.getElementsByClassName('linkDelete')[i]
-
-        editItem.addEventListener('click', (function(item){
-          return function(){
-            editPortfolio(item);
-          }
-        })(list[i]))
-
-
-        deleteItem.addEventListener('click', (function(item){
-          return function(){
-            deletePortfolio(item);
-          }
-        })(list[i]))
-
-      }
-    })
-
-  }
-
-
-
-
-  //Making a POST request with fetch
-  const form = document.getElementById('myForm')
-
-  form.addEventListener('submit', function(e){
-    e.preventDefault();
-
-    console.log('Form Submitted')
-    var URL = window.location.origin + '/api/portfolio-create/' 
-
-    const data = new FormData(this)
-    const searchParam = new URLSearchParams()
-    
-    for (const pair of data) {
-      searchParam.append(pair[0], pair[1])
-      // console.log(searchParam)
-    }
-
-    if(activeItem!=null){
-      var URL = window.location.origin + `/api/portfolio-update/${activeItem.id}/`
-      
-      activeItem=null
-    }
-
-
-  
-    fetch(URL, {
-      method: 'POST',
-      headers:{
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
-          'X-CSRFToken': csrftoken,
-      },
-      body: JSON.stringify({
-        'name': searchParam.get('name'),
-        'description': searchParam.get('description'),
-        'live_quotes': searchParam.get('live_quotes'),
-        'update_every': searchParam.get('update_every'),
-        'default_commission': searchParam.get('default_commission'),
-        'include_cash_balance': searchParam.get('include_cash_balance'),
-        'update_cash_balance_with_transaction': searchParam.get('update_cash_balance_with_transaction'),
-      }) //JavaScript object of data to POST
-    })
-
-    .then(response => {
-      buildList();
-      document.getElementById('myForm').reset()
-      $('#modalPortfolio').modal('toggle');
-    })
-    .then(data => {
-      console.log(data)
-      //Perform actions with the response data from the view
-    })
-    .catch(error => {
-      console.log(error)
-    })
-    
-  });
-
-
-
-  function editPortfolio(item) {
-    console.log('EDIT', item)
-    activeItem = item
-    document.getElementById('id_name').value = activeItem.name
-    document.getElementById('id_description').value = activeItem.description
-    document.getElementById('id_live_quotes').value = activeItem.live_quotes
-    document.getElementById('id_update_every').value = activeItem.update_every
-    document.getElementById('id_default_commission').value = activeItem.default_commission
-    document.getElementById('id_include_cash_balance').value = activeItem.include_cash_balance
-    document.getElementById('id_update_cash_balance_with_transaction').value = activeItem.update_cash_balance_with_transaction
-
-  }
-
-
-  function deletePortfolio(item){
-    var URL = window.location.origin + `/api/portfolio-delete/${item.id}/` 
-    console.log('DELETE', item.id)
-    fetch(URL, {
-      method: 'DELETE',
-      headers:{
-          'Content-Type': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
-          'X-CSRFToken': csrftoken,
-      }
-    })
-    .then((response)=>{
-      buildList();
-    })
-  }
-</script>
-
-
-{% endblock %}   
+{% endblock %}
