@@ -7,11 +7,11 @@ from . import apis
 
 
 urlpatterns = [
-    
+        
     # Ui 
     # # Views Name attribute is linked in Account URL LOGIn, as lazy reverse 
     path('', views.listView, name='portfolios'),
-    path('portfolio/<str:pk>/', views.portfolioView),
+    path('portfolios/<str:pk>/', views.portfolioView),
     
     
     #API
@@ -19,7 +19,7 @@ urlpatterns = [
     path('api/portfolios/<str:pk>/', apis.portfolioDetail),
    
     # path('api/portfolios/<str:pk>/transactions/', apis.transactionDetail),
-    path('api/portfolios/<str:portfolio_id>/transactions/', apis.TransactionsList.as_view()),
+    path('api/portfolios/<str:portfolio_id>/transactions/', apis.TransactionsList.as_view()), # Not working with datatable API
     
     path('api/portfolios/<str:portfolio_id>/stocks/', apis.StocksList.as_view()),
     path('api/stock-detail/<str:pk>/', apis.stockDetail),

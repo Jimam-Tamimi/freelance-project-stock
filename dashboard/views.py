@@ -5,11 +5,17 @@ from . forms import *
 from . serializers import *
 
 
+
+
+
 def listView(request):
     
     modalPortfolioForm = PortfolioForm()    
+    
     return render(request, 'dashboard/dashboard.html', 
                             {'modalPortfolioForm': modalPortfolioForm})
+
+
 
 
 def portfolioView(request, pk):
@@ -28,6 +34,7 @@ def portfolioView(request, pk):
     # stock = Stock.objects.get(portfolio=portfolio)
     # stockSerializer = StockSerializer(stock, many=True)
     
+
 
     context = {'portfolio': serializer.data, 
                 'form': transaction, 

@@ -5,6 +5,7 @@
 {% block headers %}
     <!-- XDSoft DateTimePicker -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" />
+
   
 {% endblock %}
 
@@ -65,22 +66,30 @@
 
 
 
-        <div class="dataTables_wrapper no-footer">
-          <table class="table table-striped"  >
-            <thead>
-                <tr>
-                    <th data-data="symbol">Symbol</th>                    
-                </tr>
-            </thead>
-            <tbody id="list-transaction">
+        
 
-            </tbody>
-          </table>
+          <div class="table-responsive">
+            <table id="example" class="table table-striped table-hover display nowrap" cellspacing="0" style="width:100%" >
+              <thead>
+                  <tr>
+                    <th>Quantity</th>
+                    <th>DateAdded</th>
+                    <th>Symbol</th>
+                    <th>PurchaseCost</th>
+                    <th>BuyComment</th>
+                    
+                  </tr>
+              </thead>
+
+            </table>
+          </div>
         </div>
         <!-- {{ stock }} -->
         <!-- <input id="datetimepicker" type="text"> -->
 
-        
+        <div id="events">
+            Event summary - new events added at the top
+        </div>
         
     </div>
 
@@ -92,11 +101,85 @@
 
 {% block javascript %}
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      var events = $('#events');
+      var portfolio_id = document.getElementById('portfolio_id').textContent
+      var collapsedGroups = {};
+      var table = $('#example').DataTable({
+        colReorder: true,
+        stateSave:  true,
+        select: {
+            style: 'single'
+        },
+        ajax: window.location.origin + '/api/portfolios/' + portfolio_id + '/transactions/?format=datatables',
+        order: [[ 2, "desc" ]],
+        columns: [
+          { "data": "quantity" },
+          { "data": "purchase_date" },
+          { "data": "symbol" },
+          { "data": "price" },
+          { "data": "comments" },
+        ],
+        rowGroup: {
+          dataSrc: 'symbol',
+          startRender: function ( rows, group ) {
+            var collapsed = !!collapsedGroups[group];
+
+            rows.nodes().each(function (r) {
+              r.style.display = collapsed ? 'none' : '';
+            });
+
+            return $('<tr/>')
+              .append('<td colspan="8">' + group + ' (' + rows.count() + ')</td>')
+              .attr('data-name', group)
+              .toggleClass('collapsed', collapsed);
+          },
+        },
+      });
+
+      $('#example tbody tr.group-start').each(function() {
+                var name = $(this).data('name');
+                collapsedGroups[name] = !collapsedGroups[name];
+      });
+      table.draw(false);
+
+      $('#example tbody').on('click', 'tr.group-start', function () {
+                var name = $(this).data('name');
+                collapsedGroups[name] = !collapsedGroups[name];
+                table.draw(false);
+      });  
+
+      table
+        .on( 'select', function ( e, dt, type, indexes ) {
+            var rowData = table.rows( indexes ).data().toArray();
+            events.prepend( '<div><b>'+type+' selection</b> - '+JSON.stringify( rowData )+'</div>' );
+        } )
+        // .on( 'deselect', function ( e, dt, type, indexes ) {
+        //     var rowData = table.rows( indexes ).data().toArray();
+        //     events.prepend( '<div><b>'+type+' <i>de</i>selection</b> - '+JSON.stringify( rowData )+'</div>' );
+        // } );
+
+
+    });
+
+
+
+  </script>
+
 
   <script>
     $(function () {
       $("#id_purchase_date").datetimepicker();
+      // $('#transaction_table').DataTable( {
+      //       colReorder: true,
+      //       responsive: true,
+      //       order: [[2, 'asc']],
+      //       rowGroup: {
+      //           dataSrc: 2,
+      //         }
+      //       })
+
     });
   </script>
 
@@ -109,8 +192,8 @@
 
       console.log('Updating Trasnactions')
 
-      var listTransactionWrapper = document.getElementById('list-transaction')
-      listTransactionWrapper.innerHTML = ''
+      // var listTransactionWrapper = document.getElementById('list-transaction')
+      // listTransactionWrapper.innerHTML = ''
 
       var portfolio_id = document.getElementById('portfolio_id').textContent
       var URL = window.location.origin + '/api/portfolios/' + portfolio_id + '/transactions/'
@@ -128,17 +211,22 @@
       .then(data => {
         //Perform actions with the response data from the view      
         console.log('transaction Data: ', data.results)
+        $('#transaction_table').DataTable().draw()
+        // $('#transaction_table').DataTable( {
+        //     colReorder: true
+        // });
+
         var list = data.results
         for (var i in list) {
           console.log('New Data: ', list[i])
-          var totalSymbolsList = `
-          <tr>
-            <td>
-              ${list[i].symbol}
-            </td>
-          </tr>
-          `
-          listTransactionWrapper.innerHTML += totalSymbolsList
+          // var totalSymbolsList = `
+          // <tr>
+          //   <td>${list[i].symbol}</td>
+          //   <td>${list[i].quantity}</td>
+          //   <td>{{ APIprice }}</td>
+          // </tr>
+          // `
+          // listTransactionWrapper.innerHTML += totalSymbolsList
         }
         
       })

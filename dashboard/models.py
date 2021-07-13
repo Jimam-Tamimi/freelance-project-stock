@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from ckeditor.fields import RichTextField
 
 class Portfolio(models.Model):
     """
@@ -10,7 +11,8 @@ class Portfolio(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     
     name = models.CharField(max_length=128, null=True, blank=True)
-    description = models.TextField(max_length=2000, blank=True, null=True)
+    # description = models.TextField(max_length=2000, blank=True, null=True)
+    description = RichTextField( blank=True, null=True)
     live_quotes = models.BooleanField(default=True)
     update_every = models.IntegerField(null=True, default=5)
     default_commission = models.FloatField(null=True, default=0, blank=True)
@@ -36,7 +38,7 @@ class Stock(models.Model):
     """
     # Stock will be deleted, if Portfolio is deleted
     portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE, related_name='stocks')
-    symbol = models.CharField(max_length=5)
+    symbol = models.CharField(max_length=20)
     quantity = models.PositiveBigIntegerField(null=True, default=0)
     
     created = models.DateField(auto_now_add=True, auto_now=False, null=True)
@@ -56,13 +58,14 @@ class Transaction(models.Model):
         ("SELL", "SELL"),
     )
     
-    symbol = models.CharField(max_length=5)
+    symbol = models.CharField(max_length=20)
     purchase_date = models.DateTimeField(auto_now_add=True, auto_now=False, null=True)
     price = models.FloatField(null=True, default=5)
     commissions = models.FloatField(null=True, default=0)
     fees = models.FloatField(null=True, default=0)
     update_cash_balance = models.BooleanField(default=True)
-    comments = models.TextField(max_length=1000, blank=True, null=True)
+    # comments = models.TextField(max_length=1000, blank=True, null=True) 
+    comments = RichTextField( blank=True, null=True)
     transaction_type = models.CharField(max_length=10, choices = TRANSACTION_TYPE_CHOICES)
     quantity = models.IntegerField(null=True, default=0)
     portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE, related_name='transactions')

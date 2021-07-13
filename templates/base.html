@@ -19,13 +19,32 @@
     <link href="{% static 'lib/ionicons/css/ionicons.min.css' %}" rel="stylesheet">
     <link href="{% static 'lib/typicons.font/typicons.css' %}" rel="stylesheet">
     
-    <link href="{% static '/lib/datatables.net-dt/css/jquery.dataTables.min.css' %}" rel="stylesheet">
-    <link href="{% static '/lib/datatables.net-responsive-dt/css/responsive.dataTables.min.css' %}" rel="stylesheet">
-    <link href="{% static '/lib/select2/css/select2.min.css' %}" rel="stylesheet">
+    <!-- <link href="{% static '/lib/datatables.net-dt/css/jquery.dataTables.min.css' %}" rel="stylesheet"> -->
+    <!-- <link href="{% static '/lib/datatables.net-responsive-dt/css/responsive.dataTables.min.css' %}" rel="stylesheet"> -->
+    <!-- <link href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css"> -->
+
+    <!-- <link href="https://nightly.datatables.net/css/jquery.dataTables.css" rel="stylesheet" type="text/css" /> -->
+    <!-- <link href="https://cdn.datatables.net/rowgroup/1.1.2/css/rowGroup.dataTables.css" rel="stylesheet" type="text/css" /> -->
+    <!-- <link href="https://cdn.datatables.net/rowgroup/1.0.2/css/rowGroup.dataTables.min.css" rel="stylesheet" type="text/css" /> -->
+
+    <!-- <link href="https://cdn.datatables.net/buttons/1.5.1/css/buttons.dataTables.css" rel="stylesheet" type="text/css" /> -->
+
+    
+    
+    <!-- <link href="https://cdn.datatables.net/rowgroup/1.1.3/css/rowGroup.dataTables.min.css"> -->
+
+    <!-- <link href="{% static '/lib/select2/css/select2.min.css' %}" rel="stylesheet"> -->
+
+    <link href="https://nightly.datatables.net/css/jquery.dataTables.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.datatables.net/rowgroup/1.0.2/css/rowGroup.dataTables.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.datatables.net/colreorder/1.5.4/css/colReorder.dataTables.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.datatables.net/select/1.3.3/css/select.dataTables.min.css" rel="stylesheet" type="text/css" />
 
     <!-- azia CSS -->
     <link rel="stylesheet" href="{% static '/css/azia.css' %}">
     <script src="{% static '/lib/ionicons/ionicons/ionicons.z18qlu2u.js' %}"></script>
+ 
 
     {% block headers %}
 
@@ -35,419 +54,462 @@
       .az-sidebar {
         width: 340px;
       }
+      .django-ckeditor-widget{
+        width: 100%;
+      }
 
-   
+    
+
+        
     </style>
   </head>
   <body class="az-body az-body-sidebar az-light">
 
-    <div class="az-sidebar">
-      <div class="az-sidebar-header">
-        <a href="http://127.0.0.1:8000/" class="az-logo">Market Eye</a>
-      </div><!-- az-sidebar-header -->
-      <div class="az-sidebar-loggedin">
-        <div class="az-img-user online"><img src="#" alt=""></div>
-        <div class="media-body">
-          {% if request.user.is_authenticated %}
-          <h6>{{request.user}}</h6>
-          {% endif %}
-          <span>Premium Member</span>
-        </div><!-- media-body -->
-      </div><!-- az-sidebar-loggedin -->
-      <div class="az-sidebar-body">
-        <ul class="nav">
-          <li class="nav-label">Main Menu</li>
-          <li class="nav-item active show">
-            
-            <a href="" class="nav-link with-sub"><i class="typcn typcn-clipboard"></i>Portfolios</a>
-            <ul class="nav-sub list-group wd-md">
+      <div class="az-sidebar">
+        <div class="az-sidebar-header">
+          <a href="http://127.0.0.1:8000/" class="az-logo">Market Eye</a>
+        </div><!-- az-sidebar-header -->
+        <div class="az-sidebar-loggedin">
+          <div class="az-img-user online"><img src="#" alt=""></div>
+          <div class="media-body">
+            {% if request.user.is_authenticated %}
+            <h6>{{request.user}}</h6>
+            {% endif %}
+            <span>Premium Member</span>
+          </div><!-- media-body -->
+        </div><!-- az-sidebar-loggedin -->
+        <div class="az-sidebar-body">
+          <ul class="nav">
+            <li class="nav-label">Main Menu</li>
+            <li class="nav-item active show">
               
-              <li class="nav-sub-item"><a href class="nav-sub-link" data-toggle="modal" data-target="#modalPortfolio" ><i class="fa fa-plus"></i>Create Portfolio</a></li>
-                <div id="list-portfolio" class="az-invoice-list ps az-content-left">
+              <a href="" class="nav-link with-sub"><i class="typcn typcn-clipboard"></i>Portfolios</a>
+              <ul class="nav-sub list-group wd-md">
+                
+                <li class="nav-sub-item"><a href class="nav-sub-link" data-toggle="modal" data-target="#modalPortfolio" ><i class="fa fa-plus"></i>Create Portfolio</a></li>
+                  <div id="list-portfolio" class="az-invoice-list ps az-content-left">
 
-                </div>
-              
-            </ul>
-
-            <div class="modal" id="modalPortfolio">
-              <div class="modal-dialog"  role="document">
-                <div class="modal-content" id="modalForm">
-                  <div class="modal-header">
-                    <h6 class="modal-title">Create Portfoliio</h6>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">×</span>
-                    </button>
                   </div>
-                    <form id="myForm">
-                      <div class="modal-body">
-                        <h6>Let's get you all setup so you can begin tracking your investments.</h6>
-                        <p>Some Random Text.Someme Random Text.Some Random Text.Some RRandom Text.Some Random Text. </p>
-            
-                        <!-- <div class="form-group">
-                          <input type="text" id="portfolio-name" class="form-control" placeholder="Portfolio Name">
-                        </div> -->
-                        {{ modalPortfolioForm|crispy }}
-                      </div>
-                      <div class="modal-footer">
-                        <input type="submit" id="btn-portfolio-submit" class="btn btn-indigo">
-                      </div>
-                    </form>
-                </div>
-              </div><!-- modal-dialog -->
-            </div>
+                
+              </ul>
 
+              <div class="modal" id="modalPortfolio">
+                <div class="modal-dialog"  role="document">
+                  <div class="modal-content" id="modalForm">
+                    <div class="modal-header">
+                      <h6 class="modal-title">Create Portfoliio</h6>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                      </button>
+                    </div>
+                      <form id="myForm">
+                        <div class="modal-body">
+                          <h6>Let's get you all setup so you can begin tracking your investments.</h6>
+                          <p>Some Random Text.Someme Random Text.Some Random Text.Some RRandom Text.Some Random Text. </p>
               
+                          <!-- <div class="form-group">
+                            <input type="text" id="portfolio-name" class="form-control" placeholder="Portfolio Name">
+                          </div> -->
+                          <!-- https://www.youtube.com/watch?v=mF5jzSXb1dc&ab_channel=Codemy.com -->
+                          
+                          {{ modalPortfolioForm|crispy }}
+                          {{ modalPortfolioForm.media }} 
+                        </div>
+                        <div class="modal-footer">
+                          <input type="submit" id="btn-portfolio-submit" class="btn btn-indigo">
+                        </div>
+                      </form>
+                  </div>
+                </div><!-- modal-dialog -->
+              </div>
 
-          </li><!-- nav-item -->
+                
 
-        </ul><!-- nav -->
-      </div><!-- az-sidebar-body -->
-    </div><!-- az-sidebar -->
-    <div class="az-content az-content-dashboard-five">
-      <div class="az-header">
-        <div class="container-fluid">
-          <div class="az-header-left">
-            <a href="" id="azSidebarToggle" class="az-header-menu-icon"><span></span></a>
-          </div><!-- az-header-left -->
-          <div class="az-header-center">
-            <input type="search" class="form-control" placeholder="Search for anything...">
-            <button class="btn"><i class="fas fa-search"></i></button>
-          </div><!-- az-header-center -->
-          <div class="az-header-right">
+            </li><!-- nav-item -->
 
-            <div class="dropdown az-profile-menu">
-              <a href="" class="az-img-user"><img src="#" alt=""></a>
-              <div class="dropdown-menu">
-                <div class="az-dropdown-header d-sm-none">
-                  <a href="" class="az-header-arrow"><i class="icon ion-md-arrow-back"></i></a>
-                </div>
-                <div class="az-header-profile">
-                  <div class="az-img-user">
-                    <img src="" alt="">
-                  </div><!-- az-img-user -->
-                  <h6>{{request.user}}</h6>
-                  <span>Premium Member</span>
-                </div><!-- az-header-profile -->
-                {% if request.user.is_authenticated %}
-                <a href="" class="dropdown-item"><i class="typcn typcn-user-outline"></i> My Profile</a>
-                <a href="" class="dropdown-item"><i class="typcn typcn-edit"></i> Edit Profile</a>
-                <a href="" class="dropdown-item"><i class="typcn typcn-time"></i> Activity Logs</a>
-                <a href="" class="dropdown-item"><i class="typcn typcn-cog-outline"></i> Account Settings</a>
-                <a href="{% url 'logout' %}" class="dropdown-item"><i class="typcn typcn-power-outline"></i> Sign Out</a>
-                {% else %}
-                <a href="{% url 'login' %}" class="dropdown-item"><i class="typcn typcn-power-outline"></i> Sign In</a>
-                {% endif %}
-              </div><!-- dropdown-menu -->
-            </div>
-          </div><!-- az-header-right -->
-        </div><!-- container -->
-      </div><!-- az-header -->
-      <div class="az-content-header d-block d-md-flex">
-        <div>
-          {% block portfolio-name %}
+          </ul><!-- nav -->
+        </div><!-- az-sidebar-body -->
+      </div><!-- az-sidebar -->
+      <div class="az-content az-content-dashboard-five">
+        <div class="az-header">
+          <div class="container-fluid">
+            <div class="az-header-left">
+              <a href="" id="azSidebarToggle" class="az-header-menu-icon"><span></span></a>
+            </div><!-- az-header-left -->
+            <div class="az-header-center">
+              <input type="search" class="form-control" placeholder="Search for anything...">
+              <button class="btn"><i class="fas fa-search"></i></button>
+            </div><!-- az-header-center -->
+            <div class="az-header-right">
+
+              <div class="dropdown az-profile-menu">
+                <a href="" class="az-img-user"><img src="#" alt=""></a>
+                <div class="dropdown-menu">
+                  <div class="az-dropdown-header d-sm-none">
+                    <a href="" class="az-header-arrow"><i class="icon ion-md-arrow-back"></i></a>
+                  </div>
+                  <div class="az-header-profile">
+                    <div class="az-img-user">
+                      <img src="" alt="">
+                    </div><!-- az-img-user -->
+                    <h6>{{request.user}}</h6>
+                    <span>Premium Member</span>
+                  </div><!-- az-header-profile -->
+                  {% if request.user.is_authenticated %}
+                  <a href="" class="dropdown-item"><i class="typcn typcn-user-outline"></i> My Profile</a>
+                  <a href="" class="dropdown-item"><i class="typcn typcn-edit"></i> Edit Profile</a>
+                  <a href="" class="dropdown-item"><i class="typcn typcn-time"></i> Activity Logs</a>
+                  <a href="" class="dropdown-item"><i class="typcn typcn-cog-outline"></i> Account Settings</a>
+                  <a href="{% url 'logout' %}" class="dropdown-item"><i class="typcn typcn-power-outline"></i> Sign Out</a>
+                  {% else %}
+                  <a href="{% url 'login' %}" class="dropdown-item"><i class="typcn typcn-power-outline"></i> Sign In</a>
+                  {% endif %}
+                </div><!-- dropdown-menu -->
+              </div>
+            </div><!-- az-header-right -->
+          </div><!-- container -->
+        </div><!-- az-header -->
+        <div class="az-content-header d-block d-md-flex">
+          <div>
+            {% block portfolio-name %}
+
+            {% endblock %}
+            
+            <p class="mg-b-0">Your customer service/help desk monitoring dashboard template.</p>
+          </div>
+        </div><!-- az-content-header -->
+        <div class="az-content-body">
+
+          
+
+          
+          
+          {% block content %}
 
           {% endblock %}
+
+        </div><!-- az-content-body -->
+
+        <div class="az-footer ht-40">
+          <div class="container-fluid pd-t-0-f ht-100p">
+            <span>&copy; 2021 Origami IT Lab</span>
+          </div><!-- container -->
+        </div><!-- az-footer -->
+      </div><!-- az-content -->
+
+      <!-- <script src="{% static '/lib/jquery/jquery.min.js' %}"></script> -->
+      <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+      <script src="{% static '/lib/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+      <!-- <script src="{% static '/lib/datatables.net/js/jquery.dataTables.min.js' %}"></script> -->
+      <!-- <script src="{% static '/lib/datatables.net-dt/js/dataTables.dataTables.min.js' %}"></script> -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+
+      <script src="https://nightly.datatables.net/js/jquery.dataTables.js"></script>
+      <script src="https://cdn.datatables.net/rowgroup/1.0.2/js/dataTables.rowGroup.min.js"></script>
+      <script src="https://cdn.datatables.net/colreorder/1.5.4/js/dataTables.colReorder.min.js"></script>
+      <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
+      <script src="https://cdn.datatables.net/select/1.3.3/js/dataTables.select.min.js"></script>
+
+      <!-- <script src="https://nightly.datatables.net/js/jquery.dataTables.js"></script> -->
+      <!-- <script src="https://cdn.datatables.net/rowgroup/1.1.2/js/dataTables.rowGroup.js"></script> -->
+
+      
+      <!-- <script src="https://cdn.datatables.net/rowgroup/1.0.2/js/dataTables.rowGroup.min.js"></script> -->
+
+      <!-- <script src="https://cdn.datatables.net/rowgroup/1.0.2/js/dataTables.rowGroup.min.js"></script> -->
+      <!-- <script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.html5.js"></script> -->
+      <!-- <script src="https://cdn.datatables.net/buttons/1.5.1/js/dataTables.buttons.js"></script> -->
+      <!-- <script src="https://cdn.datatables.net/buttons/1.5.1/js/buttons.colVis.min.js"></script> -->
+      <!-- <script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script> -->
+      <!-- <script src="https://cdn.datatables.net/buttons/1.5.1/js/buttons.colVis.min.js"></script> -->
+
+      <!-- <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script> -->
+      
+      
+      <!-- <script src="https://cdn.datatables.net/rowgroup/1.1.3/js/dataTables.rowGroup.min.js"></script> -->
+
+      <!-- <script src="{% static '/lib/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script> -->
+      <!-- <script src="{% static '/lib/datatables.net-responsive-dt/js/responsive.dataTables.min.js' %}"></script> -->
+      <!-- <script src="{% static '/lib/select2/js/select2.min.js' %}"></script> -->
+      
+      <script src="{% static '/lib/ionicons/ionicons.js' %}"></script>
+      <script src="{% static '/lib/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
+
+      <script src="{% static '/js/azia.js' %}"></script>
+
+      
+      
+
+      <script>
+        
+      
+      
+        $(function(){
+          'use strict'
+
           
-          <p class="mg-b-0">Your customer service/help desk monitoring dashboard template.</p>
-        </div>
-      </div><!-- az-content-header -->
-      <div class="az-content-body">
+          // Sidebar toggle
+          $('.az-sidebar .with-sub').on('click', function(e){
+            e.preventDefault();
+            $(this).parent().toggleClass('show');
+            $(this).parent().siblings().removeClass('show');
+          })
 
-        
+          $(document).on('click touchstart', function(e){
+            e.stopPropagation();
 
-        
-        
-        {% block content %}
+            // closing of sidebar menu when clicking outside of it
+            if(!$(e.target).closest('.az-header-menu-icon').length) {
+              var sidebarTarg = $(e.target).closest('.az-sidebar').length;
+              if(!sidebarTarg) {
+                $('body').removeClass('az-sidebar-show');
+              }
+            }
+          });
 
-        {% endblock %}
 
-      </div><!-- az-content-body -->
+          $('#azSidebarToggle').on('click', function(e){
+            e.preventDefault();
 
-      <div class="az-footer ht-40">
-        <div class="container-fluid pd-t-0-f ht-100p">
-          <span>&copy; 2021 Origami IT Lab</span>
-        </div><!-- container -->
-      </div><!-- az-footer -->
-    </div><!-- az-content -->
+            if(window.matchMedia('(min-width: 992px)').matches) {
+              $('.az-sidebar').toggle();
+            } else {
+              $('body').toggleClass('az-sidebar-show');
+            }
+          })
 
-    <script src="{% static '/lib/jquery/jquery.min.js' %}"></script>
-    <script src="{% static '/lib/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 
-    <script src="{% static '/lib/datatables.net/js/jquery.dataTables.min.js' %}"></script>
-    <script src="{% static '/lib/datatables.net-dt/js/dataTables.dataTables.min.js' %}"></script>
-    <script src="{% static '/lib/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script>
-    <script src="{% static '/lib/datatables.net-responsive-dt/js/responsive.dataTables.min.js' %}"></script>
-    <script src="{% static '/lib/select2/js/select2.min.js' %}"></script>
-    
-    <script src="{% static '/lib/ionicons/ionicons.js' %}"></script>
-    <script src="{% static '/lib/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
+                  
+        });
+      </script>
 
-    <script src="{% static '/js/azia.js' %}"></script>
 
-     
-    
+
 
     <script>
-      
-    
-    
-      $(function(){
-        'use strict'
 
         
-        // Sidebar toggle
-        $('.az-sidebar .with-sub').on('click', function(e){
-          e.preventDefault();
-          $(this).parent().toggleClass('show');
-          $(this).parent().siblings().removeClass('show');
-        })
-
-        $(document).on('click touchstart', function(e){
-          e.stopPropagation();
-
-          // closing of sidebar menu when clicking outside of it
-          if(!$(e.target).closest('.az-header-menu-icon').length) {
-            var sidebarTarg = $(e.target).closest('.az-sidebar').length;
-            if(!sidebarTarg) {
-              $('body').removeClass('az-sidebar-show');
-            }
-          }
-        });
+      /*
+          KEY COMPONENTS:
+          "activeItem" = null until an edit button is clicked. Will contain object of item we are editing
+          
+          PROCESS:
+          1 - Fetch Data and build rows "buildList()"
+          2 - Create Item on form submit
+          3 - Edit Item click - Prefill form and change submit URL
+          4 - Delete Item - Send item id to delete URL
+          NOTES:
+          -- Add event handlers to "edit", "delete", "title"
+          -- Remove extra data on re-render
+          -- CSRF Token
+        */
 
 
-        $('#azSidebarToggle').on('click', function(e){
-          e.preventDefault();
-
-          if(window.matchMedia('(min-width: 992px)').matches) {
-            $('.az-sidebar').toggle();
-          } else {
-            $('body').toggleClass('az-sidebar-show');
-          }
-        })
-
-
-        
-      });
-    </script>
-
-<script>
-
-    
-  /*
-			KEY COMPONENTS:
-			"activeItem" = null until an edit button is clicked. Will contain object of item we are editing
-			
-			PROCESS:
-			1 - Fetch Data and build rows "buildList()"
-			2 - Create Item on form submit
-			3 - Edit Item click - Prefill form and change submit URL
-			4 - Delete Item - Send item id to delete URL
-			NOTES:
-			-- Add event handlers to "edit", "delete", "title"
-			-- Remove extra data on re-render
-			-- CSRF Token
-		*/
-
-
-  function getCookie(name) {
-      let cookieValue = null;
-      if (document.cookie && document.cookie !== '') {
-          const cookies = document.cookie.split(';');
-          for (let i = 0; i < cookies.length; i++) {
-              const cookie = cookies[i].trim();
-              // Does this cookie string begin with the name we want?
-              if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                  break;
+      function getCookie(name) {
+          let cookieValue = null;
+          if (document.cookie && document.cookie !== '') {
+              const cookies = document.cookie.split(';');
+              for (let i = 0; i < cookies.length; i++) {
+                  const cookie = cookies[i].trim();
+                  // Does this cookie string begin with the name we want?
+                  if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                      cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                      break;
+                  }
               }
           }
+          return cookieValue;
       }
-      return cookieValue;
-  }
-  const csrftoken = getCookie('csrftoken');
+      const csrftoken = getCookie('csrftoken');
 
-  
-
-
-  var activeItem = null
-  
-  buildList()
-
-
-
-  //Making a GET request with fetch
-  function buildList() {
-    var listWrapper = document.getElementById('list-portfolio')
-    listWrapper.innerHTML = ''
-
-    var URL = window.location.origin + '/api/portfolios/'
-
-    fetch(URL, {
-      headers:{
-          'Accept': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
-      },
-    })
-    .then(response => {
       
-      return response.json() //Convert response to JSON      
-    })
-    .then(data => {
-      //Perform actions with the response data from the view      
-      console.log('Data: ', data.name)
-      $('#portfolio_table').DataTable();
 
-      var list = data
-      for (var i in list) {
-        console.log('Each Data: ', list[i].id)
-        var listItem = `
-            <div class="media">
-              <div class="media-icon"><i class="far fa-file-alt"></i></div>
-              <div class="media-body">
-                <h6>
-                  <span><a href="/portfolio/${list[i].id}/" class="nav-sub-link">${list[i].name}</a></span>
-                  <span>$25</span>
-                </h6>
-                <div>
-                  <p><span>Date:</span> Oct 25</p>
-                  <div class="ed-btn" style="display: block">
-                    <p><span><a href class="linkEdit" data-toggle="modal" data-target="#modalPortfolio"><i class="fas fa-edit fa-fw"></i></a>
-                      </span><a href class="linkDelete"><i class="fas fa-trash-alt fa-fw"></i></a>
-                    </p>                    
-                  </div>
+
+      var activeItem = null
+      
+      buildList()
+
+
+
+      //Making a GET request with fetch
+      function buildList() {
+        var listWrapper = document.getElementById('list-portfolio')
+        listWrapper.innerHTML = ''
+
+        var URL = window.location.origin + '/api/portfolios/'
+
+        fetch(URL, {
+          headers:{
+              'Accept': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+          },
+        })
+        .then(response => {
+          
+          return response.json() //Convert response to JSON      
+        })
+        .then(data => {
+          //Perform actions with the response data from the view      
+          console.log('Data: ', data.name)
+          $('#portfolio_table').DataTable();
+
+          var list = data
+          for (var i in list) {
+            console.log('Each Data: ', list[i].id)
+            var listItem = `
+                <div class="media">
+                  <div class="media-icon"><i class="far fa-file-alt"></i></div>
+                  <div class="media-body">
+                    <h6>
+                      <span><a href="/portfolios/${list[i].id}/" class="nav-sub-link">${list[i].name}</a></span>
+                      <span>$25</span>
+                    </h6>
+                    <div>
+                      <p><span>Date:</span> Oct 25</p>
+                      <div class="ed-btn" style="display: block">
+                        <p><span><a href class="linkEdit" data-toggle="modal" data-target="#modalPortfolio"><i class="fas fa-edit fa-fw"></i></a>
+                          </span><a href class="linkDelete"><i class="fas fa-trash-alt fa-fw"></i></a>
+                        </p>                    
+                      </div>
+                    </div>
+                  </div><!-- media-body -->
                 </div>
-              </div><!-- media-body -->
-            </div>
-          `
+              `
+
+            
+            listWrapper.innerHTML += listItem
+            // portfolioWrapper.innerHTML += item
+
+            
+
+          }
+
+          for (var i in list) {
+            var editItem = document.getElementsByClassName('linkEdit')[i]
+            var deleteItem = document.getElementsByClassName('linkDelete')[i]
+
+            editItem.addEventListener('click', (function(item){
+              return function(){
+                console.log('When click on Edit link, status of live quotes', item.live_quotes)
+                editPortfolio(item);
+              }
+            })(list[i]))
+
+
+            deleteItem.addEventListener('click', (function(item){
+              return function(){
+                deletePortfolio(item);
+              }
+            })(list[i]))
+
+          }
+        })
+
+
+      }
+
+
+
+
+      //Making a POST/Update request with fetch
+      const form = document.getElementById('myForm')
+
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+
+        console.log('Form Submitted')
+        var URL = window.location.origin + '/api/portfolios/' 
+
+        if(activeItem!=null){
+          var URL = window.location.origin + `/api/portfolios/${activeItem.id}/`
+          
+          activeItem=null
+        }
+        
+        const data = new FormData(this)
+        const searchParam = new URLSearchParams()
+        
+        for (const pair of data) {
+          searchParam.append(pair[0], pair[1])
+          console.log(pair[0], pair[1])
+        }
+
+        fetch(URL, {
+          method: 'POST',
+          headers:{
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+              'X-CSRFToken': csrftoken,
+          },
+          body: JSON.stringify({
+            'name': searchParam.get('name'),
+            'description': searchParam.get('description'),
+            'live_quotes': searchParam.get('live_quotes'),
+            'update_every': searchParam.get('update_every'),
+            'default_commission': searchParam.get('default_commission'),
+            'cash': searchParam.get('cash'),
+            'include_cash_balance': searchParam.get('include_cash_balance'),
+            'update_cash_balance_with_transaction': searchParam.get('update_cash_balance_with_transaction'),
+          }) //JavaScript object of data to POST
+        })
+
+        .then(response => {
+          buildList();
+          document.getElementById('myForm').reset()
+          $('#modalPortfolio').modal('toggle');
+        })
+        .then(data => {
+          console.log('POST DATA', data)
+          $('#portfolio_table').DataTable().draw()
+          //Perform actions with the response data from the view
+        })
+        .catch(error => {
+          console.log('ERROR', error)
+        })
+        
+      });
+
+
+
+      function editPortfolio(item) {    
+        activeItem = item
+        document.getElementById('id_name').value = activeItem.name
+        document.getElementById('id_description').value = activeItem.description
+        document.getElementById('id_live_quotes').checked = activeItem.live_quotes
+        document.getElementById('id_update_every').value = activeItem.update_every
+        document.getElementById('id_default_commission').value = activeItem.default_commission
+        document.getElementById('id_include_cash_balance').checked = activeItem.include_cash_balance
+        document.getElementById('id_update_cash_balance_with_transaction').checked = activeItem.update_cash_balance_with_transaction
 
         
-        listWrapper.innerHTML += listItem
-        // portfolioWrapper.innerHTML += item
-
-        
-
       }
 
-      for (var i in list) {
-        var editItem = document.getElementsByClassName('linkEdit')[i]
-        var deleteItem = document.getElementsByClassName('linkDelete')[i]
 
-        editItem.addEventListener('click', (function(item){
-          return function(){
-            console.log('When click on Edit link, status of live quotes', item.live_quotes)
-            editPortfolio(item);
+      function deletePortfolio(item){
+        var URL = window.location.origin + `/api/portfolios/${item.id}/` 
+        console.log('DELETE', item.id)
+        fetch(URL, {
+          method: 'DELETE',
+          headers:{
+              'Content-Type': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+              'X-CSRFToken': csrftoken,
           }
-        })(list[i]))
-
-
-        deleteItem.addEventListener('click', (function(item){
-          return function(){
-            deletePortfolio(item);
+        })
+        .then((response)=>{
+          
+          if (window.location.href != window.location.origin) {
+                window.location.href = window.location.origin;
           }
-        })(list[i]))
+
+          buildList();
+        })
+
 
       }
-    })
-
-
-  }
-
-
-
-
-  //Making a POST/Update request with fetch
-  const form = document.getElementById('myForm')
-
-  form.addEventListener('submit', function(e){
-    e.preventDefault();
-
-    console.log('Form Submitted')
-    var URL = window.location.origin + '/api/portfolios/' 
-
-    if(activeItem!=null){
-      var URL = window.location.origin + `/api/portfolios/${activeItem.id}/`
-      
-      activeItem=null
-    }
-    
-    const data = new FormData(this)
-    const searchParam = new URLSearchParams()
-    
-    for (const pair of data) {
-      searchParam.append(pair[0], pair[1])
-      console.log(pair[0], pair[1])
-    }
-
-    fetch(URL, {
-      method: 'POST',
-      headers:{
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
-          'X-CSRFToken': csrftoken,
-      },
-      body: JSON.stringify({
-        'name': searchParam.get('name'),
-        'description': searchParam.get('description'),
-        'live_quotes': searchParam.get('live_quotes'),
-        'update_every': searchParam.get('update_every'),
-        'default_commission': searchParam.get('default_commission'),
-        'cash': searchParam.get('cash'),
-        'include_cash_balance': searchParam.get('include_cash_balance'),
-        'update_cash_balance_with_transaction': searchParam.get('update_cash_balance_with_transaction'),
-      }) //JavaScript object of data to POST
-    })
-
-    .then(response => {
-      buildList();
-      document.getElementById('myForm').reset()
-      $('#modalPortfolio').modal('toggle');
-    })
-    .then(data => {
-      console.log('POST DATA', data)
-      $('#portfolio_table').DataTable().draw()
-      //Perform actions with the response data from the view
-    })
-    .catch(error => {
-      console.log('ERROR', error)
-    })
-    
-  });
-
-
-
-  function editPortfolio(item) {    
-    activeItem = item
-    document.getElementById('id_name').value = activeItem.name
-    document.getElementById('id_description').value = activeItem.description
-    document.getElementById('id_live_quotes').checked = activeItem.live_quotes
-    document.getElementById('id_update_every').value = activeItem.update_every
-    document.getElementById('id_default_commission').value = activeItem.default_commission
-    document.getElementById('id_include_cash_balance').checked = activeItem.include_cash_balance
-    document.getElementById('id_update_cash_balance_with_transaction').checked = activeItem.update_cash_balance_with_transaction
-
-    
-  }
-
-
-  function deletePortfolio(item){
-    var URL = window.location.origin + `/api/portfolios/${item.id}/` 
-    console.log('DELETE', item.id)
-    fetch(URL, {
-      method: 'DELETE',
-      headers:{
-          'Content-Type': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
-          'X-CSRFToken': csrftoken,
-      }
-    })
-    .then((response)=>{
-      buildList();
-    })
-
-
-  }
-</script>
+    </script>
     {% block javascript %}
 
     {% endblock %}

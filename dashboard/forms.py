@@ -32,8 +32,6 @@ class TransactionForm(forms.ModelForm):
     # def __init__(self, *args, **kwargs):
     #     super().__init__(*args, **kwargs)
         
-    #     # self.fields['portfolio'].queryset = Portfolio.objects.none()
-    #     # self.fields['portfolio'].widget.attrs['disabled'] = True
         
     #     self.helper = FormHelper()
     #     self.helper.layout = Layout(
@@ -41,7 +39,6 @@ class TransactionForm(forms.ModelForm):
     #       'transaction_type',
     #         Row(
     #             Column('purchase_date', css_class='form-group col-md-6 mb-0'),
-    #             Column('portfolio', type="text", css_class='form-group col-md-6 mb-0'),
     #             css_class='form-row'
     #         ),
     #         Row(
@@ -50,6 +47,7 @@ class TransactionForm(forms.ModelForm):
     #             css_class='form-row'
     #         ),
     #         'update_cash_balance',
+
     #         Row(
     #             Column('fees', css_class='form-group col-md-6 mb-0'),
     #             Column('commissions', css_class='form-group col-md-6 mb-0'),

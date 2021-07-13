@@ -27,7 +27,8 @@ SECRET_KEY = 'django-insecure-ae*kt+s%1lx7pdfielodkr(m+r@%1l*d$jiepat!_y@+i1b46v
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['stock-market-eye.herokuapp.com', '127.0.0.1']
+ALLOWED_HOSTS = ['stock-market-eye.herokuapp.com', 
+                 '127.0.0.1']
 
 
 # Application definition
@@ -46,6 +47,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'rest_framework',
     'rest_framework_datatables',
+    'ckeditor',
 ]
 
 MIDDLEWARE = [
