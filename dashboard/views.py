@@ -1,13 +1,14 @@
 from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+
+
 from django.http import HttpResponse, Http404
 
 from . forms import *
 from . serializers import *
 
-
-
-
-
+# Login URL is provided in SETTINGS.py
+@login_required()
 def listView(request):
     
     modalPortfolioForm = PortfolioForm()    
@@ -17,7 +18,7 @@ def listView(request):
 
 
 
-
+@login_required()
 def portfolioView(request, pk):
     # for rendering individual portfolio level detail
     portfolio = get_object_or_404(Portfolio, id=pk)
@@ -43,4 +44,4 @@ def portfolioView(request, pk):
     return render(request, 'dashboard/portfolio.html', context)
 
     
-    
+

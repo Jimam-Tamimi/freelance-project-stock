@@ -19,21 +19,6 @@
     <link href="{% static 'lib/ionicons/css/ionicons.min.css' %}" rel="stylesheet">
     <link href="{% static 'lib/typicons.font/typicons.css' %}" rel="stylesheet">
     
-    <!-- <link href="{% static '/lib/datatables.net-dt/css/jquery.dataTables.min.css' %}" rel="stylesheet"> -->
-    <!-- <link href="{% static '/lib/datatables.net-responsive-dt/css/responsive.dataTables.min.css' %}" rel="stylesheet"> -->
-    <!-- <link href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css"> -->
-
-    <!-- <link href="https://nightly.datatables.net/css/jquery.dataTables.css" rel="stylesheet" type="text/css" /> -->
-    <!-- <link href="https://cdn.datatables.net/rowgroup/1.1.2/css/rowGroup.dataTables.css" rel="stylesheet" type="text/css" /> -->
-    <!-- <link href="https://cdn.datatables.net/rowgroup/1.0.2/css/rowGroup.dataTables.min.css" rel="stylesheet" type="text/css" /> -->
-
-    <!-- <link href="https://cdn.datatables.net/buttons/1.5.1/css/buttons.dataTables.css" rel="stylesheet" type="text/css" /> -->
-
-    
-    
-    <!-- <link href="https://cdn.datatables.net/rowgroup/1.1.3/css/rowGroup.dataTables.min.css"> -->
-
-    <!-- <link href="{% static '/lib/select2/css/select2.min.css' %}" rel="stylesheet"> -->
 
     <link href="https://nightly.datatables.net/css/jquery.dataTables.css" rel="stylesheet" type="text/css" />
     <link href="https://cdn.datatables.net/rowgroup/1.0.2/css/rowGroup.dataTables.min.css" rel="stylesheet" type="text/css" />
@@ -57,9 +42,10 @@
       .django-ckeditor-widget{
         width: 100%;
       }
-
-    
-
+      #div_id_update_every{
+        display: none;
+      }
+  
         
     </style>
   </head>
@@ -67,7 +53,7 @@
 
       <div class="az-sidebar">
         <div class="az-sidebar-header">
-          <a href="http://127.0.0.1:8000/" class="az-logo">Market Eye</a>
+          <a href="{% url 'portfolios' %}" class="az-logo">Market Eye</a>
         </div><!-- az-sidebar-header -->
         <div class="az-sidebar-loggedin">
           <div class="az-img-user online"><img src="#" alt=""></div>
@@ -87,9 +73,9 @@
               <ul class="nav-sub list-group wd-md">
                 
                 <li class="nav-sub-item"><a href class="nav-sub-link" data-toggle="modal" data-target="#modalPortfolio" ><i class="fa fa-plus"></i>Create Portfolio</a></li>
-                  <div id="list-portfolio" class="az-invoice-list ps az-content-left">
+                <div id="list-portfolio" class="az-invoice-list ps az-content-left">
 
-                  </div>
+                </div>
                 
               </ul>
 
@@ -104,20 +90,23 @@
                     </div>
                       <form id="myForm">
                         <div class="modal-body">
-                          <h6>Let's get you all setup so you can begin tracking your investments.</h6>
-                          <p>Some Random Text.Someme Random Text.Some Random Text.Some RRandom Text.Some Random Text. </p>
+                          <!-- <h6>Let's get you all setup so you can begin tracking your investments.</h6> -->
+                          <!-- <p>Some Random Text.Someme Random Text.Some Random Text.Some RRandom Text.Some Random Text. </p> -->
               
                           <!-- <div class="form-group">
                             <input type="text" id="portfolio-name" class="form-control" placeholder="Portfolio Name">
                           </div> -->
                           <!-- https://www.youtube.com/watch?v=mF5jzSXb1dc&ab_channel=Codemy.com -->
                           
-                          {{ modalPortfolioForm|crispy }}
-                          {{ modalPortfolioForm.media }} 
+                          <!-- {{ modalPortfolioForm|crispy }} -->
+
+                          {% crispy modalPortfolioForm %}
+
+                          <!-- {{ modalPortfolioForm.media }}  -->
                         </div>
-                        <div class="modal-footer">
+                        <!-- <div class="modal-footer">
                           <input type="submit" id="btn-portfolio-submit" class="btn btn-indigo">
-                        </div>
+                        </div> -->
                       </form>
                   </div>
                 </div><!-- modal-dialog -->
@@ -211,27 +200,7 @@
       <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
       <script src="https://cdn.datatables.net/select/1.3.3/js/dataTables.select.min.js"></script>
 
-      <!-- <script src="https://nightly.datatables.net/js/jquery.dataTables.js"></script> -->
-      <!-- <script src="https://cdn.datatables.net/rowgroup/1.1.2/js/dataTables.rowGroup.js"></script> -->
-
-      
-      <!-- <script src="https://cdn.datatables.net/rowgroup/1.0.2/js/dataTables.rowGroup.min.js"></script> -->
-
-      <!-- <script src="https://cdn.datatables.net/rowgroup/1.0.2/js/dataTables.rowGroup.min.js"></script> -->
-      <!-- <script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.html5.js"></script> -->
-      <!-- <script src="https://cdn.datatables.net/buttons/1.5.1/js/dataTables.buttons.js"></script> -->
-      <!-- <script src="https://cdn.datatables.net/buttons/1.5.1/js/buttons.colVis.min.js"></script> -->
-      <!-- <script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script> -->
-      <!-- <script src="https://cdn.datatables.net/buttons/1.5.1/js/buttons.colVis.min.js"></script> -->
-
-      <!-- <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script> -->
-      
-      
-      <!-- <script src="https://cdn.datatables.net/rowgroup/1.1.3/js/dataTables.rowGroup.min.js"></script> -->
-
-      <!-- <script src="{% static '/lib/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script> -->
-      <!-- <script src="{% static '/lib/datatables.net-responsive-dt/js/responsive.dataTables.min.js' %}"></script> -->
-      <!-- <script src="{% static '/lib/select2/js/select2.min.js' %}"></script> -->
+     
       
       <script src="{% static '/lib/ionicons/ionicons.js' %}"></script>
       <script src="{% static '/lib/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
@@ -239,7 +208,21 @@
       <script src="{% static '/js/azia.js' %}"></script>
 
       
-      
+      <script>
+
+        
+        document.getElementById("id_live_quotes").onclick = my_toggle_func; 
+
+        
+
+        function my_toggle_func() { 
+        if (this.checked) {
+                document.getElementById("div_id_update_every").style.display = 'none';
+        } else {
+                document.getElementById("div_id_update_every").style.display = 'block';
+        }
+}
+      </script>
 
       <script>
         
@@ -351,12 +334,12 @@
         })
         .then(data => {
           //Perform actions with the response data from the view      
-          console.log('Data: ', data.name)
+          console.log('GET Portfolio Data: ', data.name)
           $('#portfolio_table').DataTable();
 
           var list = data
           for (var i in list) {
-            console.log('Each Data: ', list[i].id)
+            console.log('Each Data Portfolio: ', list[i].id)
             var listItem = `
                 <div class="media">
                   <div class="media-icon"><i class="far fa-file-alt"></i></div>
@@ -391,7 +374,7 @@
 
             editItem.addEventListener('click', (function(item){
               return function(){
-                console.log('When click on Edit link, status of live quotes', item.live_quotes)
+                console.log('When click on Edit link, status of live quotes', item.cash)
                 editPortfolio(item);
               }
             })(list[i]))
@@ -433,7 +416,19 @@
         for (const pair of data) {
           searchParam.append(pair[0], pair[1])
           console.log(pair[0], pair[1])
+
+          
         }
+
+        if (searchParam.get('live_quotes')==null) {
+            searchParam.set('live_quotes', false)
+          }
+          else{
+            searchParam.set('update_every', '0')
+          }
+          // if (searchParam.get('include_cash_balance')==null) {
+          //   searchParam.set('include_cash_balance', false)
+          // }
 
         fetch(URL, {
           method: 'POST',
@@ -450,8 +445,7 @@
             'update_every': searchParam.get('update_every'),
             'default_commission': searchParam.get('default_commission'),
             'cash': searchParam.get('cash'),
-            'include_cash_balance': searchParam.get('include_cash_balance'),
-            'update_cash_balance_with_transaction': searchParam.get('update_cash_balance_with_transaction'),
+            // 'include_cash_balance': searchParam.get('include_cash_balance'),
           }) //JavaScript object of data to POST
         })
 
@@ -480,8 +474,7 @@
         document.getElementById('id_live_quotes').checked = activeItem.live_quotes
         document.getElementById('id_update_every').value = activeItem.update_every
         document.getElementById('id_default_commission').value = activeItem.default_commission
-        document.getElementById('id_include_cash_balance').checked = activeItem.include_cash_balance
-        document.getElementById('id_update_cash_balance_with_transaction').checked = activeItem.update_cash_balance_with_transaction
+        document.getElementById('id_cash').value = activeItem.cash
 
         
       }

@@ -4,8 +4,62 @@
 
 {% block headers %}
     <!-- XDSoft DateTimePicker -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" />
+  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" /> -->
 
+  <style>
+  .bootstrap-autocomplete {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    display: none;
+    float: left;
+    min-width: 160px;
+    padding: 5px 0;
+    margin: 2px 0 0;
+    list-style: none;
+    font-size: 14px;
+    text-align: left;
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+    background-clip: padding-box;
+}
+
+.bootstrap-autocomplete > li > a {
+  display: block;
+  padding: 3px 20px;
+  clear: both;
+  font-weight: normal;
+  line-height: 1.42857143;
+  color: #333333;
+  white-space: nowrap;
+}
+
+.li-state-hover,
+.li-state-active,
+.li-state-focus {
+  text-decoration: none;
+  color: #262626;
+  background-color: #f5f5f5;
+  cursor: pointer;
+}
+
+.li-helper-hidden-accessible {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+  </style>
   
 {% endblock %}
 
@@ -43,15 +97,15 @@
                 </div>
                   <form id="myTransactionForm">
                     <div class="modal-body">
-                      <h6>Let's get you all setup so you can begin tracking your investments.</h6>
-                      <p>Some Random Text.Someme Random Text.Some Random Text.Some RRandom Text.Some Random Text. </p>
+                      <!-- <h6>Let's get you all setup so you can begin tracking your investments.</h6>
+                      <p>Some Random Text.Someme Random Text.Some Random Text.Some RRandom Text.Some Random Text. </p> -->
 
-                      <!-- {% crispy form %} -->
-                      {{ form|crispy }}
+                      {% crispy form %}
+                      <!-- {{ form|crispy }} -->
                     </div>
-                    <div class="modal-footer">
-                      <input type="submit" id="btn-transaction-submit" class="btn btn-indigo">
-                    </div>
+                    <!-- <div class="modal-footer">
+                      <input type="submit" id="submit-id-submit" class="btn btn-indigo">
+                    </div> -->
                   </form>
               </div>
             </div><!-- modal-dialog -->
@@ -69,14 +123,50 @@
         
 
           <div class="table-responsive">
-            <table id="example" class="table table-striped table-hover display nowrap" cellspacing="0" style="width:100%" >
+            <table id="example" class="table table-striped table-hover table-bordered display nowrap" cellspacing="0" style="width:100%" >
               <thead>
                   <tr>
-                    <th>Quantity</th>
-                    <th>DateAdded</th>
                     <th>Symbol</th>
-                    <th>PurchaseCost</th>
-                    <th>BuyComment</th>
+                    <th>Name</th>
+                    <th>Shares</th>
+                    <th>Date Added</th>
+                    <th>Buy Price</th>
+                    <th>Adjusted Buy Price</th>
+                    <th>Purchase Cost</th>
+                    <th>Comment</th>
+
+                    <th>Commissions</th>
+                    <th>Fees</th>
+                    <th>Update Cash Balance?</th>
+                    <th>Transaction Type</th>
+
+                    <th>Current Price</th>
+                    <th>Last Price Update Date & Time</th>
+                    <th>Day Change</th>
+                    <th>Day Change %</th>
+                    <th>Day Lo</th>
+                    <th>Day Hi</th>
+                    <th>52 Week Lo</th>
+                    <th>52 Week Hi</th>
+                    <th>Volume</th>
+                    <th>Volume Average 10 days</th>
+                    <th>Volume Average 3M</th>
+                    <th>MktCap</th>
+                    <th>EPS</th>
+                    <th>P/E</th>
+                    <th>P/B</th>
+                    <th>EV/EBITDA</th>
+                    <th>Dividend Yield</th>
+                    <th>D/E</th>
+                    <th>ROE</th>
+                    <th>ROA</th>
+                    <th>Revenues</th>
+                    <th>EBITDA</th>
+                    <th>Net Profit</th>
+                    <th>Sector</th>
+                    <th>Industry</th>
+                    <th>Website</th>
+                  
                     
                   </tr>
               </thead>
@@ -100,8 +190,47 @@
 
 
 {% block javascript %}
+  <script src="//cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.rawgit.com/xcash/bootstrap-autocomplete/3de7ad37/dist/latest/bootstrap-autocomplete.js"></script>
 
   <script>
+    // var symbol = document.getElementById('id_symbol').textContent
+    $('#id_symbol').autoComplete({
+        resolverSettings: {
+            url: window.location.origin + '/api/suggestions/'
+        }
+                
+    });
+ 
+    
+    $('#id_symbol').on('autocomplete.select', function (e) {
+          // var symbol = $('#id_symbol').val()
+          var symbol = document.getElementById('id_symbol').value
+
+					console.log(symbol);
+          $.ajax({
+            type: "GET",
+            url: window.location.origin + '/api/price/',
+            data: { 'q' :  symbol},
+            success: function(response) {
+              // show response for success
+              // console.log(response)
+              document.getElementById('id_regularMarketPrice').value = response
+            },
+            error:function(e) {
+              // show response for success
+              console.log(e)
+            },
+          });
+				});
+    
+
+
+  </script>
+
+
+  <script>
+
     $(document).ready(function() {
       var events = $('#events');
       var portfolio_id = document.getElementById('portfolio_id').textContent
@@ -113,13 +242,49 @@
             style: 'single'
         },
         ajax: window.location.origin + '/api/portfolios/' + portfolio_id + '/transactions/?format=datatables',
-        order: [[ 2, "desc" ]],
+        order: [[ 0, "desc" ]],
+        columnDefs: [
+          {"className": "dt-center", "targets": "_all"}
+        ],
         columns: [
+          { "data": "symbol" },
+          { "data": "longName" },
           { "data": "quantity" },
           { "data": "purchase_date" },
-          { "data": "symbol" },
-          { "data": "price" },
+          { "data": "buyPrice" },
+          { "data": "adjusted_buy_price" },
+          { "data": "purchase_cost" },
           { "data": "comments" },
+          { "data": "commissions" },
+          { "data": "fees" },
+          { "data": "update_cash_balance" },
+          { "data": "transaction_type" },
+          { "data": "regularMarketPrice" },
+          { "data": "regularMarketTime" },
+          { "data": "regularMarketChange" },
+          { "data": "regularMarketChangePercent" },
+          { "data": "regularMarketDayLow" },
+          { "data": "regularMarketDayHigh" },
+          { "data": "fiftyTwoWeekLow" },
+          { "data": "fiftyTwoWeekHigh" },
+          { "data": "regularMarketVolume" },
+          { "data": "averageDailyVolume10Day" },
+          { "data": "averageDailyVolume3Month" },
+          { "data": "marketCap" },
+          { "data": "epsTrailingTwelveMonths" },
+          { "data": "trailingPE" },
+          { "data": "priceToBook" },
+          { "data": "enterpriseToEbitda" },
+          { "data": "trailingAnnualDividendYield" },
+          { "data": "debtToEquity" },
+          { "data": "returnOnEquity" },
+          { "data": "returnOnAssets" },
+          { "data": "totalRevenue" },
+          { "data": "ebitda" },
+          { "data": "netIncome" },
+          { "data": "sector" },
+          { "data": "industry" },
+          { "data": "website" }
         ],
         rowGroup: {
           dataSrc: 'symbol',
@@ -131,7 +296,7 @@
             });
 
             return $('<tr/>')
-              .append('<td colspan="8">' + group + ' (' + rows.count() + ')</td>')
+              .append('<td colspan="38">' + group + ' (' + rows.count() + ')</td>')
               .attr('data-name', group)
               .toggleClass('collapsed', collapsed);
           },
@@ -155,10 +320,10 @@
             var rowData = table.rows( indexes ).data().toArray();
             events.prepend( '<div><b>'+type+' selection</b> - '+JSON.stringify( rowData )+'</div>' );
         } )
-        // .on( 'deselect', function ( e, dt, type, indexes ) {
-        //     var rowData = table.rows( indexes ).data().toArray();
-        //     events.prepend( '<div><b>'+type+' <i>de</i>selection</b> - '+JSON.stringify( rowData )+'</div>' );
-        // } );
+        .on( 'deselect', function ( e, dt, type, indexes ) {
+            var rowData = table.rows( indexes ).data().toArray();
+            events.prepend( '<div><b>'+type+' <i>de</i>selection</b> - '+JSON.stringify( rowData )+'</div>' );
+        } );
 
 
     });
@@ -170,15 +335,8 @@
 
   <script>
     $(function () {
-      $("#id_purchase_date").datetimepicker();
-      // $('#transaction_table').DataTable( {
-      //       colReorder: true,
-      //       responsive: true,
-      //       order: [[2, 'asc']],
-      //       rowGroup: {
-      //           dataSrc: 2,
-      //         }
-      //       })
+      // $("#id_purchase_date").datetimepicker();
+      
 
     });
   </script>
@@ -190,7 +348,7 @@
     //Making a GET request with fetch
     function updateTransactions() {
 
-      console.log('Updating Trasnactions')
+      console.log('Updating Trasnactions ...')
 
       // var listTransactionWrapper = document.getElementById('list-transaction')
       // listTransactionWrapper.innerHTML = ''
@@ -210,23 +368,14 @@
       })
       .then(data => {
         //Perform actions with the response data from the view      
-        console.log('transaction Data: ', data.results)
-        $('#transaction_table').DataTable().draw()
-        // $('#transaction_table').DataTable( {
-        //     colReorder: true
-        // });
+        console.log('GET Transaction List - : ', data.results)
+        $('#example').DataTable().draw()
+        
 
         var list = data.results
         for (var i in list) {
-          console.log('New Data: ', list[i])
-          // var totalSymbolsList = `
-          // <tr>
-          //   <td>${list[i].symbol}</td>
-          //   <td>${list[i].quantity}</td>
-          //   <td>{{ APIprice }}</td>
-          // </tr>
-          // `
-          // listTransactionWrapper.innerHTML += totalSymbolsList
+          console.log('GET Transaction Data: ', list[i])
+          
         }
         
       })
@@ -238,7 +387,7 @@
   transactionForm.addEventListener('submit', function(e){
     e.preventDefault();
 
-    console.log('Submitting Transaction')
+    console.log('Submitting Transaction - POST')
 
     var portfolio_id = document.getElementById('portfolio_id').textContent
     var URL = window.location.origin + '/api/portfolios/' + portfolio_id + '/transactions/'
@@ -265,7 +414,7 @@
         'fees': searchParam.get('fees'),
         'comments': searchParam.get('comments'),
         'transaction_type': searchParam.get('transaction_type'),
-        'price': searchParam.get('price'),
+        'regularMarketPrice': searchParam.get('regularMarketPrice'),
         'quantity': searchParam.get('quantity'),
         'portfolio': portfolio_id,
         'update_cash_balance': searchParam.get('update_cash_balance'),
@@ -273,13 +422,13 @@
     })
 
     .then(response => {
+      updateTransactions()
       document.getElementById('myTransactionForm').reset()
       $('#modalTransaction').modal('toggle');
     })
     .then(data => {
-      console.log('POST DATA', data)
-      updateTransactions()
-      // $('#portfolio_table').DataTable().draw()
+      console.log('POSTED Transaction DATA', data)      
+      $('#example').DataTable().draw()
       //Perform actions with the response data from the view
     })
     .catch(error => {

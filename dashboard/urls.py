@@ -8,7 +8,12 @@ from . import apis
 
 urlpatterns = [
         
-    # Ui 
+    # AJAX 
+    path('api/suggestions/', apis.get_stocks_suggestions),
+    path('api/price/', apis.get_stocks_price),
+    path('api/stock/<str:symbol>/', apis.get_stock_details),
+    
+    
     # # Views Name attribute is linked in Account URL LOGIn, as lazy reverse 
     path('', views.listView, name='portfolios'),
     path('portfolios/<str:pk>/', views.portfolioView),

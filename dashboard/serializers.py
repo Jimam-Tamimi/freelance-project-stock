@@ -10,16 +10,24 @@ class StockSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class StockDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StockDetail
+        fields = '__all__'
+        
+
 class TransactionSerializer(serializers.ModelSerializer):
 
+    # stockdetail = StockDetailSerializer(many=True, read_only=True)
+    
     class Meta:
         model = Transaction
         # fields = '__all__'
-        # read_only_fields = ('portfolio')
+        read_only_fields = ('portfolio', 'stockdetail')
         fields = ('id',
                   'symbol', 
                   'purchase_date', 
-                  'price', 
+                  'regularMarketPrice', 
                   'commissions', 
                   'fees',
                   'update_cash_balance', 
@@ -36,6 +44,7 @@ class TransactionSerializer(serializers.ModelSerializer):
 class PortfolioSerializer(serializers.ModelSerializer):
     stocks = StockSerializer(many=True, read_only=True)
     transactions = TransactionSerializer(many=True, read_only=True)
+    stockdetail = StockDetailSerializer(many=True, read_only=True)
     
     class Meta:
         model = Portfolio
@@ -45,12 +54,15 @@ class PortfolioSerializer(serializers.ModelSerializer):
                   'description', 
                   'stocks', 
                   'transactions',
+                  'stockdetail',
                   'live_quotes', 
                   'update_every', 
                   'default_commission',
                   'cash',
-                  'include_cash_balance',
-                  'update_cash_balance_with_transaction',
+                #   'include_cash_balance',
                   'created',
                   'modified',
         )
+        
+        
+        

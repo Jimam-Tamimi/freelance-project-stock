@@ -1,3 +1,4 @@
+from django.http.response import JsonResponse
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import viewsets, permissions, generics
@@ -9,11 +10,214 @@ from rest_framework import status
 from . serializers import *
 from . models import *
 from . permissions import IsOwnerOrReadOnly, IsPortfolioOwnerOrReadOnly
+from django.db.models import Q
 
 import requests
+import json
 
-def get_stocks_price(symbol):
 
+def get_stock_details(symbol):
+    url = "https://yahoo-finance-low-latency.p.rapidapi.com/v6/finance/quote?symbols=" + symbol
+
+
+    headers = {
+        'x-rapidapi-key': "15c09e0d16msh24199eee9546841p1521e6jsn94f58b809f42",
+        'x-rapidapi-host': "yahoo-finance-low-latency.p.rapidapi.com",
+        'accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+        'accept-encoding':'gzip, deflate, br',
+        'accept-language':'en-GB,en;q=0.9,en-US;q=0.8,ml;q=0.7',
+        'cache-control':'max-age=0',
+        'upgrade-insecure-requests':'1',
+        'user-agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36'
+
+        }
+    
+    
+
+    response = requests.get(url, headers=headers).json()
+
+    # print(response)
+    # print(response)
+    stock_details = {}
+    resultsArray = response['quoteResponse']['result'][0]
+    
+
+    stock_details['longName'] = resultsArray['longName']
+    stock_details['regularMarketPrice'] = resultsArray['regularMarketPrice']
+    stock_details['regularMarketTime'] = resultsArray['regularMarketTime']
+    stock_details['regularMarketChange'] = resultsArray['regularMarketChange']
+    stock_details['regularMarketChangePercent'] = resultsArray['regularMarketChangePercent']
+    stock_details['regularMarketDayLow'] = resultsArray['regularMarketDayLow']
+    stock_details['regularMarketDayHigh'] = resultsArray['regularMarketDayHigh']
+    stock_details['fiftyTwoWeekLow'] = resultsArray['fiftyTwoWeekLow']
+    stock_details['fiftyTwoWeekHigh'] = resultsArray['fiftyTwoWeekHigh']
+    stock_details['regularMarketVolume'] = resultsArray['regularMarketVolume']
+    stock_details['averageDailyVolume10Day'] = resultsArray['averageDailyVolume10Day']
+    stock_details['averageDailyVolume3Month'] = resultsArray['averageDailyVolume3Month']
+    stock_details['marketCap'] = resultsArray['marketCap']
+    stock_details['epsTrailingTwelveMonths'] = resultsArray['epsTrailingTwelveMonths']
+    stock_details['trailingPE'] = resultsArray['trailingPE']
+    stock_details['priceToBook'] = resultsArray['priceToBook']
+
+    url = "https://yahoo-finance-low-latency.p.rapidapi.com/v11/finance/quoteSummary/" + symbol
+     
+    querystring = {"modules":"summaryDetail,assetProfile,financialData,defaultKeyStatistics,incomeStatementHistory"}
+       
+    quoteResponse = requests.get(url, headers=headers, params=querystring).json()
+    
+    newResultsArray = quoteResponse['quoteSummary']['result'][0]
+    
+    stock_details['enterpriseToEbitda'] = newResultsArray['defaultKeyStatistics']['enterpriseToEbitda']['fmt']
+    stock_details['trailingAnnualDividendYield'] = newResultsArray['summaryDetail']['trailingAnnualDividendYield']['fmt']
+    stock_details['debtToEquity'] = newResultsArray['financialData']['debtToEquity']['raw']
+    stock_details['returnOnEquity'] = newResultsArray['financialData']['returnOnEquity']['fmt']
+    stock_details['returnOnAssets'] = newResultsArray['financialData']['returnOnAssets']['fmt']
+    stock_details['totalRevenue'] = newResultsArray['financialData']['totalRevenue']['raw']
+    stock_details['ebitda'] = newResultsArray['financialData']['ebitda']['raw']
+    # stock_details['netIncome'] = newResultsArray['incomeStatementHistory']['incomeStatementHistory']['0']['netIncome']['raw']
+    stock_details['sector'] = newResultsArray['assetProfile']['sector']
+    stock_details['industry'] = newResultsArray['assetProfile']['industry']
+    stock_details['website'] = newResultsArray['assetProfile']['website']
+    
+
+    print(stock_details)
+    return JsonResponse(stock_details, safe=False)
+
+
+def get_stockDetails(symbol):
+    url = "https://yahoo-finance-low-latency.p.rapidapi.com/v6/finance/quote?symbols=" + symbol
+
+
+    headers = {
+        'x-rapidapi-key': "15c09e0d16msh24199eee9546841p1521e6jsn94f58b809f42",
+        'x-rapidapi-host': "yahoo-finance-low-latency.p.rapidapi.com",
+        'accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+        'accept-encoding':'gzip, deflate, br',
+        'accept-language':'en-GB,en;q=0.9,en-US;q=0.8,ml;q=0.7',
+        'cache-control':'max-age=0',
+        'upgrade-insecure-requests':'1',
+        'user-agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36'
+
+        }
+    
+    
+
+    response = requests.get(url, headers=headers).json()
+
+    # print(response)
+    # print(response)
+    stock_details = StockDetail()
+    resultsArray = response['quoteResponse']['result'][0]
+    
+
+    stock_details.longName = resultsArray['longName']
+    stock_details.regularMarketPrice = resultsArray['regularMarketPrice']
+    stock_details.regularMarketTime = resultsArray['regularMarketTime']
+    stock_details.regularMarketChange = resultsArray['regularMarketChange']
+    stock_details.regularMarketChangePercent = resultsArray['regularMarketChangePercent']
+    stock_details.regularMarketDayLow = resultsArray['regularMarketDayLow']
+    stock_details.regularMarketDayHigh = resultsArray['regularMarketDayHigh']
+    stock_details.fiftyTwoWeekLow = resultsArray['fiftyTwoWeekLow']
+    stock_details.fiftyTwoWeekHigh = resultsArray['fiftyTwoWeekHigh']
+    stock_details.regularMarketVolume = resultsArray['regularMarketVolume']
+    stock_details.averageDailyVolume10Day = resultsArray['averageDailyVolume10Day']
+    stock_details.averageDailyVolume3Month = resultsArray['averageDailyVolume3Month']
+    stock_details.marketCap = resultsArray['marketCap']
+    stock_details.epsTrailingTwelveMonths = resultsArray['epsTrailingTwelveMonths']
+    stock_details.trailingPE = resultsArray['trailingPE']
+    stock_details.priceToBook = resultsArray['priceToBook']
+
+    url = "https://yahoo-finance-low-latency.p.rapidapi.com/v11/finance/quoteSummary/" + symbol
+     
+    querystring = {"modules":"summaryDetail,assetProfile,financialData,defaultKeyStatistics,incomeStatementHistory"}
+       
+    quoteResponse = requests.get(url, headers=headers, params=querystring).json()
+    
+    newResultsArray = quoteResponse['quoteSummary']['result'][0]
+    
+    stock_details.enterpriseToEbitda = newResultsArray['defaultKeyStatistics']['enterpriseToEbitda']['fmt']
+    stock_details.trailingAnnualDividendYield = newResultsArray['summaryDetail']['trailingAnnualDividendYield']['fmt']
+    stock_details.debtToEquity = newResultsArray['financialData']['debtToEquity']['raw']
+    stock_details.returnOnEquity = newResultsArray['financialData']['returnOnEquity']['fmt']
+    stock_details.returnOnAssets = newResultsArray['financialData']['returnOnAssets']['fmt']
+    stock_details.totalRevenue = newResultsArray['financialData']['totalRevenue']['raw']
+    stock_details.ebitda = newResultsArray['financialData']['ebitda']['raw']
+    stock_details.sector = newResultsArray['assetProfile']['sector']
+    stock_details.industry = newResultsArray['assetProfile']['industry']
+    stock_details.website = newResultsArray['assetProfile']['website']
+    # stock_details['netIncome'] = newResultsArray['incomeStatementHistory']['incomeStatementHistory']['0']['netIncome']['raw']
+
+    stock_details.save()
+
+
+    print(stock_details)
+    return stock_details
+
+
+ 
+def get_stocks_suggestions(request):
+    
+    if request.is_ajax():
+        param = request.GET.get("q")
+                
+        url = "https://yahoo-finance-low-latency.p.rapidapi.com/v6/finance/autocomplete?query=" + param + "&lang=en"
+
+
+        headers = {
+            'x-rapidapi-key': "15c09e0d16msh24199eee9546841p1521e6jsn94f58b809f42",
+            'x-rapidapi-host': "yahoo-finance-low-latency.p.rapidapi.com",
+            'accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+            'accept-encoding':'gzip, deflate, br',
+            'accept-language':'en-GB,en;q=0.9,en-US;q=0.8,ml;q=0.7',
+            'cache-control':'max-age=0',
+            'upgrade-insecure-requests':'1',
+            'user-agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36'
+
+            }
+        
+        
+
+        response = requests.get(url, headers=headers).json()
+
+        # print(response)
+        # print(response)
+        suggestions = []
+        resultsArray = response['ResultSet']['Result']
+        for result in resultsArray:
+            suggestions.append(result['symbol'])
+            
+        return JsonResponse(suggestions, safe=False)
+
+
+def get_stocks_price(request):
+    if request.is_ajax():
+        print('get_stocks_price for -')
+        symbol = request.GET.get("q")
+        print(symbol)
+        url = "https://yahoo-finance-low-latency.p.rapidapi.com/v6/finance/quote?symbols=" + symbol
+
+
+        headers = {
+            'x-rapidapi-key': "15c09e0d16msh24199eee9546841p1521e6jsn94f58b809f42",
+            'x-rapidapi-host': "yahoo-finance-low-latency.p.rapidapi.com",
+            'accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+            'accept-encoding':'gzip, deflate, br',
+            'accept-language':'en-GB,en;q=0.9,en-US;q=0.8,ml;q=0.7',
+            'cache-control':'max-age=0',
+            'upgrade-insecure-requests':'1',
+            'user-agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36'
+
+            }
+
+        response = requests.get(url, headers=headers).json()
+
+        print(response['quoteResponse']['result'][0]['regularMarketPrice'])
+        # print(response)
+        return JsonResponse(response['quoteResponse']['result'][0]['regularMarketPrice'], safe=False)
+    
+    
+def get_stocks_price_util(symbol):
+    print('get_stocks_price_util for' + symbol)
     url = "https://yahoo-finance-low-latency.p.rapidapi.com/v6/finance/quote?symbols=" + symbol
 
 
@@ -31,7 +235,7 @@ def get_stocks_price(symbol):
 
     response = requests.get(url, headers=headers).json()
 
-    # print(response)
+    print(response['quoteResponse']['result'][0]['regularMarketPrice'])
     # print(response)
     return response['quoteResponse']['result'][0]['regularMarketPrice']
 
@@ -271,29 +475,33 @@ class TransactionsList(generics.ListCreateAPIView):
         
         requested_quantity = int(self.request.data['quantity'])
         if requested_quantity <= 0:
+            print('Cannot transact negative units.')
             raise ValidationError("Cannot transact negative units.")
         transaction_type = self.request.data['transaction_type']
         
         # Get price of ticker and total transaction amount
         # price = get_yahoo_quote(ticker)[ticker]['price']
-        price = get_stocks_price(symbol)
+        price = get_stocks_price_util(symbol)
+        print(price)
         
-        
-        comm = 0
-        fees = 0
+        comm = self.request.data['commissions']
+        fees = self.request.data['fees']
         
         transaction_amount = round(requested_quantity * price, 2)
+        print(transaction_amount)
+        
+        
         # Get the held stock if it already exists in the portfolio. Otherwise held_stock is None
         held_stock = portfolio.stocks.filter(symbol=symbol).first()
         
         
-        
-        
-        
+        # Get additional stock details
+        stock_detail = get_stockDetails(symbol)
 
         if transaction_type == 'BUY':
             # Check if portfolio has sufficient funds to execute transaction
             if transaction_amount > portfolio.cash:
+                print('Insufficient cash to buy')
                 raise ValidationError(
                     'Insufficient cash to buy {} shares of {}'.format(
                         requested_quantity,
@@ -303,10 +511,9 @@ class TransactionsList(generics.ListCreateAPIView):
                 
             portfolio.cash -= transaction_amount
             portfolio.save()
-            
-            
-            # FIFO to be implemented as SELL 
+                                
             if held_stock:
+                print('held_stock = ' + held_stock.symbol)
                 held_stock.quantity += requested_quantity
                 if held_stock.quantity == 0:
                     held_stock.delete()
@@ -320,18 +527,22 @@ class TransactionsList(generics.ListCreateAPIView):
                 )
                 new_stock.save()
 
+        # FIFO to be implemented as SELL 
         elif transaction_type == 'SELL':
             # If you hold more units than you want to sell, proceed.
+            transactions = Transaction.objects.filter(symbol=symbol)
+            print(transactions)
+                    
             if held_stock and held_stock.quantity >= requested_quantity:
                 portfolio.cash += transaction_amount
                 portfolio.save()
                 held_stock.quantity -= requested_quantity
-                if held_stock.quantity == 0:
+                if held_stock.quantity == 0:                    
                     held_stock.delete()
                 else:
                     held_stock.save()
             
-
-        serializer.save(symbol=symbol, portfolio=portfolio, price=price)
+        # print(stock_detail)
+        serializer.save(symbol=symbol, portfolio=portfolio, regularMarketPrice=price, stockdetail=stock_detail)
     
     
