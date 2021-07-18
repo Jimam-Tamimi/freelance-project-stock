@@ -41,7 +41,7 @@ def get_stock_details(symbol):
     stock_details = {}
     resultsArray = response['quoteResponse']['result'][0]
     
-
+    stock_details['symbol'] = resultsArray['symbol']
     stock_details['longName'] = resultsArray['longName']
     stock_details['regularMarketPrice'] = resultsArray['regularMarketPrice']
     stock_details['regularMarketTime'] = resultsArray['regularMarketTime']
@@ -104,28 +104,29 @@ def get_stockDetails(symbol):
 
     response = requests.get(url, headers=headers).json()
 
+    print('Adding Stock Details')
     # print(response)
-    # print(response)
-    stock_details = StockDetail()
+    stock_details = {}
     resultsArray = response['quoteResponse']['result'][0]
     
+    stock_details['symbol'] = resultsArray['symbol']
+    stock_details['longName'] = resultsArray['longName']
+    stock_details['regularMarketPrice'] = resultsArray['regularMarketPrice']
+    stock_details['regularMarketTime'] = resultsArray['regularMarketTime']
+    stock_details['regularMarketChange'] = resultsArray['regularMarketChange']
+    stock_details['regularMarketChangePercent'] = resultsArray['regularMarketChangePercent']
+    stock_details['regularMarketDayLow'] = resultsArray['regularMarketDayLow']
+    stock_details['regularMarketDayHigh'] = resultsArray['regularMarketDayHigh']
+    stock_details['fiftyTwoWeekLow'] = resultsArray['fiftyTwoWeekLow']
+    stock_details['fiftyTwoWeekHigh'] = resultsArray['fiftyTwoWeekHigh']
+    stock_details['regularMarketVolume'] = resultsArray['regularMarketVolume']
+    stock_details['averageDailyVolume10Day'] = resultsArray['averageDailyVolume10Day']
+    stock_details['averageDailyVolume3Month'] = resultsArray['averageDailyVolume3Month']
+    stock_details['marketCap'] = resultsArray['marketCap']
+    stock_details['epsTrailingTwelveMonths'] = resultsArray['epsTrailingTwelveMonths']
+    stock_details['trailingPE'] = resultsArray['trailingPE']
+    stock_details['priceToBook'] = resultsArray['priceToBook']
 
-    stock_details.longName = resultsArray['longName']
-    stock_details.regularMarketPrice = resultsArray['regularMarketPrice']
-    stock_details.regularMarketTime = resultsArray['regularMarketTime']
-    stock_details.regularMarketChange = resultsArray['regularMarketChange']
-    stock_details.regularMarketChangePercent = resultsArray['regularMarketChangePercent']
-    stock_details.regularMarketDayLow = resultsArray['regularMarketDayLow']
-    stock_details.regularMarketDayHigh = resultsArray['regularMarketDayHigh']
-    stock_details.fiftyTwoWeekLow = resultsArray['fiftyTwoWeekLow']
-    stock_details.fiftyTwoWeekHigh = resultsArray['fiftyTwoWeekHigh']
-    stock_details.regularMarketVolume = resultsArray['regularMarketVolume']
-    stock_details.averageDailyVolume10Day = resultsArray['averageDailyVolume10Day']
-    stock_details.averageDailyVolume3Month = resultsArray['averageDailyVolume3Month']
-    stock_details.marketCap = resultsArray['marketCap']
-    stock_details.epsTrailingTwelveMonths = resultsArray['epsTrailingTwelveMonths']
-    stock_details.trailingPE = resultsArray['trailingPE']
-    stock_details.priceToBook = resultsArray['priceToBook']
 
     url = "https://yahoo-finance-low-latency.p.rapidapi.com/v11/finance/quoteSummary/" + symbol
      
@@ -135,19 +136,17 @@ def get_stockDetails(symbol):
     
     newResultsArray = quoteResponse['quoteSummary']['result'][0]
     
-    stock_details.enterpriseToEbitda = newResultsArray['defaultKeyStatistics']['enterpriseToEbitda']['fmt']
-    stock_details.trailingAnnualDividendYield = newResultsArray['summaryDetail']['trailingAnnualDividendYield']['fmt']
-    stock_details.debtToEquity = newResultsArray['financialData']['debtToEquity']['raw']
-    stock_details.returnOnEquity = newResultsArray['financialData']['returnOnEquity']['fmt']
-    stock_details.returnOnAssets = newResultsArray['financialData']['returnOnAssets']['fmt']
-    stock_details.totalRevenue = newResultsArray['financialData']['totalRevenue']['raw']
-    stock_details.ebitda = newResultsArray['financialData']['ebitda']['raw']
-    stock_details.sector = newResultsArray['assetProfile']['sector']
-    stock_details.industry = newResultsArray['assetProfile']['industry']
-    stock_details.website = newResultsArray['assetProfile']['website']
+    stock_details['enterpriseToEbitda'] = newResultsArray['defaultKeyStatistics']['enterpriseToEbitda']['fmt']
+    # stock_details['trailingAnnualDividendYield'] = newResultsArray['summaryDetail']['trailingAnnualDividendYield']['fmt']
+    stock_details['debtToEquity'] = newResultsArray['financialData']['debtToEquity']['raw']
+    stock_details['returnOnEquity'] = newResultsArray['financialData']['returnOnEquity']['fmt']
+    stock_details['returnOnAssets'] = newResultsArray['financialData']['returnOnAssets']['fmt']
+    stock_details['totalRevenue'] = newResultsArray['financialData']['totalRevenue']['raw']
+    stock_details['ebitda'] = newResultsArray['financialData']['ebitda']['raw']
     # stock_details['netIncome'] = newResultsArray['incomeStatementHistory']['incomeStatementHistory']['0']['netIncome']['raw']
-
-    stock_details.save()
+    stock_details['sector'] = newResultsArray['assetProfile']['sector']
+    stock_details['industry'] = newResultsArray['assetProfile']['industry']
+    stock_details['website'] = newResultsArray['assetProfile']['website']
 
 
     print(stock_details)
@@ -493,10 +492,8 @@ class TransactionsList(generics.ListCreateAPIView):
         
         # Get the held stock if it already exists in the portfolio. Otherwise held_stock is None
         held_stock = portfolio.stocks.filter(symbol=symbol).first()
-        
-        
-        # Get additional stock details
-        stock_detail = get_stockDetails(symbol)
+        # print('held_stock = ' + held_stock)
+    
 
         if transaction_type == 'BUY':
             # Check if portfolio has sufficient funds to execute transaction
@@ -519,6 +516,8 @@ class TransactionsList(generics.ListCreateAPIView):
                     held_stock.delete()
                 else:
                     held_stock.save()
+                    
+                    
             else:  # ticker doesn't exist in portfolio, create new Stock
                 new_stock = Stock(
                     symbol=symbol,
@@ -526,6 +525,7 @@ class TransactionsList(generics.ListCreateAPIView):
                     portfolio=portfolio
                 )
                 new_stock.save()
+                
 
         # FIFO to be implemented as SELL 
         elif transaction_type == 'SELL':
@@ -541,8 +541,60 @@ class TransactionsList(generics.ListCreateAPIView):
                     held_stock.delete()
                 else:
                     held_stock.save()
+                    
+        print('Stock Saved, now saving details')
+        # Get additional stock details
+        # detail = get_stockDetails(symbol)
             
-        # print(stock_detail)
-        serializer.save(symbol=symbol, portfolio=portfolio, regularMarketPrice=price, stockdetail=stock_detail)
+        # print(detail)
+        serializer.save(symbol=symbol, portfolio=portfolio)
     
     
+def get_charts_data(request, symbolrange):
+    # print(datetime.fromtimestamp(float(parse_qs(url)["date"][0])))
+    print('get_charts_data')
+    symbol = symbolrange.split('delimeter')[0]
+    chartrange = symbolrange.split('delimeter')[1]
+    print(symbol)
+    print(chartrange)
+    url = "https://yahoo-finance-low-latency.p.rapidapi.com/v8/finance/chart/" + symbol
+
+    querystring = {"range":chartrange,
+                   "interval":"1d"}
+
+    headers = {
+        'x-rapidapi-key': "15c09e0d16msh24199eee9546841p1521e6jsn94f58b809f42",
+        'x-rapidapi-host': "yahoo-finance-low-latency.p.rapidapi.com",
+        'accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+        'accept-encoding':'gzip, deflate, br',
+        'accept-language':'en-GB,en;q=0.9,en-US;q=0.8,ml;q=0.7',
+        'cache-control':'max-age=0',
+        'upgrade-insecure-requests':'1',
+        'user-agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36'
+
+        }
+
+    response = requests.get(url, headers=headers, params=querystring).json()
+
+    timestamps = response['chart']['result'][0]['timestamp']
+    close = response['chart']['result'][0]['indicators']['quote'][0]['close']
+    high = response['chart']['result'][0]['indicators']['quote'][0]['high']
+    low = response['chart']['result'][0]['indicators']['quote'][0]['low']
+    open = response['chart']['result'][0]['indicators']['quote'][0]['open']
+    volume = response['chart']['result'][0]['indicators']['quote'][0]['volume']
+
+    
+    ohlc = []
+    for key in range(len(timestamps)):
+        
+        ohlc.append([int(str(timestamps[key])+'000'), 
+                     round(open[key],2), 
+                     round(high[key],2), 
+                     round(low[key],2), 
+                     round(close[key],2), 
+                     volume[key]])
+
+    print('Total data we have ' + str(len(timestamps)))
+    # dictionary = [[34, 61, 82],[34, 61, 82],[34, 61, 82]]
+    # jsonString = json.dumps(ohlc, indent=4)
+    return JsonResponse(ohlc, safe=False)

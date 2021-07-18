@@ -12,6 +12,7 @@ urlpatterns = [
     path('api/suggestions/', apis.get_stocks_suggestions),
     path('api/price/', apis.get_stocks_price),
     path('api/stock/<str:symbol>/', apis.get_stock_details),
+    path('api/charts/<str:symbolrange>/', apis.get_charts_data),
     
     
     # # Views Name attribute is linked in Account URL LOGIn, as lazy reverse 

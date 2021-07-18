@@ -78,7 +78,7 @@ class TransactionForm(forms.ModelForm):
             ),
             Row(
                 Column('purchase_date', css_class='form-group col-md-6 mb-0'),
-                Column('regularMarketPrice', css_class='form-group col-md-6 mb-0'),
+                Column('price', css_class='form-group col-md-6 mb-0'),
                 css_class='align-items-center'
             ),
             'update_cash_balance',

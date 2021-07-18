@@ -59,7 +59,14 @@
   width: 1px;
 }
 
+#container {
+	max-height: 800px;
+	min-height: 75vh;
+}
   </style>
+
+<link rel="stylesheet" type="text/css" href="https://code.highcharts.com/css/stocktools/gui.css">
+<link rel="stylesheet" type="text/css" href="https://code.highcharts.com/css/annotations/popup.css">
   
 {% endblock %}
 
@@ -72,7 +79,10 @@
 {% block content %}
 <!-- {{ portfolio }} -->
 
+  
+
     <div class="pd-20 bg-gray-200">
+      
         <nav class="nav az-nav-line flex-column flex-md-row">
             <a class="nav-link active" data-toggle="tab" href="#">Price</a>
             <a class="nav-link" data-toggle="tab" href="#">Fundamentals</a>
@@ -116,7 +126,7 @@
     <div>
       
       
-        <h3>Transactions</h3>
+        <h3>Price</h3>
 
 
 
@@ -129,8 +139,8 @@
                     <th>Symbol</th>
                     <th>Name</th>
                     <th>Shares</th>
-                    <th>Date Added</th>
-                    <th>Buy Price</th>
+                    <!-- <th>Date Added</th> -->
+                    <!-- <th>Buy Price</th>
                     <th>Adjusted Buy Price</th>
                     <th>Purchase Cost</th>
                     <th>Comment</th>
@@ -138,7 +148,7 @@
                     <th>Commissions</th>
                     <th>Fees</th>
                     <th>Update Cash Balance?</th>
-                    <th>Transaction Type</th>
+                    <th>Transaction Type</th> -->
 
                     <th>Current Price</th>
                     <th>Last Price Update Date & Time</th>
@@ -162,7 +172,7 @@
                     <th>ROA</th>
                     <th>Revenues</th>
                     <th>EBITDA</th>
-                    <th>Net Profit</th>
+                    <!-- <th>Net Profit</th> -->
                     <th>Sector</th>
                     <th>Industry</th>
                     <th>Website</th>
@@ -170,16 +180,47 @@
                     
                   </tr>
               </thead>
+              
 
             </table>
           </div>
+
+          <hr/>
+
+          <h3>Transactions</h3>
+
+          <div class="dataTables_wrapper no-footer">
+            <table id="transaction_table" class="table table-striped" data-server-side="true" data-ajax="/api/portfolios/2/transactions/?format=datatables">
+              <thead>
+                  <tr>
+                      <th data-data="symbol">symbol</th>
+                      <th data-data="quantity">quantity</th>
+                      <th data-data="purchase_date">purchase_date</th>
+                      <th data-data="price">price</th>
+                      <th data-data="adjusted_buy_price">adjusted_buy_price</th>
+                      <th data-data="purchase_cost">purchase_cost</th>
+                      <th data-data="commissions">commissions</th>
+                      <th data-data="fees">fees</th>
+                      <th data-data="update_cash_balance">update_cash_balance</th>
+                      <th data-data="transaction_type">transaction_type</th>
+                  </tr>
+              </thead>
+            </table>
+          </div>
+
+
         </div>
         <!-- {{ stock }} -->
         <!-- <input id="datetimepicker" type="text"> -->
 
-        <div id="events">
+        <!-- <div id="events">
             Event summary - new events added at the top
-        </div>
+        </div> -->
+
+        <hr/>
+
+        <div id="container" class="chart"></div>
+        
         
     </div>
 
@@ -215,7 +256,7 @@
             success: function(response) {
               // show response for success
               // console.log(response)
-              document.getElementById('id_regularMarketPrice').value = response
+              document.getElementById('id_price').value = response
             },
             error:function(e) {
               // show response for success
@@ -232,16 +273,20 @@
   <script>
 
     $(document).ready(function() {
+
+      $('#transaction_table').DataTable()
+
       var events = $('#events');
       var portfolio_id = document.getElementById('portfolio_id').textContent
       var collapsedGroups = {};
       var table = $('#example').DataTable({
         colReorder: true,
         stateSave:  true,
+        paging: true,
         select: {
             style: 'single'
         },
-        ajax: window.location.origin + '/api/portfolios/' + portfolio_id + '/transactions/?format=datatables',
+        ajax: window.location.origin + '/api/portfolios/' + portfolio_id + '/stocks/?format=datatables',
         order: [[ 0, "desc" ]],
         columnDefs: [
           {"className": "dt-center", "targets": "_all"}
@@ -250,15 +295,15 @@
           { "data": "symbol" },
           { "data": "longName" },
           { "data": "quantity" },
-          { "data": "purchase_date" },
-          { "data": "buyPrice" },
-          { "data": "adjusted_buy_price" },
-          { "data": "purchase_cost" },
-          { "data": "comments" },
-          { "data": "commissions" },
-          { "data": "fees" },
-          { "data": "update_cash_balance" },
-          { "data": "transaction_type" },
+          // { "data": "purchase_date" },
+          // { "data": "buyPrice" },
+          // { "data": "adjusted_buy_price" },
+          // { "data": "purchase_cost" },
+          // { "data": "comments" },
+          // { "data": "commissions" },
+          // { "data": "fees" },
+          // { "data": "update_cash_balance" },
+          // { "data": "transaction_type" },
           { "data": "regularMarketPrice" },
           { "data": "regularMarketTime" },
           { "data": "regularMarketChange" },
@@ -281,7 +326,7 @@
           { "data": "returnOnAssets" },
           { "data": "totalRevenue" },
           { "data": "ebitda" },
-          { "data": "netIncome" },
+          // { "data": "netIncome" },
           { "data": "sector" },
           { "data": "industry" },
           { "data": "website" }
@@ -302,6 +347,8 @@
           },
         },
       });
+
+      
 
       $('#example tbody tr.group-start').each(function() {
                 var name = $(this).data('name');
@@ -326,6 +373,8 @@
         } );
 
 
+        const tr = $("<tr><td>CASH</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>");
+        table.row.add(tr[0]).draw();
     });
 
 
@@ -334,12 +383,25 @@
 
 
   <script>
-    $(function () {
-      // $("#id_purchase_date").datetimepicker();
+    // $(function () {
+    //   // $("#id_purchase_date").datetimepicker();
       
 
-    });
+    // });
+
+    
   </script>
+  <script src="https://code.highcharts.com/stock/highstock.js"></script>
+  <script src="https://code.highcharts.com/stock/modules/data.js"></script>
+  
+  <script src="https://code.highcharts.com/stock/indicators/indicators-all.js"></script>
+  <script src="https://code.highcharts.com/stock/modules/drag-panes.js"></script>
+  
+  <script src="https://code.highcharts.com/modules/annotations-advanced.js"></script>
+  <script src="https://code.highcharts.com/modules/price-indicator.js"></script>
+  <script src="https://code.highcharts.com/modules/full-screen.js"></script>
+  
+  <script src="https://code.highcharts.com/modules/stock-tools.js"></script>
 
   <script>
 
@@ -439,6 +501,112 @@
 
 
 
+  </script>
+
+
+
+  <script>
+    var chart_symbol = 'AAPL'
+    Highcharts.getJSON('http://127.0.0.1:8000/api/charts/AAPLdelimeter10y/', function (data) {
+
+      // console.log('Highcharts', data)
+
+    // split the data set into ohlc and volume
+    var ohlc = [],
+      volume = [],
+      dataLength = data.length,
+      i = 0;
+
+    for (i; i < dataLength; i += 1) {
+      ohlc.push([
+        data[i][0], // the date
+        data[i][1], // open
+        data[i][2], // high
+        data[i][3], // low
+        data[i][4] // close
+      ]);
+
+      volume.push([
+        data[i][0], // the date
+        data[i][5] // the volume
+      ]);
+    }
+
+    Highcharts.stockChart('container', {
+      yAxis: [{
+        labels: {
+          align: 'left'
+        },
+        height: '80%',
+        resize: {
+          enabled: true
+        }
+      }, {
+        labels: {
+          align: 'left'
+        },
+        top: '80%',
+        height: '20%',
+        offset: 0
+      }],
+      tooltip: {
+        shape: 'square',
+        headerShape: 'callout',
+        borderWidth: 0,
+        shadow: false,
+        positioner: function (width, height, point) {
+          var chart = this.chart,
+            position;
+
+          if (point.isHeader) {
+            position = {
+              x: Math.max(
+                // Left side limit
+                chart.plotLeft,
+                Math.min(
+                  point.plotX + chart.plotLeft - width / 2,
+                  // Right side limit
+                  chart.chartWidth - width - chart.marginRight
+                )
+              ),
+              y: point.plotY
+            };
+          } else {
+            position = {
+              x: point.series.chart.plotLeft,
+              y: point.series.yAxis.top - chart.plotTop
+            };
+          }
+
+          return position;
+        }
+      },
+      series: [{
+        type: 'ohlc',
+        id: 'ohlc',
+        name: 'Stock Price',
+        data: ohlc
+      }, {
+        type: 'column',
+        id: 'volume',
+        name: 'AAPL Volume',
+        data: volume,
+        yAxis: 1
+      }],
+      responsive: {
+        rules: [{
+          condition: {
+            maxWidth: 800
+          },
+          chartOptions: {
+            rangeSelector: {
+              inputEnabled: false
+            }
+          }
+        }]
+      }
+    });
+    });
   </script>
 
 
