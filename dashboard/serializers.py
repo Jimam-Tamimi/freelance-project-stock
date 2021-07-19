@@ -8,6 +8,12 @@ class StockSerializer(serializers.ModelSerializer):
     class Meta:
         model = Stock
         fields = '__all__'
+        
+        
+class WatchlistStockSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WatchlistStock
+        fields = '__all__'
 
         
 
@@ -55,6 +61,16 @@ class PortfolioSerializer(serializers.ModelSerializer):
         #           'created',
         #           'modified',
         # )
+        
+        
+class WatchlistSerializer(serializers.ModelSerializer):
+    user = serializers.SlugRelatedField(slug_field='username', read_only=True)
+    wathcliststocks = WatchlistStockSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = Watchlist
+        fields = '__all__'
+        
         
         
         

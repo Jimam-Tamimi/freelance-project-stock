@@ -25,6 +25,7 @@
     <link href="https://cdn.datatables.net/colreorder/1.5.4/css/colReorder.dataTables.min.css" rel="stylesheet" type="text/css" />
     <link href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css" rel="stylesheet" type="text/css" />
     <link href="https://cdn.datatables.net/select/1.3.3/css/select.dataTables.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css" rel="stylesheet" type="text/css" />
 
     <!-- azia CSS -->
     <link rel="stylesheet" href="{% static '/css/azia.css' %}">
@@ -43,6 +44,9 @@
         width: 100%;
       }
       #div_id_update_every{
+        display: none;
+      }
+      #div_id_watchlist_update_every{
         display: none;
       }
   
@@ -74,6 +78,16 @@
                 
                 <li class="nav-sub-item"><a href class="nav-sub-link" data-toggle="modal" data-target="#modalPortfolio" ><i class="fa fa-plus"></i>Create Portfolio</a></li>
                 <div id="list-portfolio" class="az-invoice-list ps az-content-left">
+
+                </div>
+                
+              </ul>
+
+              <a href="" class="nav-link with-sub"><i class="typcn typcn-clipboard"></i>Watchlists</a>
+              <ul class="nav-sub list-group wd-md">
+                
+                <li class="nav-sub-item"><a href class="nav-sub-link" data-toggle="modal" data-target="#modalWatchlist" ><i class="fa fa-plus"></i>Create Watchlist</a></li>
+                <div id="list-watchlist" class="az-invoice-list ps az-content-left">
 
                 </div>
                 
@@ -112,7 +126,23 @@
                 </div><!-- modal-dialog -->
               </div>
 
-                
+              <div class="modal" id="modalWatchlist">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content" id="modalForm">
+                    <div class="modal-header">
+                      <h6 class="modal-title">Create Watchlist</h6>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                      </button>
+                    </div>
+                      <form id="myWatchlistForm">
+                        <div class="modal-body">
+                          {% crispy modalWatchlistForm %}
+                        </div>
+                      </form>
+                  </div>
+                </div><!-- modal-dialog -->
+              </div>
 
             </li><!-- nav-item -->
 
@@ -199,7 +229,8 @@
       <script src="https://cdn.datatables.net/colreorder/1.5.4/js/dataTables.colReorder.min.js"></script>
       <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
       <script src="https://cdn.datatables.net/select/1.3.3/js/dataTables.select.min.js"></script>
-
+      <script src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
+      <script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.colVis.min.js"></script>
      
       
       <script src="{% static '/lib/ionicons/ionicons.js' %}"></script>
@@ -207,27 +238,41 @@
 
       <script src="{% static '/js/azia.js' %}"></script>
 
-      
-      <script>
-
+      <script>//csrftoken
         
-        document.getElementById("id_live_quotes").onclick = my_toggle_func; 
-
-        
-
-        function my_toggle_func() { 
-        if (this.checked) {
-                document.getElementById("div_id_update_every").style.display = 'none';
-        } else {
-                document.getElementById("div_id_update_every").style.display = 'block';
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
         }
-}
+        const csrftoken = getCookie('csrftoken');
       </script>
 
-      <script>
-        
-      
-      
+
+      <script> //my_toggle_func - div_id_update_every
+
+        document.getElementById("id_live_quotes").onclick = my_toggle_func; 
+        function my_toggle_func() { 
+          if (this.checked) {
+                  document.getElementById("div_id_update_every").style.display = 'none';
+          } else {
+                  document.getElementById("div_id_update_every").style.display = 'block';
+          }
+        }
+      </script>
+
+      <script> //azSidebarToggle
+
         $(function(){
           'use strict'
 
@@ -267,242 +312,419 @@
         });
       </script>
 
-
-
-
-    <script>
+      
+      
+<script> //Portfolio
 
         
-      /*
-          KEY COMPONENTS:
-          "activeItem" = null until an edit button is clicked. Will contain object of item we are editing
-          
-          PROCESS:
-          1 - Fetch Data and build rows "buildList()"
-          2 - Create Item on form submit
-          3 - Edit Item click - Prefill form and change submit URL
-          4 - Delete Item - Send item id to delete URL
-          NOTES:
-          -- Add event handlers to "edit", "delete", "title"
-          -- Remove extra data on re-render
-          -- CSRF Token
-        */
-
-
-      function getCookie(name) {
-          let cookieValue = null;
-          if (document.cookie && document.cookie !== '') {
-              const cookies = document.cookie.split(';');
-              for (let i = 0; i < cookies.length; i++) {
-                  const cookie = cookies[i].trim();
-                  // Does this cookie string begin with the name we want?
-                  if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                      cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                      break;
-                  }
-              }
-          }
-          return cookieValue;
-      }
-      const csrftoken = getCookie('csrftoken');
-
+  /*
+      KEY COMPONENTS:
+      "activeItem" = null until an edit button is clicked. Will contain object of item we are editing
       
+      PROCESS:
+      1 - Fetch Data and build rows "buildList()"
+      2 - Create Item on form submit
+      3 - Edit Item click - Prefill form and change submit URL
+      4 - Delete Item - Send item id to delete URL
+      NOTES:
+      -- Add event handlers to "edit", "delete", "title"
+      -- Remove extra data on re-render
+      -- CSRF Token
+    */
 
 
-      var activeItem = null
+  var activeItem = null
+  
+  buildList()
+  buildWatchList()
+
+
+  //Making a GET request with fetch
+  function buildList() {
+    var listWrapper = document.getElementById('list-portfolio')
+    listWrapper.innerHTML = ''
+
+    var URL = window.location.origin + '/api/portfolios/'
+
+    fetch(URL, {
+      headers:{
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+      },
+    })
+    .then(response => {
       
-      buildList()
+      return response.json() //Convert response to JSON      
+    })
+    .then(data => {
+      //Perform actions with the response data from the view      
+      console.log('GET Portfolio Data: ', data.name)
+      $('#portfolio_table').DataTable();
 
-
-
-      //Making a GET request with fetch
-      function buildList() {
-        var listWrapper = document.getElementById('list-portfolio')
-        listWrapper.innerHTML = ''
-
-        var URL = window.location.origin + '/api/portfolios/'
-
-        fetch(URL, {
-          headers:{
-              'Accept': 'application/json',
-              'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
-          },
-        })
-        .then(response => {
-          
-          return response.json() //Convert response to JSON      
-        })
-        .then(data => {
-          //Perform actions with the response data from the view      
-          console.log('GET Portfolio Data: ', data.name)
-          $('#portfolio_table').DataTable();
-
-          var list = data
-          for (var i in list) {
-            console.log('Each Data Portfolio: ', list[i])
-            var listItem = `
-                <div class="media">
-                  <div class="media-icon"><i class="far fa-file-alt"></i></div>
-                  <div class="media-body">
-                    <h6>
-                      <span><a href="/portfolios/${list[i].id}/" class="nav-sub-link">${list[i].name}</a></span>
-                      <span>$25</span>
-                    </h6>
-                    <div>
-                      <p><span>Date:</span> Oct 25</p>
-                      <div class="ed-btn" style="display: block">
-                        <p><span><a href class="linkEdit" data-toggle="modal" data-target="#modalPortfolio"><i class="fas fa-edit fa-fw"></i></a>
-                          </span><a href class="linkDelete"><i class="fas fa-trash-alt fa-fw"></i></a>
-                        </p>                    
-                      </div>
-                    </div>
-                  </div><!-- media-body -->
+      var list = data
+      for (var i in list) {
+        console.log('Each Data Portfolio: ', list[i])
+        var listItem = `
+            <div class="media">
+              <div class="media-icon"><i class="far fa-file-alt"></i></div>
+              <div class="media-body">
+                <h6>
+                  <span><a href="/portfolios/${list[i].id}/" class="nav-sub-link">${list[i].name}</a></span>
+                  <span>$25</span>
+                </h6>
+                <div>
+                  <p><span>Date:</span> Oct 25</p>
+                  <div class="ed-btn" style="display: block">
+                    <p><span><a href class="linkEdit" data-toggle="modal" data-target="#modalPortfolio"><i class="fas fa-edit fa-fw"></i></a>
+                      </span><a href class="linkDelete"><i class="fas fa-trash-alt fa-fw"></i></a>
+                    </p>                    
+                  </div>
                 </div>
-              `
+              </div><!-- media-body -->
+            </div>
+          `
 
-            
-            listWrapper.innerHTML += listItem
-            // portfolioWrapper.innerHTML += item
+        
+        listWrapper.innerHTML += listItem
+        // portfolioWrapper.innerHTML += item
 
-            
-
-          }
-
-          for (var i in list) {
-            var editItem = document.getElementsByClassName('linkEdit')[i]
-            var deleteItem = document.getElementsByClassName('linkDelete')[i]
-
-            editItem.addEventListener('click', (function(item){
-              return function(){
-                console.log('When click on Edit link, status of live quotes', item.cash)
-                editPortfolio(item);
-              }
-            })(list[i]))
-
-
-            deleteItem.addEventListener('click', (function(item){
-              return function(){
-                deletePortfolio(item);
-              }
-            })(list[i]))
-
-          }
-        })
-
+        
 
       }
 
+      for (var i in list) {
+        var editItem = document.getElementsByClassName('linkEdit')[i]
+        var deleteItem = document.getElementsByClassName('linkDelete')[i]
 
-
-
-      //Making a POST/Update request with fetch
-      const form = document.getElementById('myForm')
-
-      form.addEventListener('submit', function(e){
-        e.preventDefault();
-
-        console.log('Form Submitted')
-        var URL = window.location.origin + '/api/portfolios/' 
-
-        if(activeItem!=null){
-          var URL = window.location.origin + `/api/portfolios/${activeItem.id}/`
-          
-          activeItem=null
-        }
-        
-        const data = new FormData(this)
-        const searchParam = new URLSearchParams()
-        
-        for (const pair of data) {
-          searchParam.append(pair[0], pair[1])
-          console.log(pair[0], pair[1])
-
-          
-        }
-
-        if (searchParam.get('live_quotes')==null) {
-            searchParam.set('live_quotes', false)
+        editItem.addEventListener('click', (function(item){
+          return function(){
+            console.log('When click on Edit link, status of live quotes', item.cash)
+            editPortfolio(item);
           }
-          else{
-            searchParam.set('update_every', '0')
+        })(list[i]))
+
+
+        deleteItem.addEventListener('click', (function(item){
+          return function(){
+            deletePortfolio(item);
           }
-          // if (searchParam.get('include_cash_balance')==null) {
-          //   searchParam.set('include_cash_balance', false)
-          // }
+        })(list[i]))
 
-        fetch(URL, {
-          method: 'POST',
-          headers:{
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-              'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
-              'X-CSRFToken': csrftoken,
-          },
-          body: JSON.stringify({
-            'name': searchParam.get('name'),
-            'description': searchParam.get('description'),
-            'live_quotes': searchParam.get('live_quotes'),
-            'update_every': searchParam.get('update_every'),
-            'default_commission': searchParam.get('default_commission'),
-            'cash': searchParam.get('cash'),
-            // 'include_cash_balance': searchParam.get('include_cash_balance'),
-          }) //JavaScript object of data to POST
-        })
+      }
+    })
 
-        .then(response => {
-          buildList();
-          document.getElementById('myForm').reset()
-          $('#modalPortfolio').modal('toggle');
-        })
-        .then(data => {
-          console.log('POST DATA', data)
-          $('#portfolio_table').DataTable().draw()
-          //Perform actions with the response data from the view
-        })
-        .catch(error => {
-          console.log('ERROR', error)
-        })
+
+  }
+
+
+
+
+  //Making a POST/Update request with fetch
+  const form = document.getElementById('myForm')
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    console.log('Form Submitted')
+    var URL = window.location.origin + '/api/portfolios/' 
+
+    if(activeItem!=null){
+      var URL = window.location.origin + `/api/portfolios/${activeItem.id}/`
+      
+      activeItem=null
+    }
+    
+    const data = new FormData(this)
+    const searchParam = new URLSearchParams()
+    
+    for (const pair of data) {
+      searchParam.append(pair[0], pair[1])
+      console.log(pair[0], pair[1])
+
+      
+    }
+
+    if (searchParam.get('live_quotes')==null) {
+        searchParam.set('live_quotes', false)
+      }
+      else{
+        searchParam.set('update_every', '0')
+      }
+      // if (searchParam.get('include_cash_balance')==null) {
+      //   searchParam.set('include_cash_balance', false)
+      // }
+
+    fetch(URL, {
+      method: 'POST',
+      headers:{
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+          'X-CSRFToken': csrftoken,
+      },
+      body: JSON.stringify({
+        'name': searchParam.get('name'),
+        'description': searchParam.get('description'),
+        'live_quotes': searchParam.get('live_quotes'),
+        'update_every': searchParam.get('update_every'),
+        'default_commission': searchParam.get('default_commission'),
+        'cash': searchParam.get('cash'),
+        // 'include_cash_balance': searchParam.get('include_cash_balance'),
+      }) //JavaScript object of data to POST
+    })
+
+    .then(response => {
+      buildList();
+      document.getElementById('myForm').reset()
+      $('#modalPortfolio').modal('toggle');
+    })
+    .then(data => {
+      console.log('POST DATA', data)
+      $('#portfolio_table').DataTable().draw()
+      //Perform actions with the response data from the view
+    })
+    .catch(error => {
+      console.log('ERROR', error)
+    })
+    
+  });
+
+
+
+  function editPortfolio(item) {    
+    activeItem = item
+    document.getElementById('id_name').value = activeItem.name
+    document.getElementById('id_description').value = activeItem.description
+    document.getElementById('id_live_quotes').checked = activeItem.live_quotes
+    document.getElementById('id_update_every').value = activeItem.update_every
+    document.getElementById('id_default_commission').value = activeItem.default_commission
+    document.getElementById('id_cash').value = activeItem.cash
+
+    
+  }
+
+
+  function deletePortfolio(item){
+    var URL = window.location.origin + `/api/portfolios/${item.id}/` 
+    console.log('DELETE', item.id)
+    fetch(URL, {
+      method: 'DELETE',
+      headers:{
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+          'X-CSRFToken': csrftoken,
+      }
+    })
+    .then((response)=>{
+      
+      if (window.location.href != window.location.origin) {
+            window.location.href = window.location.origin;
+      }
+
+      buildList();
+    })
+
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+  var activeWItem = null
+  
+  
+  console.log('GET Watchlist Data: ')
+  //Making a GET request with fetch
+  function buildWatchList() {
+    var listWWrapper = document.getElementById('list-watchlist')
+    listWWrapper.innerHTML = ''
+
+    var URL = window.location.origin + '/api/watchlists/'
+
+    fetch(URL, {
+      headers:{
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+      },
+    })
+    .then(response => {
+      
+      return response.json() //Convert response to JSON      
+    })
+    .then(data => {
+      //Perform actions with the response data from the view      
+      console.log('GET Watchlist Data: ', data.name)
+      $('#watchlist_table').DataTable();
+
+      var list = data
+      for (var i in list) {
+        console.log('Each Data watchlist: ', list[i])
+        var listWItem = `
+            <div class="media">
+              <div class="media-icon"><i class="far fa-file-alt"></i></div>
+              <div class="media-body">
+                <h6>
+                  <span><a href="/watchlists/${list[i].id}/" class="nav-sub-link">${list[i].watchlist_name}</a></span>
+                  <span>$25</span>
+                </h6>
+                <div>
+                  <p><span>Date:</span> Oct 25</p>
+                  <div class="ed-btn" style="display: block">
+                    <p><span><a href class="linkWEdit" data-toggle="modal" data-target="#modalWatchlist"><i class="fas fa-edit fa-fw"></i></a>
+                      </span><a href class="linkWDelete"><i class="fas fa-trash-alt fa-fw"></i></a>
+                    </p>                    
+                  </div>
+                </div>
+              </div><!-- media-body -->
+            </div>
+          `
+
         
-      });
-
-
-
-      function editPortfolio(item) {    
-        activeItem = item
-        document.getElementById('id_name').value = activeItem.name
-        document.getElementById('id_description').value = activeItem.description
-        document.getElementById('id_live_quotes').checked = activeItem.live_quotes
-        document.getElementById('id_update_every').value = activeItem.update_every
-        document.getElementById('id_default_commission').value = activeItem.default_commission
-        document.getElementById('id_cash').value = activeItem.cash
+        listWWrapper.innerHTML += listWItem
+        // portfolioWrapper.innerHTML += item
 
         
+
+      }
+
+      for (var i in list) {
+        var editItem = document.getElementsByClassName('linkWEdit')[i]
+        var deleteItem = document.getElementsByClassName('linkWDelete')[i]
+
+        editItem.addEventListener('click', (function(item){
+          return function(){
+            console.log('When click on Edit link, status of live quotes', item.cash)
+            editWatchlist(item);
+          }
+        })(list[i]))
+
+
+        deleteItem.addEventListener('click', (function(item){
+          return function(){
+            deleteWatchlist(item);
+          }
+        })(list[i]))
+
+      }
+    })
+
+
+  }
+
+
+
+
+  //Making a POST/Update request with fetch
+  const formW = document.getElementById('myWatchlistForm')
+
+  formW.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    console.log('watchlist Form Submitted')
+    var URL = window.location.origin + '/api/watchlists/' 
+
+    if(activeWItem!=null){
+      var URL = window.location.origin + `/api/watchlists/${activeWItem.id}/`
+      
+      activeWItem=null
+    }
+    
+    const dataW = new FormData(this)
+    const searchParamW = new URLSearchParams()
+    
+    for (const pair of dataW) {
+      searchParamW.append(pair[0], pair[1])
+      console.log(pair[0], pair[1])
+
+      
+    }
+
+    if (searchParamW.get('live_quotes')==null) {
+        searchParamW.set('live_quotes', false)
+      }
+      else{
+        searchParamW.set('update_every', '0')
       }
 
 
-      function deletePortfolio(item){
-        var URL = window.location.origin + `/api/portfolios/${item.id}/` 
-        console.log('DELETE', item.id)
-        fetch(URL, {
-          method: 'DELETE',
-          headers:{
-              'Content-Type': 'application/json',
-              'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
-              'X-CSRFToken': csrftoken,
-          }
-        })
-        .then((response)=>{
-          
-          if (window.location.href != window.location.origin) {
-                window.location.href = window.location.origin;
-          }
+    fetch(URL, {
+      method: 'POST',
+      headers:{
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+          'X-CSRFToken': csrftoken,
+      },
+      body: JSON.stringify({
+        'watchlist_name': searchParamW.get('watchlist_name'),
+        'watchlist_description': searchParamW.get('watchlist_description'),
+        'watchlist_live_quotes': searchParamW.get('watchlist_live_quotes'),
+        'watchlist_update_every': searchParamW.get('watchlist_update_every'),
+      }) //JavaScript object of data to POST
+    })
 
-          buildList();
-        })
+    .then(response => {
+      buildWatchList();
+      document.getElementById('myWatchlistForm').reset()
+      $('#modalWatchlist').modal('toggle');
+    })
+    .then(data => {
+      console.log('POST DATA', data)
+      $('#watchlist_table').DataTable().draw()
+      //Perform actions with the response data from the view
+    })
+    .catch(error => {
+      console.log('ERROR', error)
+    })
+    
+  });
 
 
+
+  function editWatchlist(item) {    
+    activeWItem = item
+    document.getElementById('id_watchlist_name').value = activeWItem.watchlist_name
+    document.getElementById('id_watchlist_description').value = activeWItem.watchlist_description
+    document.getElementById('id_watchlist_live_quotes').checked = activeWItem.watchlist_live_quotes
+    document.getElementById('id_watchlist_update_every').value = activeWItem.watchlist_update_every
+
+    
+  }
+
+
+  function deleteWatchlist(item){
+    var URL = window.location.origin + `/api/watchlists/${item.id}/` 
+    console.log('DELETE', item.id)
+    fetch(URL, {
+      method: 'DELETE',
+      headers:{
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+          'X-CSRFToken': csrftoken,
       }
-    </script>
+    })
+    .then((response)=>{
+      
+      if (window.location.href != window.location.origin) {
+            window.location.href = window.location.origin;
+      }
+
+      buildWatchList();
+    })
+
+
+  }
+</script>
+
+    
     {% block javascript %}
 
     {% endblock %}

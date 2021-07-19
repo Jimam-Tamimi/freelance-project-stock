@@ -12,9 +12,12 @@ from . serializers import *
 def listView(request):
     
     modalPortfolioForm = PortfolioForm()    
+    modalWatchlistForm = WatchlistForm()  
     
     return render(request, 'dashboard/dashboard.html', 
-                            {'modalPortfolioForm': modalPortfolioForm})
+                            {'modalPortfolioForm': modalPortfolioForm,
+                             'modalWatchlistForm': modalWatchlistForm
+                             })
 
 
 
@@ -28,6 +31,7 @@ def portfolioView(request, pk):
     
     # for rendering Modal Portfolio Create Form from sidebar
     modalPortfolioForm = PortfolioForm()
+    modalWatchlistForm = WatchlistForm()  
     
     # for rendering Modal BuySell Stock Form 
     transaction = TransactionForm() 
@@ -39,9 +43,33 @@ def portfolioView(request, pk):
 
     context = {'portfolio': serializer.data, 
                 'form': transaction, 
-                'modalPortfolioForm': modalPortfolioForm}
+                'modalPortfolioForm': modalPortfolioForm,
+                'modalWatchlistForm': modalWatchlistForm
+                }
     
     return render(request, 'dashboard/portfolio.html', context)
 
-    
 
+
+
+@login_required()
+def watchlistView(request, pk):
+    # for rendering individual watchlist level detail
+    watchlist = get_object_or_404(Watchlist, id=pk)
+    
+    serializer = WatchlistSerializer(watchlist, many=False)
+    
+    # for rendering Modal Portfolio Create Form from sidebar
+    modalPortfolioForm = PortfolioForm()
+    modalWatchlistForm = WatchlistForm()  
+    
+    # for rendering Modal Add Stock Form 
+    form = AddToWatchlistForm() 
+    
+    context = {'watchlist': serializer.data, 
+                'form': form, 
+                'modalPortfolioForm': modalPortfolioForm,
+                'modalWatchlistForm': modalWatchlistForm
+                }
+    
+    return render(request, 'dashboard/watchlist.html', context)

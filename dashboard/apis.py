@@ -307,7 +307,6 @@ class StocksList(generics.ListAPIView):
 
 
 
-
 @api_view(['GET'])
 def stockDetail(request, pk):
     stock = Stock.objects.get(id=pk)
@@ -481,6 +480,8 @@ class TransactionsList(generics.ListCreateAPIView):
         # Get price of ticker and total transaction amount
         # price = get_yahoo_quote(ticker)[ticker]['price']
         price = get_stocks_price_util(symbol)
+        # price = self.request.data['regularMarketPrice']
+        # price = 23.01
         print(price)
         
         comm = self.request.data['commissions']
@@ -551,14 +552,18 @@ class TransactionsList(generics.ListCreateAPIView):
     
     
 def get_charts_data(request, symbolrange):
+    
     # print(datetime.fromtimestamp(float(parse_qs(url)["date"][0])))
     print('get_charts_data')
     symbol = symbolrange.split('delimeter')[0]
     chartrange = symbolrange.split('delimeter')[1]
+    
+    if 'DOT' in symbol:
+        symbol = symbol.replace('DOT', '.')
     print(symbol)
     print(chartrange)
     url = "https://yahoo-finance-low-latency.p.rapidapi.com/v8/finance/chart/" + symbol
-
+    print(url)
     querystring = {"range":chartrange,
                    "interval":"1d"}
 
@@ -575,7 +580,7 @@ def get_charts_data(request, symbolrange):
         }
 
     response = requests.get(url, headers=headers, params=querystring).json()
-
+    # print(response)
     timestamps = response['chart']['result'][0]['timestamp']
     close = response['chart']['result'][0]['indicators']['quote'][0]['close']
     high = response['chart']['result'][0]['indicators']['quote'][0]['high']
@@ -586,15 +591,128 @@ def get_charts_data(request, symbolrange):
     
     ohlc = []
     for key in range(len(timestamps)):
-        
-        ohlc.append([int(str(timestamps[key])+'000'), 
-                     round(open[key],2), 
-                     round(high[key],2), 
-                     round(low[key],2), 
-                     round(close[key],2), 
-                     volume[key]])
+
+        try:
+            data_open = round(open[key],2)
+        except:
+            data_open = open[key]
+            print(data_open)
+            
+        try:
+            data_high = round(high[key],2)
+        except:
+            data_high = high[key]
+            
+        try:
+            data_low = round(low[key],2)
+        except:
+            data_low = low[key]
+            
+        try:
+            data_close = round(close[key],2)
+        except:
+            data_close = close[key]
+            
+        ohlc.append([
+                    int(str(timestamps[key])+'000'), 
+                     data_open, 
+                     data_high, 
+                     data_low, 
+                     data_close, 
+                     volume[key]
+                     ])
 
     print('Total data we have ' + str(len(timestamps)))
     # dictionary = [[34, 61, 82],[34, 61, 82],[34, 61, 82]]
     # jsonString = json.dumps(ohlc, indent=4)
     return JsonResponse(ohlc, safe=False)
+
+
+
+@api_view(['GET', 'POST'])
+def watchList(request):
+    
+    """
+    /api/watchlist/
+        GET: Get all watchList.    
+        POST: Create watchlist    
+    """
+    if request.method == 'GET':
+        username = request.user
+        if username:
+            user = User.objects.get(username=username)
+            queryset = Watchlist.objects.filter(user=user)
+        else:
+            queryset = Watchlist.objects.all()
+            
+        serializer = WatchlistSerializer(queryset, many=True)
+        
+        return Response(serializer.data)
+    
+    elif request.method == 'POST':
+        serializer = WatchlistSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'POST', 'DELETE'])
+def watchListDetail(request, pk):
+    try:
+        watchlist = Watchlist.objects.get(id=pk)
+    except Watchlist.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    if request.method == 'GET':
+        serializer = WatchlistSerializer(watchlist, many=False)
+        return Response(serializer.data)
+    
+    elif request.method == 'POST':
+        serializer = WatchlistSerializer(watchlist, data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        watchlist = Watchlist.objects.get(id=pk)
+        watchlist.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class WatchlistStocksList(generics.ListCreateAPIView):
+    """
+    /api/watchlists/<watchlist_id>/stocks/
+        GET: Get list of watchlists stocks.
+        POST: Create a stocks. Must be authenticated. JSON payload must contain:
+            "ticker": Ticker of security you want to transact.
+    """
+    serializer_class = WatchlistStockSerializer
+
+    def get_queryset(self):
+        w = get_object_or_404(Watchlist, id=self.kwargs['watchlist_id'])
+        # Return transactions in reverse order to get most recent
+        # transactions first. [::-1]
+        return WatchlistStock.objects.filter(watchlist=w)
+    
+    
+    def perform_create(self, serializer):
+        print('in POST')
+        # Assign request data to local variables
+        watchlist = get_object_or_404(Watchlist, id=self.kwargs['watchlist_id'])
+        print('Watchlist - ' + watchlist.watchlist_name)
+        symbol = self.request.data['symbol'].upper()
+        print(symbol)
+        
+        
+        new_stock = WatchlistStock(
+            symbol=symbol,
+            watchlist=watchlist
+        )
+        new_stock.save()
+           
+        print('Stock Saved, now saving details')
+
+        serializer.save(symbol=symbol, watchList=watchlist)

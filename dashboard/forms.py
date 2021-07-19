@@ -114,8 +114,58 @@ class TransactionForm(forms.ModelForm):
         
         
 
-
+class WatchlistForm(forms.ModelForm):
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+          'watchlist_name',
+          'watchlist_description',
+            Row(
+                Column('watchlist_live_quotes', css_class='form-group col-md-6 mb-0'),
+                Column('watchlist_update_every', css_class='form-group col-md-6 mb-0'),
+                css_class='form-row'
+            ),
+                                
+        )
+        self.helper.add_input(Submit('submit', 'Submit', css_class='btn btn-indigo'))
+        
+    
+    class Meta:
+        model = Watchlist
+        widgets = {
+          'description': forms.Textarea(attrs={'rows':3, 'cols':15}),
+        }
+        fields = '__all__'
+        exclude = ('user',)        
         
     
     
+
+
+class AddToWatchlistForm(forms.ModelForm):
     
+    symbol = forms.CharField(widget=forms.TextInput(attrs={'autocomplete':'off'}))
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Row(
+                Column('symbol', css_class='form-group col-md-12 mb-0'),
+                css_class='form-row'
+            ),
+
+        )
+        self.helper.add_input(Submit('submit', 'Submit', css_class='btn btn-indigo'))
+        
+
+    class Meta:
+        model = WatchlistStock
+        fields = '__all__'
+        exclude = ('watchlist',)

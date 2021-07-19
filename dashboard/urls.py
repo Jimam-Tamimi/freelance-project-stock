@@ -18,16 +18,20 @@ urlpatterns = [
     # # Views Name attribute is linked in Account URL LOGIn, as lazy reverse 
     path('', views.listView, name='portfolios'),
     path('portfolios/<str:pk>/', views.portfolioView),
-    
+    path('watchlists/<str:pk>/', views.watchlistView),
     
     #API
     path('api/portfolios/', apis.portfolioList),
     path('api/portfolios/<str:pk>/', apis.portfolioDetail),
+    path('api/watchlists/', apis.watchList),
+    path('api/watchlists/<str:pk>/', apis.watchListDetail),
    
     # path('api/portfolios/<str:pk>/transactions/', apis.transactionDetail),
     path('api/portfolios/<str:portfolio_id>/transactions/', apis.TransactionsList.as_view()), # Not working with datatable API
     
     path('api/portfolios/<str:portfolio_id>/stocks/', apis.StocksList.as_view()),
+    path('api/watchlists/<str:watchlist_id>/stocks/', apis.WatchlistStocksList.as_view()),
+    
     path('api/stock-detail/<str:pk>/', apis.stockDetail),
     path('api/stock-create/', apis.stockCreate),
     path('api/stock-update/<str:pk>/', apis.stockUpdate),

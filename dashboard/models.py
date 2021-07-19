@@ -244,13 +244,121 @@ class Transaction(models.Model):
     
 
     
+class Watchlist(models.Model):
+    
+
+    """
+    A Watchlist belonging to a User. A Watchlist has stocks.
+    """
+    # Potfolio will be deleted, if user is deleted
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    
+    watchlist_name = models.CharField(max_length=128, null=True, blank=True)
+    watchlist_description = models.TextField(max_length=2000, blank=True, null=True)    
+    watchlist_live_quotes = models.BooleanField(default=True)
+    watchlist_update_every = models.IntegerField(null=True, default=10)
+        
+    created = models.DateField(auto_now_add=True, auto_now=False, null=True)
+    modified = models.DateField(auto_now_add=True, null=True)
+    
+    # declares a field to display on the Django admin or 
+    # anytime you want string representation of the entire object; must be unique
+    def __str__(self):
+        return self.watchlist_name
+    
+
+    class Meta:
+        '''The ForeignKey i.e. user and portfolio name must be unique'''
+        unique_together = ('user', 'watchlist_name')
+        # ordering = ['-name']
     
     
+
+        
+class WatchlistStock(models.Model):
+    """
+    A wathcliststock belonging to a wathclist.
+    """
+    # Stock will be deleted, if Watchlist is deleted
+    watchlist = models.ForeignKey(Watchlist, on_delete=models.CASCADE, related_name='wathcliststocks')
+    
+    # from Quotes API
+    symbol = models.CharField('Symbol', max_length=20)
+    longName = models.CharField('Name', null=True, max_length=150)    
+    regularMarketPrice = models.DecimalField('Current Price', null=True, default=0, decimal_places=2, max_digits=15)
+    regularMarketTime = models.DateField('Last Price Update Date and Time', null=True)
+    regularMarketChange = models.DecimalField('Day Change', null=True, default=0, decimal_places=2, max_digits=15)
+    regularMarketChangePercent = models.DecimalField('Day Change %', null=True, default=0, decimal_places=2, max_digits=15)
+    regularMarketDayLow = models.DecimalField('Day Lo', null=True, default=0, decimal_places=2, max_digits=15)
+    regularMarketDayHigh = models.DecimalField('Day Hi', null=True, default=0, decimal_places=2, max_digits=15)
+    fiftyTwoWeekLow = models.DecimalField('52 Week Lo', null=True, default=0, decimal_places=2, max_digits=15)
+    fiftyTwoWeekHigh = models.DecimalField('52 Week Hi', null=True, default=0, decimal_places=2, max_digits=15)
+    regularMarketVolume = models.PositiveBigIntegerField('Volume', null=True, default=0)
+    averageDailyVolume10Day = models.PositiveBigIntegerField('Volume Average 10 days', null=True, default=0)
+    averageDailyVolume3Month = models.PositiveBigIntegerField('Volume Average 3M', null=True, default=0)
+    marketCap = models.DecimalField('Mkt Cap', null=True, default=0, decimal_places=2, max_digits=15)
+    epsTrailingTwelveMonths = models.DecimalField('EPS', null=True, default=0, decimal_places=2, max_digits=15)
+    trailingPE = models.DecimalField('P/E', null=True, default=0, decimal_places=2, max_digits=15)
+    priceToBook = models.DecimalField('P/B', null=True, default=0, decimal_places=2, max_digits=15)
     
     
+    # from Stock API
+    enterpriseToEbitda = models.DecimalField('EV/ EBITDA', null=True, default=0, decimal_places=2, max_digits=15)
+    trailingAnnualDividendYield = models.DecimalField('Dividend Yield', null=True, default=0, decimal_places=2, max_digits=15)
+    debtToEquity = models.DecimalField('D/E', null=True, default=0, decimal_places=2, max_digits=15)
+    returnOnEquity = models.DecimalField('ROE', null=True, default=0, decimal_places=2, max_digits=15)
+    returnOnAssets = models.DecimalField('ROA', null=True, default=0, decimal_places=2, max_digits=15)
+    totalRevenue = models.DecimalField('Revenues', null=True, default=0, decimal_places=2, max_digits=15)
+    ebitda = models.DecimalField('EBITDA', null=True, default=0, decimal_places=2, max_digits=15)
+    # netIncome = models.PositiveBigIntegerField('Net Profit', null=True, default=0)
+    sector = models.CharField('Sector', null=True, blank=True, max_length=250)
+    industry = models.CharField('Industry', null=True, blank=True, max_length=250)
+    website = models.CharField('Website', null=True, blank=True, max_length=250)
     
+    created = models.DateField(auto_now_add=True, auto_now=False, null=True)
+    modified = models.DateField(auto_now_add=True, null=True)
+    
+    def __str__(self):
+        return self.symbol
     
         
+    def save(self, *args, **kwargs):
         
+        details = get_stockDetails(self.symbol)
+
+        self.longName = details['longName']
+        self.regularMarketPrice = details['regularMarketPrice']
+        # self.regularMarketTime = details['regularMarketTime']
+        self.regularMarketChange = details['regularMarketChange']
+        self.regularMarketChangePercent = details['regularMarketChangePercent']
+        self.regularMarketDayLow = details['regularMarketDayLow']
+        self.regularMarketDayHigh = details['regularMarketDayHigh']
+        self.fiftyTwoWeekLow = details['fiftyTwoWeekLow']
+        self.fiftyTwoWeekHigh = details['fiftyTwoWeekHigh']
+        self.regularMarketVolume = details['regularMarketVolume']
+        self.averageDailyVolume10Day = details['averageDailyVolume10Day']
+        self.averageDailyVolume3Month = details['averageDailyVolume3Month']
+        self.marketCap = details['marketCap']
+        self.epsTrailingTwelveMonths = details['epsTrailingTwelveMonths']
+        self.trailingPE = details['trailingPE']
+        self.priceToBook = details['priceToBook']
+
+
+        self.enterpriseToEbitda = details['enterpriseToEbitda']
+        self.trailingAnnualDividendYield = str(details['trailingAnnualDividendYield']).replace('%', '')
+        self.debtToEquity = details['debtToEquity']
+        self.returnOnEquity = str(details['returnOnEquity']).replace('%', '')
+        self.returnOnAssets = str(details['returnOnAssets']).replace('%', '')
+        self.totalRevenue = details['totalRevenue']
+        self.ebitda = details['ebitda']
+        # self.netIncome = details['netIncome']
+        self.sector = details['sector']
+        self.industry = details['industry']
+        self.website = details['website']
+
+       
+        
+        super().save(*args, **kwargs)
+    
 
 

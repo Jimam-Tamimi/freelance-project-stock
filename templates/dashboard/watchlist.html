@@ -74,8 +74,16 @@
 
 
 {% block portfolio-name %}
-  <h2 class="az-content-title mg-b-5 mg-b-lg-8">{{ portfolio.name }}</h2> 
-  <h2 id="portfolio_id" class="az-content-title mg-b-5 mg-b-lg-8">{{ portfolio.id }}</h2> 
+<div class="row m-3">
+  <div class="col">
+    <h2 class="az-content-title mg-b-5 mg-b-lg-8">{{ watchlist.watchlist_name }}</h2> 
+    <h2 id="watchlist_id" class="az-content-title mg-b-5 mg-b-lg-8">{{ watchlist.id }}</h2> 
+  </div>
+  <div class="col">
+    <button class="nav-link" data-toggle="modal" data-target="#modalAddWatchlist" href>Add to List</a>
+  </div>
+</div>
+  
 {% endblock %}
 
 
@@ -84,46 +92,25 @@
 
 {% block content %}
 
-  <div class="pd-20 bg-gray-200">
-    
-    <nav class="nav az-nav-line flex-column flex-md-row">
-      <a class="nav-link active" data-toggle="tab" href="#">Price</a>
-      <a class="nav-link" data-toggle="tab" href="#">Fundamentals</a>
-      <a class="nav-link" data-toggle="tab" href="#">Reports</a>
-      <a class="nav-link" data-toggle="modal" data-target="#modalTransaction" href>Buy/Sell</a>
-      <a class="nav-link" data-toggle="tab" href="#">Distribution</a>
-      <a class="nav-link" data-toggle="tab" href="#">Other</a>
-      <a class="nav-link" data-toggle="tab" href="#">Details</a>
-      <a class="nav-link" data-toggle="tab" href="#">Alerts</a>
-      <a class="nav-link" data-toggle="tab" href="#">Get Quoes</a>
-      <a class="nav-link" data-toggle="tab" href="#">More</a>
-    </nav>
 
-    <div class="modal" id="modalTransaction">
-      <div class="modal-dialog"  role="document">
-        <div class="modal-content" id="modalForm">
-          <div class="modal-header">
-            <h6 class="modal-title">Buy Stock</h6>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">×</span>
-            </button>
-          </div>
-            <form id="myTransactionForm">
-              <div class="modal-body">
-                <!-- <h6>Let's get you all setup so you can begin tracking your investments.</h6>
-                <p>Some Random Text.Someme Random Text.Some Random Text.Some RRandom Text.Some Random Text. </p> -->
+  <div class="modal" id="modalAddWatchlist">
+    <div class="modal-dialog"  role="document">
+      <div class="modal-content" id="modalForm">
+        <div class="modal-header">
+          <h6 class="modal-title">Add Stock</h6>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+          <form id="myAddWatchlistForm">
+            <div class="modal-body">
+              {% crispy form %}
+            </div>
+          </form>
+      </div><!-- modal-content -->
+    </div><!-- modal-dialog -->
+  </div><!-- modal -->    
 
-                {% crispy form %}
-                <!-- {{ form|crispy }} -->
-              </div>
-              <!-- <div class="modal-footer">
-                <input type="submit" id="submit-id-submit" class="btn btn-indigo">
-              </div> -->
-            </form>
-        </div><!-- modal-content -->
-      </div><!-- modal-dialog -->
-    </div><!-- modal -->    
-  </div>
 
   <br/>
 
@@ -132,25 +119,13 @@
       <div class="container-fluid">
         <div class="table-responsive">
           <div class="dataTables_wrapper no-footer" style="width:90%;">
-            <table id="example" class="table table-striped table-hover nowrap dt-responsive"  style="width:100%;" >
+            <table id="watchlistID" class="table table-striped table-hover nowrap dt-responsive"  style="width:100%;" >
               <thead>
                 <tr>
                   <th>Symbol</th>
                   <th>Name</th>
-                  <th>Shares</th>
-                  <!-- <th>Date Added</th> -->
-                  <!-- <th>Buy Price</th>
-                  <th>Adjusted Buy Price</th>
-                  <th>Purchase Cost</th>
-                  <th>Comment</th>
-        
-                  <th>Commissions</th>
-                  <th>Fees</th>
-                  <th>Update Cash Balance?</th>
-                  <th>Transaction Type</th> -->
-        
                   <th>Current Price</th>
-                  <th>Last Price Update Date & Time</th>
+                  <!-- <th>Last Price Update Date & Time</th> -->
                   <th>Day Change</th>
                   <th>Day Change %</th>
                   <th>Day Lo</th>
@@ -186,45 +161,6 @@
   </div> 
   
 
-  <hr/>
-
-  <h3>Transactions</h3>
-  <div class="row m-3">
-    <div class="col">
-      <div class="container-fluid">
-        <div class="table-responsive">
-          <div class="dataTables_wrapper no-footer" style="width:90%;">
-            <table id="transaction_table" class="table table-striped table-hover nowrap dt-responsive" data-server-side="true">
-              <thead>
-                <tr>
-                  <th>symbol</th>
-                  <th>quantity</th>
-                  <th>purchase_date</th>
-                  <th>price</th>
-                  <th>adjusted_buy_price</th>
-                  <th>purchase_cost</th>
-                  <th>commissions</th>
-                  <th>fees</th>
-                  <th>update_cash_balance</th>
-                  <th>transaction_type</th>
-                </tr>
-              </thead>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-
-
-
-  <!-- {{ stock }} -->
-  <!-- <input id="datetimepicker" type="text"> -->
-
-  <!-- <div id="events">
-      Event summary - new events added at the top
-  </div> -->
 
   <div class="row m-3">
     <div class="col">
@@ -233,7 +169,7 @@
       </div>
     </div>
   </div>
-  <hr/>
+
   
 
 
@@ -272,20 +208,7 @@
           var symbol = document.getElementById('id_symbol').value
 
 					console.log(symbol);
-          $.ajax({
-            type: "GET",
-            url: window.location.origin + '/api/price/',
-            data: { 'q' :  symbol},
-            success: function(response) {
-              // show response for success
-              // console.log(response)
-              document.getElementById('id_price').value = response
-            },
-            error:function(e) {
-              // show response for success
-              console.log(e)
-            },
-          });
+          
 				});
     
 
@@ -297,41 +220,10 @@
 
     $(document).ready(function() {
 
-      var portfolio_id = document.getElementById('portfolio_id').textContent
+      var watchlist_id = document.getElementById('watchlist_id').textContent
 
-      $('#transaction_table').DataTable({
-        bAutoWidth: false,
-        responsive: true,
-        colReorder: true,
-        stateSave:  true,
-        paging: true,
-        autoWidth: true,
-        select: {
-            style: 'single'
-        },
-        columnDefs: [
-          {"className": "dt-center", "targets": "_all"}
-        ],
-        ajax: window.location.origin + '/api/portfolios/' + portfolio_id + '/transactions/?format=datatables',
-        order: [[ 0, "desc" ]],
-        columns: [
-          { "data": "symbol" },
-          { "data": "quantity" },
-          { "data": "purchase_date" },
-          { "data": "price" },
-          { "data": "adjusted_buy_price" },
-          { "data": "purchase_cost" },
-          { "data": "commissions" },
-          { "data": "fees" },
-          { "data": "update_cash_balance" },
-          { "data": "transaction_type" },
-        ]
-      })
-
-      var events = $('#events');
-      
       var collapsedGroups = {};
-      var table = $('#example').DataTable({
+      var table = $('#watchlistID').DataTable({
         bAutoWidth: false,
         responsive: true,
         colReorder: true,
@@ -341,7 +233,7 @@
         select: {
             style: 'single'
         },
-        ajax: window.location.origin + '/api/portfolios/' + portfolio_id + '/stocks/?format=datatables',
+        ajax: window.location.origin + '/api/watchlists/' + watchlist_id + '/stocks/?format=datatables',
         order: [[ 0, "desc" ]],
         columnDefs: [
           {"className": "dt-center", "targets": "_all"}
@@ -349,18 +241,8 @@
         columns: [
           { "data": "symbol" },
           { "data": "longName" },
-          { "data": "quantity" },
-          // { "data": "purchase_date" },
-          // { "data": "buyPrice" },
-          // { "data": "adjusted_buy_price" },
-          // { "data": "purchase_cost" },
-          // { "data": "comments" },
-          // { "data": "commissions" },
-          // { "data": "fees" },
-          // { "data": "update_cash_balance" },
-          // { "data": "transaction_type" },
           { "data": "regularMarketPrice" },
-          { "data": "regularMarketTime" },
+          // { "data": "regularMarketTime" },
           { "data": "regularMarketChange" },
           { "data": "regularMarketChangePercent" },
           { "data": "regularMarketDayLow" },
@@ -386,41 +268,8 @@
           { "data": "industry" },
           { "data": "website" }
         ],
-        dom: 'Bfrtip',
-        buttons: [
-            {
-                extend: 'colvisGroup',
-                text: 'Price',
-                show: [ 1, 2 ],
-                hide: [ 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21 ,22, 23, 24, 25, 26, 27, 28, 29 ]
-            },
-            {
-                extend: 'colvisGroup',
-                text: 'HR info',
-                show: [ 3, 4, 5 ],
-                hide: [ 1, 2 ]
-            },
-            {
-                extend: 'colvisGroup',
-                text: 'Show all',
-                show: ':hidden'
-            }
-        ],
-        rowGroup: {
-          dataSrc: 'symbol',
-          startRender: function ( rows, group ) {
-            var collapsed = !!collapsedGroups[group];
-
-            rows.nodes().each(function (r) {
-              r.style.display = collapsed ? 'none' : '';
-            });
-
-            return $('<tr/>')
-              .append('<td colspan="38">' + group + ' (' + rows.count() + ')</td>')
-              .attr('data-name', group)
-              .toggleClass('collapsed', collapsed);
-          },
-        },
+        
+        
       });
 
       var chart_symbol = 'SYMBOL'
@@ -567,15 +416,6 @@
         table.row.add(tr[0]).draw();
 
 
-
-      
-        
-      
-
-
-
-
-
     });
 
 
@@ -583,29 +423,18 @@
   </script>
 
 
-  <script>//datetimepicker
-    // $(function () {
-    //   // $("#id_purchase_date").datetimepicker();
-      
 
-    // });
-  </script>
-  
+  <script> //watchlist
 
-  <script>
-
-    updateTransactions()
+    updateStocks()
 
     //Making a GET request with fetch
-    function updateTransactions() {
+    function updateStocks() {
 
-      console.log('Updating Trasnactions ...')
+      console.log('Updating Stocks in Watchlist ...')
 
-      // var listTransactionWrapper = document.getElementById('list-transaction')
-      // listTransactionWrapper.innerHTML = ''
-
-      var portfolio_id = document.getElementById('portfolio_id').textContent
-      var URL = window.location.origin + '/api/portfolios/' + portfolio_id + '/transactions/'
+      var watchlist_id = document.getElementById('watchlist_id').textContent
+      var URL = window.location.origin + '/api/watchlists/' + watchlist_id + '/stocks/'
 
       fetch(URL, {
         headers:{
@@ -619,13 +448,13 @@
       })
       .then(data => {
         //Perform actions with the response data from the view      
-        console.log('GET Transaction List - : ', data.results)
-        $('#example').DataTable().draw()
+        console.log('GET Stocks List - : ', data.results)
+        $('#watchlistID').DataTable().draw()
         
 
         var list = data.results
         for (var i in list) {
-          console.log('GET Transaction Data: ', list[i])
+          console.log('GET Watchlist Data: ', list[i])
           
         }
         
@@ -633,21 +462,22 @@
     }
 
   //Making a POST/Update request with fetch
-  const transactionForm = document.getElementById('myTransactionForm')
+  const stocksForm = document.getElementById('myAddWatchlistForm')
     
-  transactionForm.addEventListener('submit', function(e){
+  stocksForm.addEventListener('submit', function(e){
     e.preventDefault();
 
-    console.log('Submitting Transaction - POST')
+    console.log('Submitting myAddWatchlistForm - POST')
 
-    var portfolio_id = document.getElementById('portfolio_id').textContent
-    var URL = window.location.origin + '/api/portfolios/' + portfolio_id + '/transactions/'
+    var watchlist_id = document.getElementById('watchlist_id').textContent
+    var URL = window.location.origin + '/api/watchlists/' + watchlist_id + '/stocks/'
 
-    const data = new FormData(this)
-    const searchParam = new URLSearchParams()
+    const dataS = new FormData(this)
+    const searchParamS = new URLSearchParams()
     
-    for (const pair of data) {
-      searchParam.append(pair[0], pair[1])
+    for (const pair of dataS) {
+      searchParamS.append(pair[0], pair[1])
+      
       console.log(pair[0], pair[1])
     }
 
@@ -660,26 +490,19 @@
           'X-CSRFToken': csrftoken,
       },
       body: JSON.stringify({
-        'symbol': searchParam.get('symbol'),
-        'commissions': searchParam.get('commissions'),
-        'fees': searchParam.get('fees'),
-        'comments': searchParam.get('comments'),
-        'transaction_type': searchParam.get('transaction_type'),
-        'regularMarketPrice': searchParam.get('regularMarketPrice'),
-        'quantity': searchParam.get('quantity'),
-        'portfolio': portfolio_id,
-        'update_cash_balance': searchParam.get('update_cash_balance'),
+        'symbol': searchParamS.get('symbol'),        
+        'watchlist': watchlist_id,
       }) //JavaScript object of data to POST
     })
 
     .then(response => {
-      updateTransactions()
-      document.getElementById('myTransactionForm').reset()
-      $('#modalTransaction').modal('toggle');
+      updateStocks()
+      document.getElementById('myAddWatchlistForm').reset()
+      $('#modalAddWatchlist').modal('toggle');
     })
     .then(data => {
-      console.log('POSTED Transaction DATA', data)      
-      $('#example').DataTable().draw()
+      console.log('POSTED Watchlist DATA', data)      
+      $('#watchlistID').DataTable().draw()
       //Perform actions with the response data from the view
     })
     .catch(error => {
