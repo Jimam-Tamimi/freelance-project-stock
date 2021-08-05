@@ -30,6 +30,8 @@
     <!-- azia CSS -->
     <link rel="stylesheet" href="{% static '/css/azia.css' %}">
     <script src="{% static '/lib/ionicons/ionicons/ionicons.z18qlu2u.js' %}"></script>
+
+    
  
 
     {% block headers %}
@@ -155,10 +157,7 @@
             <div class="az-header-left">
               <a href="" id="azSidebarToggle" class="az-header-menu-icon"><span></span></a>
             </div><!-- az-header-left -->
-            <div class="az-header-center">
-              <input type="search" class="form-control" placeholder="Search for anything...">
-              <button class="btn"><i class="fas fa-search"></i></button>
-            </div><!-- az-header-center -->
+            
             <div class="az-header-right">
 
               <div class="dropdown az-profile-menu">
@@ -188,19 +187,24 @@
             </div><!-- az-header-right -->
           </div><!-- container -->
         </div><!-- az-header -->
+
         <div class="az-content-header d-block d-md-flex">
           <div>
-            {% block portfolio-name %}
+            {% block portfoliodetail %}
 
             {% endblock %}
-            
-            <p class="mg-b-0">Your customer service/help desk monitoring dashboard template.</p>
+
           </div>
-        </div><!-- az-content-header -->
+          
+          
+        </div>
+
+
+        
         <div class="az-content-body">
 
           
-
+          
           
           
           {% block content %}
@@ -233,7 +237,7 @@
       <script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.colVis.min.js"></script>
      
       
-      <script src="{% static '/lib/ionicons/ionicons.js' %}"></script>
+      <!-- <script src="{% static '/lib/ionicons/ionicons.js' %}"></script> -->
       <script src="{% static '/lib/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
 
       <script src="{% static '/js/azia.js' %}"></script>

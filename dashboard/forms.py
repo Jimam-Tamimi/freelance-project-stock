@@ -32,7 +32,7 @@ class PortfolioForm(forms.ModelForm):
             #     Submit('submit', 'Submit', css_class='button')
             # )          
         )
-        self.helper.add_input(Submit('submit', 'Submit', css_class='btn btn-indigo'))
+        self.helper.add_input(Submit('submit-portfolio', 'Submit', css_class='btn btn-indigo'))
         # self.helper.form_method = 'POST'
         
     
@@ -78,7 +78,7 @@ class TransactionForm(forms.ModelForm):
             ),
             Row(
                 Column('purchase_date', css_class='form-group col-md-6 mb-0'),
-                Column('price', css_class='form-group col-md-6 mb-0'),
+                Column('regularMarketPrice', css_class='form-group col-md-6 mb-0'),
                 css_class='align-items-center'
             ),
             'update_cash_balance',
@@ -97,7 +97,7 @@ class TransactionForm(forms.ModelForm):
             #     Submit('submit', 'Submit', css_class='button')
             # )          
         )
-        self.helper.add_input(Submit('submit', 'Submit', css_class='btn btn-indigo'))
+        self.helper.add_input(Submit('submit-transaction', 'Submit', css_class='btn btn-indigo'))
         # self.helper.form_method = 'POST'
         
 
@@ -131,7 +131,7 @@ class WatchlistForm(forms.ModelForm):
             ),
                                 
         )
-        self.helper.add_input(Submit('submit', 'Submit', css_class='btn btn-indigo'))
+        self.helper.add_input(Submit('submit-wishlist', 'Submit', css_class='btn btn-indigo'))
         
     
     class Meta:
@@ -162,7 +162,7 @@ class AddToWatchlistForm(forms.ModelForm):
             ),
 
         )
-        self.helper.add_input(Submit('submit', 'Submit', css_class='btn btn-indigo'))
+        self.helper.add_input(Submit('submit-add-stock', 'Submit', css_class='btn btn-indigo'))
         
 
     class Meta:

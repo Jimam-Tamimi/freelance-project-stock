@@ -17,12 +17,11 @@ import json
 
 
 def get_stock_details(symbol):
-    url = "https://yahoo-finance-low-latency.p.rapidapi.com/v6/finance/quote?symbols=" + symbol
+    url = "https://rest.yahoofinanceapi.com/v6/finance/quote?symbols=" + symbol
 
 
     headers = {
-        'x-rapidapi-key': "15c09e0d16msh24199eee9546841p1521e6jsn94f58b809f42",
-        'x-rapidapi-host': "yahoo-finance-low-latency.p.rapidapi.com",
+        'x-api-key': "AD1ayImlEG78RQNYTzFYG3rzNSEVJHXY1v5ZipcL",
         'accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
         'accept-encoding':'gzip, deflate, br',
         'accept-language':'en-GB,en;q=0.9,en-US;q=0.8,ml;q=0.7',
@@ -59,7 +58,7 @@ def get_stock_details(symbol):
     stock_details['trailingPE'] = resultsArray['trailingPE']
     stock_details['priceToBook'] = resultsArray['priceToBook']
 
-    url = "https://yahoo-finance-low-latency.p.rapidapi.com/v11/finance/quoteSummary/" + symbol
+    url = "https://rest.yahoofinanceapi.com/v11/finance/quoteSummary/" + symbol
      
     querystring = {"modules":"summaryDetail,assetProfile,financialData,defaultKeyStatistics,incomeStatementHistory"}
        
@@ -80,17 +79,16 @@ def get_stock_details(symbol):
     stock_details['website'] = newResultsArray['assetProfile']['website']
     
 
-    print(stock_details)
+    # print(stock_details)
     return JsonResponse(stock_details, safe=False)
 
 
 def get_stockDetails(symbol):
-    url = "https://yahoo-finance-low-latency.p.rapidapi.com/v6/finance/quote?symbols=" + symbol
+    url = "https://rest.yahoofinanceapi.com/v6/finance/quote?symbols=" + symbol
 
 
     headers = {
-        'x-rapidapi-key': "15c09e0d16msh24199eee9546841p1521e6jsn94f58b809f42",
-        'x-rapidapi-host': "yahoo-finance-low-latency.p.rapidapi.com",
+        'x-api-key': "AD1ayImlEG78RQNYTzFYG3rzNSEVJHXY1v5ZipcL",
         'accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
         'accept-encoding':'gzip, deflate, br',
         'accept-language':'en-GB,en;q=0.9,en-US;q=0.8,ml;q=0.7',
@@ -104,7 +102,7 @@ def get_stockDetails(symbol):
 
     response = requests.get(url, headers=headers).json()
 
-    print('Adding Stock Details')
+    # print('Adding Stock Details')
     # print(response)
     stock_details = {}
     resultsArray = response['quoteResponse']['result'][0]
@@ -128,7 +126,7 @@ def get_stockDetails(symbol):
     stock_details['priceToBook'] = resultsArray['priceToBook']
 
 
-    url = "https://yahoo-finance-low-latency.p.rapidapi.com/v11/finance/quoteSummary/" + symbol
+    url = "https://rest.yahoofinanceapi.com/v11/finance/quoteSummary/" + symbol
      
     querystring = {"modules":"summaryDetail,assetProfile,financialData,defaultKeyStatistics,incomeStatementHistory"}
        
@@ -149,56 +147,60 @@ def get_stockDetails(symbol):
     stock_details['website'] = newResultsArray['assetProfile']['website']
 
 
-    print(stock_details)
+    # print(stock_details)
     return stock_details
 
 
  
 def get_stocks_suggestions(request):
+    '''
+    api/suggestions/
+    '''
     
-    if request.is_ajax():
-        param = request.GET.get("q")
-                
-        url = "https://yahoo-finance-low-latency.p.rapidapi.com/v6/finance/autocomplete?query=" + param + "&lang=en"
-
-
-        headers = {
-            'x-rapidapi-key': "15c09e0d16msh24199eee9546841p1521e6jsn94f58b809f42",
-            'x-rapidapi-host': "yahoo-finance-low-latency.p.rapidapi.com",
-            'accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-            'accept-encoding':'gzip, deflate, br',
-            'accept-language':'en-GB,en;q=0.9,en-US;q=0.8,ml;q=0.7',
-            'cache-control':'max-age=0',
-            'upgrade-insecure-requests':'1',
-            'user-agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36'
-
-            }
-        
-        
-
-        response = requests.get(url, headers=headers).json()
-
-        # print(response)
-        # print(response)
-        suggestions = []
-        resultsArray = response['ResultSet']['Result']
-        for result in resultsArray:
-            suggestions.append(result['symbol'])
+    # if request.is_ajax():
+    param = request.GET.get("q")
             
-        return JsonResponse(suggestions, safe=False)
+    url = "https://rest.yahoofinanceapi.com/v6/finance/autocomplete?region=IN&lang=en&query=" + param 
+
+
+    headers = {
+        'x-api-key': "AD1ayImlEG78RQNYTzFYG3rzNSEVJHXY1v5ZipcL",
+        'accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+        'accept-encoding':'gzip, deflate, br',
+        'accept-language':'en-GB,en;q=0.9,en-US;q=0.8,ml;q=0.7',
+        'cache-control':'max-age=0',
+        'upgrade-insecure-requests':'1',
+        'user-agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36'
+
+        }
+    
+    
+
+    response = requests.get(url, headers=headers).json()
+
+    # print(response)
+    # print(response)
+    suggestions = []
+    resultsArray = response['ResultSet']['Result']
+    for result in resultsArray:
+        # suggestions.append(result['symbol'] + " | " + result['name'] + " | " + result['exchDisp'] + " - " + result['typeDisp'])
+        suggestions.append(result['symbol'])
+        
+    return JsonResponse(suggestions, safe=False)
+    
+    
 
 
 def get_stocks_price(request):
     if request.is_ajax():
-        print('get_stocks_price for -')
+        # print('get_stocks_price for -')
         symbol = request.GET.get("q")
-        print(symbol)
-        url = "https://yahoo-finance-low-latency.p.rapidapi.com/v6/finance/quote?symbols=" + symbol
+        # print(symbol)
+        url = "https://rest.yahoofinanceapi.com/v6/finance/quote?symbols=" + symbol
 
 
         headers = {
-            'x-rapidapi-key': "15c09e0d16msh24199eee9546841p1521e6jsn94f58b809f42",
-            'x-rapidapi-host': "yahoo-finance-low-latency.p.rapidapi.com",
+            'x-api-key': "AD1ayImlEG78RQNYTzFYG3rzNSEVJHXY1v5ZipcL",
             'accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
             'accept-encoding':'gzip, deflate, br',
             'accept-language':'en-GB,en;q=0.9,en-US;q=0.8,ml;q=0.7',
@@ -210,19 +212,18 @@ def get_stocks_price(request):
 
         response = requests.get(url, headers=headers).json()
 
-        print(response['quoteResponse']['result'][0]['regularMarketPrice'])
+        # print(response['quoteResponse']['result'][0]['regularMarketPrice'])
         # print(response)
         return JsonResponse(response['quoteResponse']['result'][0]['regularMarketPrice'], safe=False)
     
     
 def get_stocks_price_util(symbol):
-    print('get_stocks_price_util for' + symbol)
-    url = "https://yahoo-finance-low-latency.p.rapidapi.com/v6/finance/quote?symbols=" + symbol
+    # print('get_stocks_price_util for' + symbol)
+    url = "https://rest.yahoofinanceapi.com/v6/finance/quote?symbols=" + symbol
 
 
     headers = {
-        'x-rapidapi-key': "15c09e0d16msh24199eee9546841p1521e6jsn94f58b809f42",
-        'x-rapidapi-host': "yahoo-finance-low-latency.p.rapidapi.com",
+        'x-api-key': "AD1ayImlEG78RQNYTzFYG3rzNSEVJHXY1v5ZipcL",
         'accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
         'accept-encoding':'gzip, deflate, br',
         'accept-language':'en-GB,en;q=0.9,en-US;q=0.8,ml;q=0.7',
@@ -234,7 +235,7 @@ def get_stocks_price_util(symbol):
 
     response = requests.get(url, headers=headers).json()
 
-    print(response['quoteResponse']['result'][0]['regularMarketPrice'])
+    # print(response['quoteResponse']['result'][0]['regularMarketPrice'])
     # print(response)
     return response['quoteResponse']['result'][0]['regularMarketPrice']
 
@@ -257,7 +258,7 @@ def portfolioList(request):
             queryset = Portfolio.objects.all()
             
         serializer = PortfolioSerializer(queryset, many=True)
-        
+
         return Response(serializer.data)
     
     elif request.method == 'POST':
@@ -296,155 +297,28 @@ def portfolioDetail(request, pk):
 
 class StocksList(generics.ListAPIView):
     """
-    /api/portfolios/<portfolio_id>/stocks/
+    api/portfolios/<str:portfolio_id>/stocks/
         GET: Get portfolio's stock holdings.
     """
     serializer_class = StockSerializer
 
     def get_queryset(self):
-        p = get_object_or_404(Portfolio, id=self.kwargs['portfolio_id'])
-        return Stock.objects.filter(portfolio=p)
+        portfolio = get_object_or_404(Portfolio, id=self.kwargs['portfolio_id'])
+        return Stock.objects.filter(portfolio=portfolio)
 
 
+class StocksDetailList(generics.ListAPIView):
+    """
+    /api/stocks/
+        GET: Get stock details.
+    """
+    serializer_class = StockDetailSerializer
 
-@api_view(['GET'])
-def stockDetail(request, pk):
-    stock = Stock.objects.get(id=pk)
-    serializer = StockSerializer(stock, many=False)
+    def get_queryset(self):
+        # p = get_object_or_404(Stock, id=self.kwargs['portfolio_id'])
+        return StockDetail.objects.all()
     
-    return Response(serializer.data)
 
-
-@api_view(['POST'])
-def stockCreate(request):
-    serializer = StockSerializer(data=request.data)
-    print('API CREATE')
-    print(request.data)
-    if serializer.is_valid():
-        print('API VALID')
-        # serializer.save()
-        serializer.save(portfolio=request.portfolio)
-        
-    return Response(serializer.data)
-
-
-@api_view(['POST'])
-def stockUpdate(request, pk):
-    stock = Stock.objects.get(id=pk)
-    serializer = StockSerializer(instance=stock, data=request.data)
-    print('API UPDATE')
-    print(request.data)
-    
-    if serializer.is_valid():
-        serializer.save()
-        
-    return Response(serializer.data)
-
-
-@api_view(['DELETE'])
-def stockDelete(request, pk):
-    stock = Stock.objects.get(id=pk)
-    stock.delete()
-        
-    return Response('Items Successfully deleted')
-
-
-
-
-
-# @api_view(['GET', 'POST', 'DELETE'])
-# def transactionDetail(request, pk):
-#     # portfolio_id = Portfolio.objects.get(id=pk)
-#     # transaction = Transaction.objects.filter(portfolio=portfolio_id)
-
-#     # serializer = TransactionSerializer(transaction, many=True)
-#     # return Response(serializer.data)
-
-#     try:
-#         portfolio = Portfolio.objects.get(id=pk)
-#         transaction = Transaction.objects.filter(portfolio=portfolio)
-#     except Portfolio.DoesNotExist:
-#         return Response(status=status.HTTP_404_NOT_FOUND)
-#     except Transaction.DoesNotExist:
-#         return Response(status=status.HTTP_404_NOT_FOUND)
-    
-#     if request.method == 'GET':
-#         serializer = TransactionSerializer(transaction, many=True)
-#         return Response(serializer.data)
-    
-#     elif request.method == 'POST':
-#         print(portfolio.cash)
-        
-#         serializer = TransactionSerializer(transaction, data=request.data)
-#         symbol = request.data['symbol'].upper()
-        
-#         requested_quantity = int(request.data['quantity'])
-#         print(requested_quantity)
-#         if requested_quantity <= 0:
-#             raise ValidationError("Cannot transact negative units.")
-#         transaction_type = request.data['transaction_type']
-        
-#         # Get price of ticker and total transaction amount
-#         # price = get_yahoo_quote(ticker)[ticker]['price']
-#         price = 5
-        
-#         transaction_amount = round(requested_quantity * price, 2)
-#         # Get the held stock if it already exists in the portfolio. Otherwise held_stock is None
-#         print(symbol)
-#         held_stock = portfolio.stocks.filter(symbol=symbol).first()
-#         print(held_stock)
-#         print(transaction_type)
-#         if transaction_type == 'BUY':
-#             # Check if portfolio has sufficient funds to execute transaction
-            
-#             print(transaction_amount)
-#             if transaction_amount > portfolio.cash:
-#                 raise ValidationError(
-#                     'Insufficient cash to buy {} shares of {}'.format(
-#                         requested_quantity,
-#                         symbol
-#                     )
-#                 )
-#             portfolio.cash -= transaction_amount
-#             portfolio.save()
-#             if held_stock:
-#                 held_stock.quantity += requested_quantity
-#                 if held_stock.quantity == 0:
-#                     held_stock.delete()
-#                 else:
-#                     held_stock.save()
-#             else:  # ticker doesn't exist in portfolio, create new Stock
-#                 new_stock = Stock(
-#                     symbol=symbol,
-#                     quantity=requested_quantity,
-#                     portfolio=portfolio
-#                 )
-#                 new_stock.save()
-
-#         elif transaction_type == 'SELL':
-#             # If you hold more units than you want to sell, proceed.
-#             if held_stock and held_stock.quantity >= requested_quantity:
-#                 portfolio.cash += transaction_amount
-#                 portfolio.save()
-#                 held_stock.quantity -= requested_quantity
-#                 if held_stock.quantity == 0:
-#                     held_stock.delete()
-#                 else:
-#                     held_stock.save()
-                    
-#         if serializer.is_valid():
-#             serializer.save(symbol=symbol, portfolio=portfolio, price=price)
-#             return Response(serializer.data)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-
-#     elif request.method == 'DELETE':
-#         portfolio = Portfolio.objects.get(id=pk)
-#         portfolio.delete()
-#         return Response(status=status.HTTP_204_NO_CONTENT)
-    
-    
 class TransactionsList(generics.ListCreateAPIView):
     """
     /api/portfolios/<portfolio_id>/transactions/
@@ -461,14 +335,14 @@ class TransactionsList(generics.ListCreateAPIView):
         p = get_object_or_404(Portfolio, id=self.kwargs['portfolio_id'])
         # Return transactions in reverse order to get most recent
         # transactions first. [::-1]
-        return Transaction.objects.filter(portfolio=p)
+        return Transaction.objects.filter(portfolio=p).order_by('-created')
     
     
     def perform_create(self, serializer):
-        print('in POST')
+        # print('in POST')
         # Assign request data to local variables
         portfolio = get_object_or_404(Portfolio, id=self.kwargs['portfolio_id'])
-        print('Portfolio' + portfolio.name)
+        # print('Portfolio' + portfolio.name)
         symbol = self.request.data['symbol'].upper()
         
         requested_quantity = int(self.request.data['quantity'])
@@ -479,22 +353,27 @@ class TransactionsList(generics.ListCreateAPIView):
         
         # Get price of ticker and total transaction amount
         # price = get_yahoo_quote(ticker)[ticker]['price']
-        price = get_stocks_price_util(symbol)
-        # price = self.request.data['regularMarketPrice']
+        # price = get_stocks_price_util(symbol)
+        # print(self.request.data)
+        price = float(self.request.data['regularMarketPrice'])
         # price = 23.01
-        print(price)
+        # print(price)
         
-        comm = self.request.data['commissions']
-        fees = self.request.data['fees']
+        commissions = float(self.request.data['commissions'])
+        fees = float(self.request.data['fees'])
         
-        transaction_amount = round(requested_quantity * price, 2)
-        print(transaction_amount)
+        transaction_amount = round(float(requested_quantity) * price, 2) + commissions + fees
+        purchase_cost = transaction_amount
+        adjusted_buy_price = transaction_amount
+        # print(transaction_amount)
+        # print('transaction_amount')
         
+        
+        # current_transaction = portfolio.transactions.filter(symbol=symbol, quantity__gt = 0).order_by('-created').first()
         
         # Get the held stock if it already exists in the portfolio. Otherwise held_stock is None
-        held_stock = portfolio.stocks.filter(symbol=symbol).first()
-        # print('held_stock = ' + held_stock)
-    
+        held_stock = Stock.objects.filter(symbol=symbol).first()
+
 
         if transaction_type == 'BUY':
             # Check if portfolio has sufficient funds to execute transaction
@@ -507,69 +386,92 @@ class TransactionsList(generics.ListCreateAPIView):
                     )
                 )
                 
-            portfolio.cash -= transaction_amount
-            portfolio.save()
-                                
+                 
             if held_stock:
-                print('held_stock = ' + held_stock.symbol)
+                # print('current_transaction = ' + current_transaction.symbol)
                 held_stock.quantity += requested_quantity
                 if held_stock.quantity == 0:
                     held_stock.delete()
                 else:
                     held_stock.save()
                     
-                    
             else:  # ticker doesn't exist in portfolio, create new Stock
-                new_stock = Stock(
-                    symbol=symbol,
-                    quantity=requested_quantity,
-                    portfolio=portfolio
+      
+                held_stock = Stock(
+                    symbol= symbol,
+                    quantity = requested_quantity,
+                    portfolio = portfolio
+                )
+                held_stock.save()
+                print('New Stock Added in Prtfolio')
+                
+                new_stock = StockDetail(
+                    symbol= symbol,
                 )
                 new_stock.save()
+                print('New Stock Added in Details')
+            
+            portfolio.cash -= transaction_amount
+            portfolio.save()   
+            print('Stock BOUGHT, now saving details')
                 
 
         # FIFO to be implemented as SELL 
         elif transaction_type == 'SELL':
             # If you hold more units than you want to sell, proceed.
-            transactions = Transaction.objects.filter(symbol=symbol)
-            print(transactions)
-                    
+            # transactions = Transaction.objects.filter(symbol=symbol)
+            print('SELL')
+            print(held_stock)
+            print(held_stock.id)
+            print(held_stock.quantity)
+            print(requested_quantity)
+            print(portfolio.cash)     
+               
             if held_stock and held_stock.quantity >= requested_quantity:
-                portfolio.cash += transaction_amount
-                portfolio.save()
+                
                 held_stock.quantity -= requested_quantity
                 if held_stock.quantity == 0:                    
                     held_stock.delete()
+                    held_stock.save()
                 else:
                     held_stock.save()
                     
-        print('Stock Saved, now saving details')
-        # Get additional stock details
-        # detail = get_stockDetails(symbol)
+                portfolio.cash += transaction_amount
+                portfolio.save()
+            
+            print(held_stock.quantity)
+            print(requested_quantity)
+            print(portfolio.cash)           
+            print('Stock SOLD, now saving details')
+        
             
         # print(detail)
-        serializer.save(symbol=symbol, portfolio=portfolio)
+        serializer.save(
+                        symbol=symbol, 
+                        portfolio=portfolio,
+                        purchase_cost=purchase_cost, 
+                        adjusted_buy_price=adjusted_buy_price
+                        )
     
     
 def get_charts_data(request, symbolrange):
     
     # print(datetime.fromtimestamp(float(parse_qs(url)["date"][0])))
-    print('get_charts_data')
+    # print('get_charts_data')
     symbol = symbolrange.split('delimeter')[0]
     chartrange = symbolrange.split('delimeter')[1]
     
     if 'DOT' in symbol:
         symbol = symbol.replace('DOT', '.')
-    print(symbol)
-    print(chartrange)
-    url = "https://yahoo-finance-low-latency.p.rapidapi.com/v8/finance/chart/" + symbol
-    print(url)
+    # print(symbol)
+    # print(chartrange)
+    url = "https://rest.yahoofinanceapi.com/v8/finance/chart/" + symbol
+    # print(url)
     querystring = {"range":chartrange,
                    "interval":"1d"}
 
     headers = {
-        'x-rapidapi-key': "15c09e0d16msh24199eee9546841p1521e6jsn94f58b809f42",
-        'x-rapidapi-host': "yahoo-finance-low-latency.p.rapidapi.com",
+        'x-api-key': "AD1ayImlEG78RQNYTzFYG3rzNSEVJHXY1v5ZipcL",
         'accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
         'accept-encoding':'gzip, deflate, br',
         'accept-language':'en-GB,en;q=0.9,en-US;q=0.8,ml;q=0.7',
@@ -596,7 +498,7 @@ def get_charts_data(request, symbolrange):
             data_open = round(open[key],2)
         except:
             data_open = open[key]
-            print(data_open)
+            # print(data_open)
             
         try:
             data_high = round(high[key],2)
@@ -622,7 +524,7 @@ def get_charts_data(request, symbolrange):
                      volume[key]
                      ])
 
-    print('Total data we have ' + str(len(timestamps)))
+    # print('Total data we have ' + str(len(timestamps)))
     # dictionary = [[34, 61, 82],[34, 61, 82],[34, 61, 82]]
     # jsonString = json.dumps(ohlc, indent=4)
     return JsonResponse(ohlc, safe=False)
@@ -683,6 +585,7 @@ def watchListDetail(request, pk):
 
 
 class WatchlistStocksList(generics.ListCreateAPIView):
+    
     """
     /api/watchlists/<watchlist_id>/stocks/
         GET: Get list of watchlists stocks.
@@ -699,12 +602,12 @@ class WatchlistStocksList(generics.ListCreateAPIView):
     
     
     def perform_create(self, serializer):
-        print('in POST')
+        # print('in POST')
         # Assign request data to local variables
         watchlist = get_object_or_404(Watchlist, id=self.kwargs['watchlist_id'])
-        print('Watchlist - ' + watchlist.watchlist_name)
+        # print('Watchlist - ' + watchlist.watchlist_name)
         symbol = self.request.data['symbol'].upper()
-        print(symbol)
+        # print(symbol)
         
         
         new_stock = WatchlistStock(
@@ -713,6 +616,10 @@ class WatchlistStocksList(generics.ListCreateAPIView):
         )
         new_stock.save()
            
-        print('Stock Saved, now saving details')
+        # print('Stock Saved, now saving details')
 
         serializer.save(symbol=symbol, watchList=watchlist)
+        
+        
+        
+

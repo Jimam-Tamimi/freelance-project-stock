@@ -7,6 +7,9 @@ from django.http import HttpResponse, Http404
 from . forms import *
 from . serializers import *
 
+import time
+
+    
 # Login URL is provided in SETTINGS.py
 @login_required()
 def listView(request):
@@ -26,6 +29,22 @@ def portfolioView(request, pk):
     # for rendering individual portfolio level detail
     portfolio = get_object_or_404(Portfolio, id=pk)
     
+    # stocks_list = portfolio.stocks.filter()
+    
+    transaction_list = portfolio.transactions.filter().order_by('-created')
+
+    # for stock in stocks_list:
+    #     start_time = time.time()        
+    #     stock.update_fields()
+    #     current_time = time.time()
+    #     elapsed_time = current_time - start_time
+    #     # print("Finished Updating Stock in: " + str(int(elapsed_time))  + " seconds")
+
+    #     # stock.save()
+    for t in transaction_list:
+        t.update_fields()
+    
+        
     # portfolio = Portfolio.objects.get(id=pk)
     serializer = PortfolioSerializer(portfolio, many=False)
     
@@ -36,16 +55,17 @@ def portfolioView(request, pk):
     # for rendering Modal BuySell Stock Form 
     transaction = TransactionForm() 
 
-    # stock = Stock.objects.get(portfolio=portfolio)
-    # stockSerializer = StockSerializer(stock, many=True)
+    stockdetail = StockDetail.objects.all()
+    stockSerializer = StockDetailSerializer(stockdetail, many=True)
     
-
-
-    context = {'portfolio': serializer.data, 
+    context = {
+                'portfolio': serializer.data, 
+                'transactions': transaction_list,
+                'stock': stockSerializer.data,
                 'form': transaction, 
                 'modalPortfolioForm': modalPortfolioForm,
                 'modalWatchlistForm': modalWatchlistForm
-                }
+            }
     
     return render(request, 'dashboard/portfolio.html', context)
 

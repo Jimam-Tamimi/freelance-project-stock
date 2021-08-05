@@ -7,6 +7,7 @@ from . import apis
 
 
 urlpatterns = [
+
         
     # AJAX 
     path('api/suggestions/', apis.get_stocks_suggestions),
@@ -14,8 +15,8 @@ urlpatterns = [
     path('api/stock/<str:symbol>/', apis.get_stock_details),
     path('api/charts/<str:symbolrange>/', apis.get_charts_data),
     
+ 
     
-    # # Views Name attribute is linked in Account URL LOGIn, as lazy reverse 
     path('', views.listView, name='portfolios'),
     path('portfolios/<str:pk>/', views.portfolioView),
     path('watchlists/<str:pk>/', views.watchlistView),
@@ -30,10 +31,12 @@ urlpatterns = [
     path('api/portfolios/<str:portfolio_id>/transactions/', apis.TransactionsList.as_view()), # Not working with datatable API
     
     path('api/portfolios/<str:portfolio_id>/stocks/', apis.StocksList.as_view()),
+    path('api/stocks/', apis.StocksDetailList.as_view()),
     path('api/watchlists/<str:watchlist_id>/stocks/', apis.WatchlistStocksList.as_view()),
     
-    path('api/stock-detail/<str:pk>/', apis.stockDetail),
-    path('api/stock-create/', apis.stockCreate),
-    path('api/stock-update/<str:pk>/', apis.stockUpdate),
-    path('api/stock-delete/<str:pk>/', apis.stockDelete),
+    # path('api/stock-detail/<str:pk>/', apis.stockDetail),
+    # path('api/stock-create/', apis.stockCreate),
+    # path('api/stock-update/<str:pk>/', apis.stockUpdate),
+    # path('api/stock-delete/<str:pk>/', apis.stockDelete),
+    
 ]
