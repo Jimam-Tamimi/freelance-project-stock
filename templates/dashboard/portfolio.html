@@ -7,6 +7,15 @@
   <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" /> -->
 
   <style>
+    td.details-control {
+    background: url('../resources/details_open.png') no-repeat center center;
+    cursor: pointer;
+}
+tr.shown td.details-control {
+    background: url('../resources/details_close.png') no-repeat center center;
+}
+
+
   .bootstrap-autocomplete {
     position: absolute;
     top: 100%;
@@ -117,6 +126,7 @@
 {% block portfoliodetail %}
 <h2 class="az-content-title tx-24 mg-b-5 mg-b-lg-8">{{ portfolio.name }}</h2> 
 <p class="mg-b-0"><h6 id="portfolio_id">{{ portfolio.id }}</h6></p>
+
 {% endblock %}
             
 
@@ -185,19 +195,19 @@
 
   <div class="card bd-0">
     <div class="card-header bg-gray-400 bd-b-0-f pd-b-0">
-      <nav class="nav nav-tabs">
+      <nav class="nav nav-tabs">        
         <a class="nav-link active show" data-toggle="tab" href="#tabContTransactions">Transactions</a>
+        <a class="nav-link" data-toggle="tab" href="#tabContStockDetails">Stock Details</a>
         <a class="nav-link" data-toggle="tab" href="#tabContHoldings">Holdings</a>
         <a class="nav-link" data-toggle="tab" href="#tabContProfitLoss">ProfitLoss</a>
         <a class="nav-link" data-toggle="tab" href="#tabContPortfolioValue">Portfolio Value</a>
         <a class="nav-link" data-toggle="tab" href="#tabContNAV">NAV</a>
-        <a class="nav-link" data-toggle="tab" href="#tabContNoOfStocks">No of stocks</a>
         <a class="nav-link" data-toggle="tab" href="#tabContSectoralComposition">Sectoral Composition</a>
       </nav>
     </div><!-- card-header -->
     <div class="card-body bd bd-t-0 tab-content">
       <div id="tabContTransactions" class="tab-pane active show">
-        <div class="container-fluid">
+        <div>
           <div class="table-responsive">
             <div class="dataTables_wrapper no-footer" >
               <table id="transaction_table" class="table table-striped table-hover nowrap dt-responsive">
@@ -211,7 +221,7 @@
                     <th>purchase cost</th>
                     <th>commissions</th>
                     <th>fees</th>
-                    <th>current_value</th>
+                    <th>net value</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -233,7 +243,7 @@
                           <td>{{ transaction.purchase_cost }}</td>
                           <td>{{ transaction.commissions }}</td>
                           <td>{{ transaction.fees }}</td>
-                          <td>{{ transaction.current_value }}</td>                        
+                          <td>{{ 12 }}</td>                        
                         {% endif %}      
                       {% endfor %}
                       
@@ -243,13 +253,21 @@
               </table>
             </div>
           </div>
+
+          <div class="row m-3">
+            <div class="col">
+              <div class="container-fluid">        
+                <div id="container" class="chart"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div><!-- tab-pane -->
       <div id="tabContHoldings" class="tab-pane">
-        <div class="container-fluid">
+        <div>
           <div class="table-responsive">
-            <div class="dataTables_wrapper no-footer" >
-              <table id="holding_table" class="table table-striped table-hover nowrap dt-responsive">
+            <div class="dataTables_wrapper no-footer">
+              <table id="holding_table" class="table table-striped table-hover wrap dt-responsive">
                 <thead>
                   <tr>
                     <th>symbol</th>
@@ -281,11 +299,11 @@
                     <th>Website</th>
                   </tr>
                 </thead> 
-                <tbody>                
-                  <tr>
-                    {% for portfolioStock in portfolio.stocks %}
-                      {% for s in stock %}
-                        {% if portfolioStock.symbol in s.symbol %}
+                <tbody>                                  
+                  {% for portfolioStock in portfolio.stocks %}
+                    {% for s in stock %}
+                      {% if portfolioStock.symbol in s.symbol %}
+                        <tr>
                         <td>{{ s.symbol }}</td>    
                         <td>{{ s.longName }}</td>                    
                         <td>{{ portfolioStock.quantity }}</td>
@@ -313,14 +331,24 @@
                         <td>{{ s.sector }}</td>
                         <td>{{ s.industry }}</td>
                         <td>{{ s.website }}</td>
-                        {% endif %}
-                      {% endfor %}
+                      </tr>
+                      {% endif %}
                     {% endfor %}
-                  </tr>
+                  {% endfor %}                  
                 </tbody>               
               </table>
             </div>
           </div>
+          
+            <figure class="highcharts-figure">
+              <div id="container-NOS"></div>
+              <p class="highcharts-description">
+                  Chart showing use of rotated axis labels and data labels. This can be a
+                  way to include more labels in the chart, but note that more labels can
+                  sometimes make charts harder to read.
+              </p>
+          </figure>
+          
         </div>
       </div><!-- tab-pane -->
       <div id="tabContProfitLoss" class="tab-pane">
@@ -333,12 +361,12 @@
                     <th>symbol</th>
                     <th>purchase date</th>                  
                     <th>name</th>
-                    <th>transaction type</th>                  
                     <th>quantity</th>
                     <th>purchase cost</th>
-                    <th>commissions</th>
-                    <th>fees</th>
-                    <th>current_value</th>
+                    <th>selling cost</th>
+                    <th>net profit</th>
+                    <th>net profit %</th>
+                    <th>days held</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -349,18 +377,13 @@
                         {% if transaction.symbol in s.symbol %}
                           <td>{{ transaction.symbol }}</td>  
                           <td>{{ transaction.purchase_date }}</td>                        
-                          <td>{{ s.longName }}</td>  
-                          {% if 'BUY' in transaction.transaction_type %}
-                            <td><label class="badge badge-success">{{ transaction.transaction_type }}</label></td>
-                          {% endif %}    
-                          {% if 'SELL' in transaction.transaction_type %}
-                            <td><label class="badge badge-danger">{{ transaction.transaction_type }}</label></td>
-                          {% endif %}  
+                          <td>{{ s.longName }}</td>                             
                           <td>{{ transaction.quantity }}</td>
                           <td>{{ transaction.purchase_cost }}</td>
-                          <td>{{ transaction.commissions }}</td>
-                          <td>{{ transaction.fees }}</td>
-                          <td>{{ transaction.current_value }}</td>                        
+                          <td>{{ transaction.purchase_cost }}</td>
+                          <td>10</td>
+                          <td>11</td>
+                          <td>12</td>                        
                         {% endif %}      
                       {% endfor %}
                       
@@ -370,6 +393,8 @@
               </table>
             </div>
           </div>
+
+          
         </div>
       </div><!-- tab-pane -->
       <div id="tabContPortfolioValue" class="tab-pane">
@@ -378,15 +403,83 @@
       <div id="tabContNAV" class="tab-pane">
 
       </div><!-- tab-pane -->
-      <div id="tabContNoOfStocks" class="tab-pane">
-        <figure class="highcharts-figure-nos">
-          <div id="container-NOS"></div>
-          <p class="highcharts-description">
-              Chart showing use of rotated axis labels and data labels. This can be a
-              way to include more labels in the chart, but note that more labels can
-              sometimes make charts harder to read.
-          </p>
-      </figure>
+      <div id="tabContStockDetails" class="tab-pane">
+        <div>
+          <div class="table-responsive">
+            <div class="dataTables_wrapper no-footer">
+              <table id="stockdetail_table" class="table table-striped table-hover wrap dt-responsive">
+                <thead>
+                  <tr>
+                    <th>symbol</th>
+                    <th>name</th>
+                    <th>quantity</th>
+                    <th>regularMarketPrice</th>
+                    <th>Day Change</th>
+                    <th>Day Change %</th>
+                    <th>Day Lo</th>
+                    <th>Day Hi</th>
+                    <th>52 Week Lo</th>
+                    <th>52 Week Hi</th>
+                    <th>Volume</th>
+                    <th>Volume Average 10 days</th>
+                    <th>Volume Average 3M</th>
+                    <th>MktCap</th>
+                    <th>EPS</th>
+                    <th>P/E</th>
+                    <th>P/B</th>
+                    <th>EV/EBITDA</th>
+                    <th>Dividend Yield</th>
+                    <th>D/E</th>
+                    <th>ROE</th>
+                    <th>ROA</th>
+                    <th>Revenues</th>
+                    <th>EBITDA</th>
+                    <th>Sector</th>
+                    <th>Industry</th>
+                    <th>Website</th>
+                  </tr>
+                </thead> 
+                <tbody>                                  
+                  {% for portfolioStock in portfolio.stocks %}
+                    {% for s in stock %}
+                      {% if portfolioStock.symbol in s.symbol %}
+                        <tr>
+                        <td>{{ s.symbol }}</td>    
+                        <td>{{ s.longName }}</td>                    
+                        <td>{{ portfolioStock.quantity }}</td>
+                        <td>{{ s.regularMarketPrice }}</td>
+                        <td>{{ s.regularMarketChange }}</td>
+                        <td>{{ s.regularMarketChangePercent }}</td>
+                        <td>{{ s.regularMarketDayLow }}</td>
+                        <td>{{ s.regularMarketDayHigh }}</td>
+                        <td>{{ s.fiftyTwoWeekLow }}</td>
+                        <td>{{ s.fiftyTwoWeekHigh }}</td>
+                        <td>{{ s.regularMarketVolume }}</td>
+                        <td>{{ s.averageDailyVolume10Day }}</td>
+                        <td>{{ s.averageDailyVolume3Month }}</td>
+                        <td>{{ s.marketCap }}</td>
+                        <td>{{ s.epsTrailingTwelveMonths }}</td>
+                        <td>{{ s.trailingPE }}</td>
+                        <td>{{ s.priceToBook }}</td>
+                        <td>{{ s.enterpriseToEbitda }}</td>
+                        <td>{{ s.trailingAnnualDividendYield }}</td>
+                        <td>{{ s.debtToEquity }}</td>
+                        <td>{{ s.returnOnEquity }}</td>
+                        <td>{{ s.returnOnAssets }}</td>
+                        <td>{{ s.totalRevenue }}</td>
+                        <td>{{ s.ebitda }}</td>
+                        <td>{{ s.sector }}</td>
+                        <td>{{ s.industry }}</td>
+                        <td>{{ s.website }}</td>
+                      </tr>
+                      {% endif %}
+                    {% endfor %}
+                  {% endfor %}                  
+                </tbody>               
+              </table>
+            </div>
+          </div>
+        </div>
       </div><!-- tab-pane -->
       <div id="tabContSectoralComposition" class="tab-pane">
         <figure class="highcharts-figure">
@@ -566,15 +659,8 @@
       Event summary - new events added at the top
   </div> -->
 
-  <div class="row m-3">
-    <div class="col">
-      <div class="container-fluid">        
-        <div id="container" class="chart"></div>
-      </div>
-    </div>
-  </div>
-  <hr/>
   
+
 
 
 {% endblock %}  
@@ -668,7 +754,7 @@
             });
 
             return $('<tr/>')
-              .append('<td colspan="9">' + group + ' (' + rows.count() + ')</td>')
+              .append('<td colspan="9" align="left">' + group + ' (' + rows.count() + ')</td>')
               .attr('data-name', group)
               .toggleClass('collapsed', collapsed);
           },
@@ -687,7 +773,7 @@
       $('#transaction_table tbody').on('click', 'tr.group-start', function () {
                 var name = $(this).data('name');
                 chart_symbol = name
-                collapsedGroups[name] = !collapsedGroups[name];
+                collapsedGroups[name] = !collapsedGroups[name];                
                 table.draw(false);
       }); 
       
@@ -711,107 +797,107 @@
 
             Highcharts.getJSON(window.location.origin + '/api/charts/' + chart_new_symbol + 'delimeter10y/', function (data) {
 
-                    // console.log('Highcharts', data)
+              // console.log('Highcharts', data)
 
-                    // split the data set into ohlc and volume
-                    var ohlc = [],
-                    volume = [],
-                    dataLength = data.length,
-                    i = 0;
+              // split the data set into ohlc and volume
+              var ohlc = [],
+              volume = [],
+              dataLength = data.length,
+              i = 0;
 
-                    for (i; i < dataLength; i += 1) {
-                    ohlc.push([
-                      data[i][0], // the date
-                      data[i][1], // open
-                      data[i][2], // high
-                      data[i][3], // low
-                      data[i][4] // close
-                    ]);
+              for (i; i < dataLength; i += 1) {
+                ohlc.push([
+                  data[i][0], // the date
+                  data[i][1], // open
+                  data[i][2], // high
+                  data[i][3], // low
+                  data[i][4] // close
+                ]);
 
-                    volume.push([
-                      data[i][0], // the date
-                      data[i][5] // the volume
-                    ]);
+                volume.push([
+                  data[i][0], // the date
+                  data[i][5] // the volume
+                ]);
+              }
+
+              Highcharts.stockChart('container', {
+              yAxis: [{
+                labels: {
+                  align: 'left'
+                },
+                height: '80%',
+                resize: {
+                  enabled: true
+                }
+              }, {
+                labels: {
+                  align: 'left'
+                },
+                top: '80%',
+                height: '20%',
+                offset: 0
+              }],
+              tooltip: {
+                shape: 'square',
+                headerShape: 'callout',
+                borderWidth: 0,
+                shadow: false,
+                positioner: function (width, height, point) {
+                  var chart = this.chart,
+                    position;
+
+                  if (point.isHeader) {
+                    position = {
+                      x: Math.max(
+                        // Left side limit
+                        chart.plotLeft,
+                        Math.min(
+                          point.plotX + chart.plotLeft - width / 2,
+                          // Right side limit
+                          chart.chartWidth - width - chart.marginRight
+                        )
+                      ),
+                      y: point.plotY
+                    };
+                  } else {
+                    position = {
+                      x: point.series.chart.plotLeft,
+                      y: point.series.yAxis.top - chart.plotTop
+                    };
+                  }
+
+                  return position;
+                }
+              },
+              title: {
+                  text: chart_symbol + ' Stock Price'
+              },
+              series: [{
+                type: 'ohlc',
+                id: 'ohlc',
+                name: chart_symbol + ' Stock Price',
+                data: ohlc
+              }, {
+                type: 'column',
+                id: 'volume',
+                name: chart_symbol + ' Volume',
+                data: volume,
+                yAxis: 1
+              }],
+              responsive: {
+                rules: [{
+                  condition: {
+                    maxWidth: 800
+                  },
+                  chartOptions: {
+                    rangeSelector: {
+                      inputEnabled: false
                     }
-
-                    Highcharts.stockChart('container', {
-                    yAxis: [{
-                      labels: {
-                        align: 'left'
-                      },
-                      height: '80%',
-                      resize: {
-                        enabled: true
-                      }
-                    }, {
-                      labels: {
-                        align: 'left'
-                      },
-                      top: '80%',
-                      height: '20%',
-                      offset: 0
-                    }],
-                    tooltip: {
-                      shape: 'square',
-                      headerShape: 'callout',
-                      borderWidth: 0,
-                      shadow: false,
-                      positioner: function (width, height, point) {
-                        var chart = this.chart,
-                          position;
-
-                        if (point.isHeader) {
-                          position = {
-                            x: Math.max(
-                              // Left side limit
-                              chart.plotLeft,
-                              Math.min(
-                                point.plotX + chart.plotLeft - width / 2,
-                                // Right side limit
-                                chart.chartWidth - width - chart.marginRight
-                              )
-                            ),
-                            y: point.plotY
-                          };
-                        } else {
-                          position = {
-                            x: point.series.chart.plotLeft,
-                            y: point.series.yAxis.top - chart.plotTop
-                          };
-                        }
-
-                        return position;
-                      }
-                    },
-                    title: {
-                        text: chart_symbol + ' Stock Price'
-                    },
-                    series: [{
-                      type: 'ohlc',
-                      id: 'ohlc',
-                      name: chart_symbol + ' Stock Price',
-                      data: ohlc
-                    }, {
-                      type: 'column',
-                      id: 'volume',
-                      name: chart_symbol + ' Volume',
-                      data: volume,
-                      yAxis: 1
-                    }],
-                    responsive: {
-                      rules: [{
-                        condition: {
-                          maxWidth: 800
-                        },
-                        chartOptions: {
-                          rangeSelector: {
-                            inputEnabled: false
-                          }
-                        }
-                      }]
-                    }
-                    });
-                    });
+                  }
+                }]
+              }
+              });
+            });
         } )
         .on( 'deselect', function ( e, dt, type, indexes ) {
             var rowData = table.rows( indexes ).data().toArray();
@@ -1012,76 +1098,196 @@
   </script>
 
 <script>//build no of stock chart
-Highcharts.chart('container-NOS', {
-    chart: {
-        type: 'column'
-    },
-    title: {
-        text: 'World\'s largest cities per 2017'
-    },
-    subtitle: {
-        text: 'Source: <a href="http://en.wikipedia.org/wiki/List_of_cities_proper_by_population">Wikipedia</a>'
-    },
-    xAxis: {
-        type: 'category',
-        labels: {
-            rotation: -45,
-            style: {
-                fontSize: '13px',
-                fontFamily: 'Verdana, sans-serif'
-            }
-        }
-    },
-    yAxis: {
-        min: 0,
+  var portfolio_id = document.getElementById('portfolio_id').textContent
+  Highcharts.getJSON(window.location.origin + '/api/portfolios/' + portfolio_id + '/stocks/', function (data) {
+
+    // console.log('Highcharts', data)
+
+    // split the data set into ohlc and volume
+    var ohlc = [],
+    dataLength = data.results.length
+    // console.log('dataLength', dataLength)
+    i = 0;
+
+    for (i; i < dataLength; i += 1) {
+      // console.log('data', data.results[i]['symbol'])
+      ohlc.push([        
+        data.results[i]['symbol'], // symbol
+        data.results[i]['quantity'], // qty
+      ]);
+    }
+
+    // console.log('Data', ohlc)
+  
+    Highcharts.chart('container-NOS', {
+        chart: {
+            type: 'column'
+        },
         title: {
-            text: 'Population (millions)'
-        }
-    },
-    legend: {
-        enabled: false
-    },
-    tooltip: {
-        pointFormat: 'Population in 2017: <b>{point.y:.1f} millions</b>'
-    },
-    series: [{
-        name: 'Population',
-        data: [
-            ['Shanghai', 24.2],
-            ['Beijing', 20.8],
-            ['Karachi', 14.9],
-            ['Shenzhen', 13.7],
-            ['Guangzhou', 13.1],
-            ['Istanbul', 12.7],
-            ['Mumbai', 12.4],
-            ['Moscow', 12.2],
-            ['São Paulo', 12.0],
-            ['Delhi', 11.7],
-            ['Kinshasa', 11.5],
-            ['Tianjin', 11.2],
-            ['Lahore', 11.1],
-            ['Jakarta', 10.6],
-            ['Dongguan', 10.6],
-            ['Lagos', 10.6],
-            ['Bengaluru', 10.3],
-            ['Seoul', 9.8],
-            ['Foshan', 9.3],
-            ['Tokyo', 9.3]
-        ],
-        dataLabels: {
-            enabled: true,
-            rotation: -90,
-            color: '#FFFFFF',
-            align: 'right',
-            format: '{point.y:.1f}', // one decimal
-            y: 10, // 10 pixels down from the top
-            style: {
-                fontSize: '13px',
-                fontFamily: 'Verdana, sans-serif'
+            text: 'Stock\'s holding in Portfolio'
+        },
+        subtitle: {
+            text: 'Subtitle'
+        },
+        xAxis: {
+            type: 'category',
+            labels: {
+                rotation: -45,
+                style: {
+                    fontSize: '13px',
+                    fontFamily: 'Verdana, sans-serif'
+                }
             }
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'Holdings (in numbers)'
+            }
+        },
+        legend: {
+            enabled: false
+        },
+        tooltip: {
+            pointFormat: 'Holdings: <b>{point.y:.1f}</b>'
+        },
+        series: [{
+            name: 'Holdings',
+
+            data: ohlc,
+
+            dataLabels: {
+                enabled: true,
+                rotation: -90,
+                color: '#FFFFFF',
+                align: 'right',
+                format: '{point.y:.1f}', // one decimal
+                y: 10, // 10 pixels down from the top
+                style: {
+                    fontSize: '13px',
+                    fontFamily: 'Verdana, sans-serif'
+                }
+            }
+        }]
+    });
+  });
+</script>
+
+<script>
+  /* Formatting function for row details - modify as you need */
+function format ( d ) {
+    // `d` is the original data object for the row
+    console.log(d[0])
+    var transactions = JSON.parse('{{ transaction_js | safe }}')
+
+    var stock = JSON.parse('{{ stock_js | safe }}')
+    
+    staticTemplate = '<h6>Transactions</h6>' +
+          '<div class="table-responsive">' +
+            '<div class="dataTables_wrapper no-footer" >' +
+              '<table id="transactions_table" class="table table-striped table-hover nowrap dt-responsive">' +
+                '<thead>' +
+                  '<tr>' + 
+                    '<th>symbol</th><th>purchase date</th><th>name</th>' +
+                    '<th>transaction type</th><th>quantity</th>' +
+                    '<th>purchase cost</th><th>commissions</th>' +
+                    '<th>fees</th><th>net value</th>' +
+                  '</tr>' +
+                '</thead>' +
+                '<tbody>' 
+    
+    dynamicTemplate = ''
+
+    transactions.forEach(transaction => {
+      // console.log(transaction['fields']['symbol'])
+      dynamicTemplate += '<tr>' 
+        // console.log(s['fields']['symbol'])
+        if (transaction['fields']['symbol'] == d[0]) {
+          dynamicTemplate += '<td>' +  transaction['fields']['symbol']  + '</td>'  
+          dynamicTemplate += '<td>' +  transaction['fields']['purchase_date'] + '</td>'                        
+          dynamicTemplate += '<td><label class="badge badge-success">' + transaction['fields']['transaction_type'] + '</label></td>' 
+          dynamicTemplate += '<td>' +  transaction['fields']['quantity'] + '</td>'  
+          dynamicTemplate += '<td>' +  transaction['fields']['purchase_cost'] + '</td>'  
+          dynamicTemplate += '<td>' +  transaction['fields']['commissions'] + '</td>'  
+          dynamicTemplate += '<td>' +  transaction['fields']['fees'] + '</td>'  
+          dynamicTemplate += '<td>' +  12 + '</td>'  
+          dynamicTemplate += '<td>' +  12 + '</td>'  
         }
-    }]
-});
+      dynamicTemplate += '</tr>' 
+    });
+
+    return staticTemplate + dynamicTemplate +
+                '</tbody>' +
+              '</table>' + 
+            '</div>' +
+          '</div>';
+}
+
+  var collapsedGroups = {};
+  var tableS = $('#stockdetail_table').DataTable({
+        bAutoWidth: false,
+        responsive: true,
+        colReorder: true,
+        stateSave:  false,
+        paging: true,
+        autoWidth: true,
+        select: {
+            style: 'single'
+        },
+        columnDefs: [
+          {"className": "dt-center", 
+          "targets": "_all"}
+        ],
+        order: [[ 0, "desc" ]],
+
+        rowGroup: {
+          dataSrc: 0,
+          startRender: function ( rows, group ) {
+            var collapsed = !!collapsedGroups[group];
+
+            rows.nodes().each(function (r) {
+              r.style.display = collapsed ? 'none' : '';
+            });
+
+            return $('<tr/>')
+              .append('<td colspan="27" align="left">' + group + ' (' + rows.count() + ')</td>')
+              .attr('data-name', group)
+              .toggleClass('collapsed', collapsed);
+          },
+        },
+        
+      })
+
+      $('#stockdetail_table tbody tr.group-start').each(function() {
+                var name = $(this).data('name');
+                collapsedGroups[name] = !collapsedGroups[name];
+      });
+      tableS.draw(false);
+
+      $('#stockdetail_table tbody').on('click', 'tr.group-start', function () {
+                var name = $(this).data('name');
+                chart_symbol = name
+                collapsedGroups[name] = !collapsedGroups[name];     
+
+                tableS.draw(false);
+      }); 
+
+      // Add event listener for opening and closing details
+      $('#stockdetail_table tbody').on('click', 'td.dt-center', function () {
+          var tr = $(this).closest('tr');
+          var row = tableS.row( tr );
+          if ( row.child.isShown() ) {
+              // This row is already open - close it
+              row.child.hide();
+              tr.removeClass('shown');
+          }
+          else {
+              // Open this row
+              row.child( format(row.data()) ).show();
+              tr.addClass('shown');
+          }
+      } );
+  
 </script>
 
 {% endblock %}

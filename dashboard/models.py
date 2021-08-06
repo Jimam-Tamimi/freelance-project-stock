@@ -227,9 +227,16 @@ class Stock(models.Model):
     quantity = models.IntegerField('Shares', null=True, default=0)
     portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE, related_name='stocks')
 
+    # declares a field to display on the Django admin or anytime 
+    # you want string representation of the entire object; must be unique
+    def __str__(self):
+        return self.symbol
     
+    class Meta:
+        '''The ForeignKey i.e. portfolio and symbol name must be unique'''
+        unique_together = ('symbol', 'portfolio')
+        # ordering = ['-name']
     
-
 class StockDetail(models.Model):
     """
     A StockDetail table for all users.
@@ -336,11 +343,11 @@ class Transaction(models.Model):
     quantity = models.IntegerField('Shares', null=True, default=0)
     purchase_date = models.DateField('Purchase Date', auto_now_add=True, auto_now=False, null=True)
     regularMarketPrice = models.DecimalField('Buy Price', null=True, default=0, decimal_places=2, max_digits=15)
-    adjusted_buy_price = models.DecimalField('Adjusted Buy Price', null=True, default=0, decimal_places=2, max_digits=15)
     purchase_cost = models.DecimalField('Purchase Cost', null=True, default=0, decimal_places=2, max_digits=15)
     comments = models.TextField('Comments', max_length=1000, blank=True, null=True)
     commissions = models.DecimalField('Commissions', null=True, default=0, decimal_places=2, max_digits=15)
     fees = models.DecimalField('Fees', null=True, default=0, decimal_places=2, max_digits=15)
+    adjusted_buy_price = models.DecimalField('Adjusted Buy Price', null=True, default=0, decimal_places=2, max_digits=15)
     update_cash_balance = models.BooleanField('Update Cash', default=True)
     # comments = RichTextField( blank=True, null=True)
     transaction_type = models.CharField('Transaction Type', max_length=10, choices = TRANSACTION_TYPE_CHOICES)
@@ -348,9 +355,7 @@ class Transaction(models.Model):
     # Transactions will be deleted, if Portfolio is deleted
     portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE, related_name='transactions')    
     
-    
-    
-    
+
     # calculations
     portfolio_percentage = models.DecimalField(null=True, default=0, decimal_places=2, max_digits=15)
     days_held = models.IntegerField(null=True, default=0)

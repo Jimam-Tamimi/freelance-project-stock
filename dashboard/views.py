@@ -8,7 +8,7 @@ from . forms import *
 from . serializers import *
 
 import time
-
+from django.core import serializers
     
 # Login URL is provided in SETTINGS.py
 @login_required()
@@ -32,7 +32,10 @@ def portfolioView(request, pk):
     # stocks_list = portfolio.stocks.filter()
     
     transaction_list = portfolio.transactions.filter().order_by('-created')
-
+    
+    transaction_js = serializers.serialize("json", portfolio.transactions.filter().order_by('-created'))
+    stock_js = serializers.serialize("json", portfolio.stocks.all())
+    
     # for stock in stocks_list:
     #     start_time = time.time()        
     #     stock.update_fields()
@@ -61,6 +64,8 @@ def portfolioView(request, pk):
     context = {
                 'portfolio': serializer.data, 
                 'transactions': transaction_list,
+                'transaction_js': transaction_js,
+                'stock_js': stock_js,
                 'stock': stockSerializer.data,
                 'form': transaction, 
                 'modalPortfolioForm': modalPortfolioForm,

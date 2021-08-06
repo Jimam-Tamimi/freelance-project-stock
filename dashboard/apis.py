@@ -372,7 +372,7 @@ class TransactionsList(generics.ListCreateAPIView):
         # current_transaction = portfolio.transactions.filter(symbol=symbol, quantity__gt = 0).order_by('-created').first()
         
         # Get the held stock if it already exists in the portfolio. Otherwise held_stock is None
-        held_stock = Stock.objects.filter(symbol=symbol).first()
+        held_stock = Stock.objects.filter(symbol=symbol, portfolio=portfolio).first()
 
 
         if transaction_type == 'BUY':
@@ -396,7 +396,7 @@ class TransactionsList(generics.ListCreateAPIView):
                     held_stock.save()
                     
             else:  # ticker doesn't exist in portfolio, create new Stock
-      
+                
                 held_stock = Stock(
                     symbol= symbol,
                     quantity = requested_quantity,
@@ -405,11 +405,17 @@ class TransactionsList(generics.ListCreateAPIView):
                 held_stock.save()
                 print('New Stock Added in Prtfolio')
                 
-                new_stock = StockDetail(
-                    symbol= symbol,
-                )
-                new_stock.save()
-                print('New Stock Added in Details')
+                
+                # check if ticker exists in global stock  create new Stock
+                global_stock = StockDetail.objects.filter(symbol=symbol).first()
+                if global_stock:
+                    pass
+                else:
+                    new_stock = StockDetail(
+                        symbol= symbol,
+                    )
+                    new_stock.save()
+                    print('New Stock Added in Details')
             
             portfolio.cash -= transaction_amount
             portfolio.save()   
@@ -420,17 +426,18 @@ class TransactionsList(generics.ListCreateAPIView):
         elif transaction_type == 'SELL':
             # If you hold more units than you want to sell, proceed.
             # transactions = Transaction.objects.filter(symbol=symbol)
-            print('SELL')
-            print(held_stock)
-            print(held_stock.id)
-            print(held_stock.quantity)
-            print(requested_quantity)
-            print(portfolio.cash)     
+            # print('SELL')
+            # print(held_stock)
+            # print(held_stock.id)
+            # print(held_stock.quantity)
+            # print(requested_quantity)
+            # print(portfolio.cash)     
                
             if held_stock and held_stock.quantity >= requested_quantity:
-                
+
                 held_stock.quantity -= requested_quantity
-                if held_stock.quantity == 0:                    
+                if held_stock.quantity == 0:  
+                    print('Deleting stock instance')                  
                     held_stock.delete()
                     held_stock.save()
                 else:
@@ -439,9 +446,9 @@ class TransactionsList(generics.ListCreateAPIView):
                 portfolio.cash += transaction_amount
                 portfolio.save()
             
-            print(held_stock.quantity)
-            print(requested_quantity)
-            print(portfolio.cash)           
+            # print(held_stock.quantity)
+            # print(requested_quantity)
+            # print(portfolio.cash)           
             print('Stock SOLD, now saving details')
         
             
