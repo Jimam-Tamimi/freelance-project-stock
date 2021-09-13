@@ -6,72 +6,73 @@
     <!-- XDSoft DateTimePicker -->
   <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" /> -->
 
-  <style>
+<style>
     td.details-control {
-    background: url('../resources/details_open.png') no-repeat center center;
+      background: url('../resources/details_open.png') no-repeat center center;
+      cursor: pointer;
+    }
+    tr.shown td.details-control {
+        background: url('../resources/details_close.png') no-repeat center center;
+    }
+
+
+
+    .bootstrap-autocomplete {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      z-index: 1000;
+      display: none;
+      float: left;
+      min-width: 160px;
+      padding: 5px 0;
+      margin: 2px 0 0;
+      list-style: none;
+      font-size: 14px;
+      text-align: left;
+      background-color: #ffffff;
+      border: 1px solid #cccccc;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      border-radius: 4px;
+      -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+      background-clip: padding-box;
+  }
+
+  .bootstrap-autocomplete > li > a {
+    display: block;
+    padding: 3px 20px;
+    clear: both;
+    font-weight: normal;
+    line-height: 1.42857143;
+    color: #333333;
+    white-space: nowrap;
+  }
+
+  .li-state-hover,
+  .li-state-active,
+  .li-state-focus {
+    text-decoration: none;
+    color: #262626;
+    background-color: #f5f5f5;
     cursor: pointer;
-}
-tr.shown td.details-control {
-    background: url('../resources/details_close.png') no-repeat center center;
-}
+  }
 
-
-  .bootstrap-autocomplete {
+  .li-helper-hidden-accessible {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
     position: absolute;
-    top: 100%;
-    left: 0;
-    z-index: 1000;
-    display: none;
-    float: left;
-    min-width: 160px;
-    padding: 5px 0;
-    margin: 2px 0 0;
-    list-style: none;
-    font-size: 14px;
-    text-align: left;
-    background-color: #ffffff;
-    border: 1px solid #cccccc;
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    border-radius: 4px;
-    -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-    background-clip: padding-box;
-}
+    width: 1px;
+  }
 
-.bootstrap-autocomplete > li > a {
-  display: block;
-  padding: 3px 20px;
-  clear: both;
-  font-weight: normal;
-  line-height: 1.42857143;
-  color: #333333;
-  white-space: nowrap;
-}
-
-.li-state-hover,
-.li-state-active,
-.li-state-focus {
-  text-decoration: none;
-  color: #262626;
-  background-color: #f5f5f5;
-  cursor: pointer;
-}
-
-.li-helper-hidden-accessible {
-  border: 0;
-  clip: rect(0 0 0 0);
-  height: 1px;
-  margin: -1px;
-  overflow: hidden;
-  padding: 0;
-  position: absolute;
-  width: 1px;
-}
-
-#container {
-	max-height: 800px;
-	min-height: 75vh;
-}
+  #container {
+    max-height: 800px;
+    min-height: 75vh;
+  }
 
 
 
@@ -114,10 +115,13 @@ tr.shown td.details-control {
     } 
 
 
-  </style>
+</style>
 
 <link rel="stylesheet" type="text/css" href="https://code.highcharts.com/css/stocktools/gui.css">
 <link rel="stylesheet" type="text/css" href="https://code.highcharts.com/css/annotations/popup.css">
+
+
+
 
 
   
@@ -125,155 +129,298 @@ tr.shown td.details-control {
 
 {% block portfoliodetail %}
 <h2 class="az-content-title tx-24 mg-b-5 mg-b-lg-8">{{ portfolio.name }}</h2> 
-<p class="mg-b-0"><h6 id="portfolio_id">{{ portfolio.id }}</h6></p>
+<p class="mg-b-0"><h6 id="portfolio_id" hidden>{{ portfolio.id }}</h6></p>
+<p class="mg-b-0"><h6 id="portfolio_default_commission" hidden>{{ portfolio.default_commission }}</h6></p>
 
 {% endblock %}
             
 
 {% block content %}
 
-<div class="row row-sm">
-  
-  <div class="col-sm-6 col-lg-12 col-xl-3 mg-t-20 mg-xl-t-0">
-    <div class="d-lg-flex d-xl-block">
-      <div class="card wd-lg-50p wd-xl-auto">
-        <div class="card-header">
-          <h6 class="card-title tx-14 mg-b-0">Cash</h6>
-        </div><!-- card-header -->
-        <div class="card-body">
-          <h3 class="tx-bold tx-inverse lh--5 mg-b-15">{{ portfolio.cash }} <span class="tx-base tx-normal tx-gray-600">INR. </span></h3>
-        </div><!-- card-body -->
-      </div><!-- card -->
-       
-    </div>
-  </div><!-- col-3 -->
-  <div class="col-sm-6 col-lg-12 col-xl-3 mg-t-20 mg-xl-t-0">
-    <div class="d-lg-flex d-xl-block">
-      <div class="card wd-lg-50p wd-xl-auto">
-        <div class="card-header">
-          <h6 class="card-title tx-14 mg-b-0">Overall return</h6>
-        </div><!-- card-header -->
-        <div class="card-body">
-          <h3 class="tx-bold tx-inverse lh--5 mg-b-15">+$0.00 <span class="tx-base tx-normal tx-gray-600">/ Goal: 8m:0s</span></h3>
-        </div><!-- card-body -->
-      </div><!-- card -->
-       
-    </div>
-  </div><!-- col-3 -->
-  <div class="col-sm-6 col-lg-12 col-xl-3 mg-t-20 mg-xl-t-0">
-    <div class="d-lg-flex d-xl-block">
-      <div class="card wd-lg-50p wd-xl-auto">
-        <div class="card-header">
-          <h6 class="card-title tx-14 mg-b-0">Market value</h6>
-        </div><!-- card-header -->
-        <div class="card-body">
-          <h3 class="tx-bold tx-inverse lh--5 mg-b-15">$15,126,369.20 <span class="tx-base tx-normal tx-gray-600">/ Goal: 8m:0s</span></h3>
-        </div><!-- card-body -->
-      </div><!-- card -->
-       
-    </div>
-  </div><!-- col-3 -->
-  <div class="col-sm-6 col-lg-12 col-xl-3 mg-t-20 mg-xl-t-0">
-    <div class="d-lg-flex d-xl-block">
-      <div class="card wd-lg-50p wd-xl-auto">
-        <div class="card-header">
-          <h6 class="card-title tx-14 mg-b-0">Portfolio cost</h6>
-        </div><!-- card-header -->
-        <div class="card-body">
-          <h3 class="tx-bold tx-inverse lh--5 mg-b-15">$15,126,369.20 <span class="tx-base tx-normal tx-gray-600">/ Goal: 8m:0s</span></h3>
-        </div><!-- card-body -->
-      </div><!-- card -->
-       
-    </div>
-  </div><!-- col-3 -->
-  
-  
-</div>
 
-<hr/>
-<button class="nav-link" data-toggle="modal" data-target="#modalTransaction" href>Buy/Sell</button>
 
   <div class="card bd-0">
     <div class="card-header bg-gray-400 bd-b-0-f pd-b-0">
-      <nav class="nav nav-tabs">        
-        <a class="nav-link active show" data-toggle="tab" href="#tabContTransactions">Transactions</a>
-        <a class="nav-link" data-toggle="tab" href="#tabContStockDetails">Stock Details</a>
-        <a class="nav-link" data-toggle="tab" href="#tabContHoldings">Holdings</a>
-        <a class="nav-link" data-toggle="tab" href="#tabContProfitLoss">ProfitLoss</a>
-        <a class="nav-link" data-toggle="tab" href="#tabContPortfolioValue">Portfolio Value</a>
-        <a class="nav-link" data-toggle="tab" href="#tabContNAV">NAV</a>
-        <a class="nav-link" data-toggle="tab" href="#tabContSectoralComposition">Sectoral Composition</a>
+    
+      <nav class="nav">  
+        <a class="nav-link active show" data-toggle="tab" href="#tabContSummary">Summary</a>  
+        <a class="nav-link" data-toggle="tab" href="#tabContFundamentals">Details</a>    
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">Performance and Reports</a>
+          <ul class="dropdown-menu">            
+            <li><a class="nav-link" data-toggle="tab" href="#tabContTransactions">Transactions History</a> </li>
+            <li><a class="nav-link" data-toggle="tab" href="#tabContPortfolioValue">Portfolio Value</a></li>
+            <li><a class="nav-link" data-toggle="tab" href="#tabContPortfolioValue">Number Of Stocks</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="nav-link" data-toggle="tab" href="#tabContNAV">NAV</a></li>
+            <li><a class="nav-link" data-toggle="tab" href="#tabContSectoralComposition">Sectoral Composition</a></li>
+          </ul>
+        </li>
+
+        <button class="btn btn-secondary btn-with-icon" data-toggle="modal" data-target="#modalTransaction" href><i class="typcn typcn-edit"></i>Buy/Sell</button>
+        
       </nav>
+
+
     </div><!-- card-header -->
     <div class="card-body bd bd-t-0 tab-content">
-      <div id="tabContTransactions" class="tab-pane active show">
-        <div>
-          <div class="table-responsive">
-            <div class="dataTables_wrapper no-footer" >
-              <table id="transaction_table" class="table table-striped table-hover nowrap dt-responsive">
-                <thead>
-                  <tr>
-                    <th>symbol</th>
-                    <th>purchase date</th>                  
-                    <th>name</th>
-                    <th>transaction type</th>                  
-                    <th>quantity</th>
-                    <th>purchase cost</th>
-                    <th>commissions</th>
-                    <th>fees</th>
-                    <th>net value</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  
-                  {% for transaction in transactions %}
-                    <tr>
-                      {% for s in stock %}
-                        {% if transaction.symbol in s.symbol %}
-                          <td>{{ transaction.symbol }}</td>  
-                          <td>{{ transaction.purchase_date }}</td>                        
-                          <td>{{ s.longName }}</td>  
-                          {% if 'BUY' in transaction.transaction_type %}
-                            <td><label class="badge badge-success">{{ transaction.transaction_type }}</label></td>
-                          {% endif %}    
-                          {% if 'SELL' in transaction.transaction_type %}
-                            <td><label class="badge badge-danger">{{ transaction.transaction_type }}</label></td>
-                          {% endif %}  
-                          <td>{{ transaction.quantity }}</td>
-                          <td>{{ transaction.purchase_cost }}</td>
-                          <td>{{ transaction.commissions }}</td>
-                          <td>{{ transaction.fees }}</td>
-                          <td>{{ 12 }}</td>                        
-                        {% endif %}      
-                      {% endfor %}
-                      
-                    </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div>
-          </div>
+      <div id="tabContSummary" class="tab-pane active show">
+        <table id="summary_table" class="nowrap cell-border">
+          <thead>
+            <tr>
+              
+              <th>Symbol</th>  
+              <th>Name</th>
+              <th>Quantity</th>
+              <th>Price</th>
+          
+              <th>Adjusted Buy Price</th>                  
+              <th>Current Value</th>
+              <th>Profit</th>
+              <th>Profit %</th>
+              <th>Portfolio %</th>
 
-          <div class="row m-3">
-            <div class="col">
-              <div class="container-fluid">        
-                <div id="container" class="chart"></div>
-              </div>
-            </div>
-          </div>
-        </div>
+              
+              <th>Day Change</th>
+              <th>Day Change %</th>
+              <th>Day Lo</th>
+              <th>Day Hi</th>
+              <th>52 Week Lo</th>
+              <th>52 Week Hi</th>
+              <th>Volume</th>
+              <th>Volume Average 10 days</th>
+              <th>Volume Average 3M</th>
+              <th>MktCap</th>
+              <th>EPS</th>
+              <th>P/E</th>
+              <th>P/B</th>
+              <th>EV/EBITDA</th>
+              <th>Dividend Yield</th>
+              <th>D/E</th>
+              <th>ROE</th>
+              <th>ROA</th>
+              <th>Revenues</th>
+              <th>EBITDA</th>
+              <th>Sector</th>
+              <th>Industry</th>
+              <th>Website</th>
+              
+              <th>symbol</th>
+            </tr>
+          </thead> 
+          <tbody>  
+            {% for transaction in transactions %}
+              <tr>
+                {% for s in stock %}
+                  {% if transaction.symbol in s.symbol %}
+                    
+                    <td>{{ transaction.date }}</td> 
+                    <td>{{ s.longName }}</td>  
+                    <td>{{ transaction.quantity }}</td>                    
+                    <td>{{ s.regularMarketPrice }}</td>
+
+
+                    <td>{{ transaction.cost }}</td>
+
+                    {% if transaction.current_value > 0 %}
+                      <td class="tx-success">{{ transaction.current_value }}</td>
+                    {% else %}
+                      <td class="tx-danger">{{ transaction.current_value }}</td>
+                    {% endif %}
+
+                    {% if transaction.profit > 0 %}
+                      <td class="tx-success">{{ transaction.profit }}</td>
+                    {% else %}
+                      <td class="tx-danger">{{ transaction.profit }}</td>
+                    {% endif %}
+
+                    {% if transaction.profit_percentage > 0 %}
+                      <td class="tx-success">{{ transaction.profit_percentage }}</td>
+                    {% else %}
+                      <td class="tx-danger">{{ transaction.profit_percentage }}</td>
+                    {% endif %}
+
+                    {% if transaction.portfolio_percentage > 0 %}
+                      <td class="tx-success">{{ transaction.portfolio_percentage }}</td>
+                    {% else %}
+                      <td class="tx-danger">{{ transaction.portfolio_percentage }}</td>
+                    {% endif %}
+
+
+                    <td>{{ s.regularMarketChange }}</td>
+                    <td>{{ s.regularMarketChangePercent }}</td>
+                    <td>{{ s.regularMarketDayLow }}</td>
+                    <td>{{ s.regularMarketDayHigh }}</td>
+                    <td>{{ s.fiftyTwoWeekLow }}</td>
+                    <td>{{ s.fiftyTwoWeekHigh }}</td>
+                    <td>{{ s.regularMarketVolume }}</td>
+                    <td>{{ s.averageDailyVolume10Day }}</td>
+                    <td>{{ s.averageDailyVolume3Month }}</td>
+                    <td>{{ s.marketCap }}</td>
+                    <td>{{ s.epsTrailingTwelveMonths }}</td>
+                    <td>{{ s.trailingPE }}</td>
+                    <td>{{ s.priceToBook }}</td>
+                    <td>{{ s.enterpriseToEbitda }}</td>
+                    <td>{{ s.trailingAnnualDividendYield }}</td>
+                    <td>{{ s.debtToEquity }}</td>
+                    <td>{{ s.returnOnEquity }}</td>
+                    <td>{{ s.returnOnAssets }}</td>
+                    <td>{{ s.totalRevenue }}</td>
+                    <td>{{ s.ebitda }}</td>
+                    <td>{{ s.sector }}</td>
+                    <td>{{ s.industry }}</td>
+                    <td>{{ s.website }}</td>
+                     
+                    <td>{{ transaction.symbol }}</td>  
+
+                  {% endif %}      
+                {% endfor %}  
+                
+              </tr>
+            {% endfor %}
+            
+            
+
+
+                            
+          </tbody>               
+        </table>
       </div><!-- tab-pane -->
-      <div id="tabContHoldings" class="tab-pane">
+      <div id="tabContFundamentals" class="tab-pane">
+        
+        <table id="fundamentals_table" class="nowrap cell-border">
+          <thead>
+            <tr>
+              
+              <th>Symbol</th>  
+              <th>Name</th>
+              <th>Quantity</th>
+              <th>Price</th>
+          
+              <th>Adjusted Buy Price</th>                  
+              <th>Current Value</th>
+              <th>Profit</th>
+              <th>Profit %</th>
+              <th>Portfolio %</th>
+
+              
+              <th>Day Change</th>
+              <th>Day Change %</th>
+              <th>Day Lo</th>
+              <th>Day Hi</th>
+              <th>52 Week Lo</th>
+              <th>52 Week Hi</th>
+              <th>Volume</th>
+              <th>Volume Average 10 days</th>
+              <th>Volume Average 3M</th>
+              <th>MktCap</th>
+              <th>EPS</th>
+              <th>P/E</th>
+              <th>P/B</th>
+              <th>EV/EBITDA</th>
+              <th>Dividend Yield</th>
+              <th>D/E</th>
+              <th>ROE</th>
+              <th>ROA</th>
+              <th>Revenues</th>
+              <th>EBITDA</th>
+              <th>Sector</th>
+              <th>Industry</th>
+              <th>Website</th>
+              
+              <th>symbol</th>
+            </tr>
+          </thead> 
+          <tbody>  
+            {% for transaction in transactions %}
+              <tr>
+                {% for s in stock %}
+                  {% if transaction.symbol in s.symbol %}
+                    
+                    <td>{{ transaction.date }}</td> 
+                    <td>{{ s.longName }}</td>  
+                    <td>{{ transaction.quantity }}</td>                    
+                    <td>{{ s.regularMarketPrice }}</td>
+
+
+                    <td>{{ transaction.cost }}</td>
+
+                    {% if transaction.current_value > 0 %}
+                      <td class="tx-success">{{ transaction.current_value }}</td>
+                    {% else %}
+                      <td class="tx-danger">{{ transaction.current_value }}</td>
+                    {% endif %}
+
+                    {% if transaction.profit > 0 %}
+                      <td class="tx-success">{{ transaction.profit }}</td>
+                    {% else %}
+                      <td class="tx-danger">{{ transaction.profit }}</td>
+                    {% endif %}
+
+                    {% if transaction.profit_percentage > 0 %}
+                      <td class="tx-success">{{ transaction.profit_percentage }}</td>
+                    {% else %}
+                      <td class="tx-danger">{{ transaction.profit_percentage }}</td>
+                    {% endif %}
+
+                    {% if transaction.portfolio_percentage > 0 %}
+                      <td class="tx-success">{{ transaction.portfolio_percentage }}</td>
+                    {% else %}
+                      <td class="tx-danger">{{ transaction.portfolio_percentage }}</td>
+                    {% endif %}
+
+
+                    <td>{{ s.regularMarketChange }}</td>
+                    <td>{{ s.regularMarketChangePercent }}</td>
+                    <td>{{ s.regularMarketDayLow }}</td>
+                    <td>{{ s.regularMarketDayHigh }}</td>
+                    <td>{{ s.fiftyTwoWeekLow }}</td>
+                    <td>{{ s.fiftyTwoWeekHigh }}</td>
+                    <td>{{ s.regularMarketVolume }}</td>
+                    <td>{{ s.averageDailyVolume10Day }}</td>
+                    <td>{{ s.averageDailyVolume3Month }}</td>
+                    <td>{{ s.marketCap }}</td>
+                    <td>{{ s.epsTrailingTwelveMonths }}</td>
+                    <td>{{ s.trailingPE }}</td>
+                    <td>{{ s.priceToBook }}</td>
+                    <td>{{ s.enterpriseToEbitda }}</td>
+                    <td>{{ s.trailingAnnualDividendYield }}</td>
+                    <td>{{ s.debtToEquity }}</td>
+                    <td>{{ s.returnOnEquity }}</td>
+                    <td>{{ s.returnOnAssets }}</td>
+                    <td>{{ s.totalRevenue }}</td>
+                    <td>{{ s.ebitda }}</td>
+                    <td>{{ s.sector }}</td>
+                    <td>{{ s.industry }}</td>
+                    <td>{{ s.website }}</td>
+                     
+                    <td>{{ transaction.symbol }}</td>  
+
+                  {% endif %}      
+                {% endfor %}  
+                
+              </tr>
+            {% endfor %}
+            
+            
+
+
+                            
+          </tbody>               
+        </table>
+      </div><!-- tab-pane -->
+      <div id="tabCont" class="tab-pane">
         <div>
-          <div class="table-responsive">
+          <div class="table-responsive-sm">
             <div class="dataTables_wrapper no-footer">
-              <table id="holding_table" class="table table-striped table-hover wrap dt-responsive">
+              <table id="Fundamentals_table" class="table table-striped table-hover wrap dt-responsive">
                 <thead>
                   <tr>
                     <th>symbol</th>
                     <th>name</th>
                     <th>quantity</th>
-                    <th>regularMarketPrice</th>
+                    <th>price</th>
                     <th>Day Change</th>
                     <th>Day Change %</th>
                     <th>Day Lo</th>
@@ -351,6 +498,54 @@ tr.shown td.details-control {
           
         </div>
       </div><!-- tab-pane -->
+      <div id="tabContTransactions" class="tab-pane">
+          <div class="table-responsive">
+            <div class="dataTables_wrapper no-footer" >
+              <table id="transaction_table" class="table table-striped table-hover nowrap dt-responsive">
+                <thead>
+                  <tr>
+                    <th>symbol</th>
+                    <th>date</th>                  
+                    <th>name</th>
+                    <th>transaction type</th>                  
+                    <th>quantity</th>
+                    <th>cost</th>
+                    <th>commissions</th>
+                    <th>fees</th>
+                    <th>net value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  
+                  {% for transaction in transactions %}
+                    <tr>
+                      {% for s in stock %}
+                        {% if transaction.symbol in s.symbol %}
+                          <td>{{ transaction.symbol }}</td>  
+                          <td>{{ transaction.date }}</td>                        
+                          <td>{{ s.longName }}</td>  
+                          {% if 'BUY' in transaction.transaction_type %}
+                            <td><label class="badge badge-success">{{ transaction.transaction_type }}</label></td>
+                          {% endif %}    
+                          {% if 'SELL' in transaction.transaction_type %}
+                            <td><label class="badge badge-danger">{{ transaction.transaction_type }}</label></td>
+                          {% endif %}  
+                          <td>{{ transaction.quantity }}</td>
+                          <td>{{ transaction.cost }}</td>
+                          <td>{{ transaction.commissions }}</td>
+                          <td>{{ transaction.fees }}</td>
+                          <td>{{ 12 }}</td>                        
+                        {% endif %}      
+                      {% endfor %}
+                      
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+        </div>
+      </div><!-- tab-pane -->
+      
       <div id="tabContProfitLoss" class="tab-pane">
         <div class="container-fluid">
           <div class="table-responsive">
@@ -359,10 +554,10 @@ tr.shown td.details-control {
                 <thead>
                   <tr>
                     <th>symbol</th>
-                    <th>purchase date</th>                  
+                    <th>date</th>                  
                     <th>name</th>
                     <th>quantity</th>
-                    <th>purchase cost</th>
+                    <th>cost</th>
                     <th>selling cost</th>
                     <th>net profit</th>
                     <th>net profit %</th>
@@ -376,11 +571,11 @@ tr.shown td.details-control {
                       {% for s in stock %}
                         {% if transaction.symbol in s.symbol %}
                           <td>{{ transaction.symbol }}</td>  
-                          <td>{{ transaction.purchase_date }}</td>                        
+                          <td>{{ transaction.date }}</td>                        
                           <td>{{ s.longName }}</td>                             
                           <td>{{ transaction.quantity }}</td>
-                          <td>{{ transaction.purchase_cost }}</td>
-                          <td>{{ transaction.purchase_cost }}</td>
+                          <td>{{ transaction.cost }}</td>
+                          <td>{{ transaction.cost }}</td>
                           <td>10</td>
                           <td>11</td>
                           <td>12</td>                        
@@ -398,88 +593,237 @@ tr.shown td.details-control {
         </div>
       </div><!-- tab-pane -->
       <div id="tabContPortfolioValue" class="tab-pane">
-
+        <table id="fundamentals_table" class="nowrap">
+          <thead>
+            <tr>
+              <th>symbol</th>
+              <th>name</th>
+              <th>quantity</th>
+              <th>price</th>
+              <th>Day Change</th>
+              <th>Day Change %</th>
+              <th>Day Lo</th>
+              <th>Day Hi</th>
+              <th>52 Week Lo</th>
+              <th>52 Week Hi</th>
+              <th>Volume</th>
+              <th>Volume Average 10 days</th>
+              <th>Volume Average 3M</th>
+              <th>MktCap</th>
+              <th>EPS</th>
+              <th>P/E</th>
+              <th>P/B</th>
+              <th>EV/EBITDA</th>
+              <th>Dividend Yield</th>
+              <th>D/E</th>
+              <th>ROE</th>
+              <th>ROA</th>
+              <th>Revenues</th>
+              <th>EBITDA</th>
+              <th>Sector</th>
+              <th>Industry</th>
+              <th>Website</th>
+            </tr>
+          </thead> 
+          <tbody>                                  
+            {% for portfolioStock in portfolio.stocks %}
+              {% for s in stock %}
+                {% if portfolioStock.symbol in s.symbol %}
+                  <tr>
+                  <td>{{ s.symbol }}</td>    
+                  <td>{{ s.longName }}</td>                    
+                  <td>{{ portfolioStock.quantity }}</td>
+                  <td>{{ s.regularMarketPrice }}</td>
+                  <td>{{ s.regularMarketChange }}</td>
+                  <td>{{ s.regularMarketChangePercent }}</td>
+                  <td>{{ s.regularMarketDayLow }}</td>
+                  <td>{{ s.regularMarketDayHigh }}</td>
+                  <td>{{ s.fiftyTwoWeekLow }}</td>
+                  <td>{{ s.fiftyTwoWeekHigh }}</td>
+                  <td>{{ s.regularMarketVolume }}</td>
+                  <td>{{ s.averageDailyVolume10Day }}</td>
+                  <td>{{ s.averageDailyVolume3Month }}</td>
+                  <td>{{ s.marketCap }}</td>
+                  <td>{{ s.epsTrailingTwelveMonths }}</td>
+                  <td>{{ s.trailingPE }}</td>
+                  <td>{{ s.priceToBook }}</td>
+                  <td>{{ s.enterpriseToEbitda }}</td>
+                  <td>{{ s.trailingAnnualDividendYield }}</td>
+                  <td>{{ s.debtToEquity }}</td>
+                  <td>{{ s.returnOnEquity }}</td>
+                  <td>{{ s.returnOnAssets }}</td>
+                  <td>{{ s.totalRevenue }}</td>
+                  <td>{{ s.ebitda }}</td>
+                  <td>{{ s.sector }}</td>
+                  <td>{{ s.industry }}</td>
+                  <td>{{ s.website }}</td>
+                </tr>
+                {% endif %}
+              {% endfor %}
+            {% endfor %}                  
+          </tbody>               
+        </table>
       </div><!-- tab-pane -->
       <div id="tabContNAV" class="tab-pane">
-
-      </div><!-- tab-pane -->
-      <div id="tabContStockDetails" class="tab-pane">
-        <div>
-          <div class="table-responsive">
-            <div class="dataTables_wrapper no-footer">
-              <table id="stockdetail_table" class="table table-striped table-hover wrap dt-responsive">
-                <thead>
-                  <tr>
-                    <th>symbol</th>
-                    <th>name</th>
-                    <th>quantity</th>
-                    <th>regularMarketPrice</th>
-                    <th>Day Change</th>
-                    <th>Day Change %</th>
-                    <th>Day Lo</th>
-                    <th>Day Hi</th>
-                    <th>52 Week Lo</th>
-                    <th>52 Week Hi</th>
-                    <th>Volume</th>
-                    <th>Volume Average 10 days</th>
-                    <th>Volume Average 3M</th>
-                    <th>MktCap</th>
-                    <th>EPS</th>
-                    <th>P/E</th>
-                    <th>P/B</th>
-                    <th>EV/EBITDA</th>
-                    <th>Dividend Yield</th>
-                    <th>D/E</th>
-                    <th>ROE</th>
-                    <th>ROA</th>
-                    <th>Revenues</th>
-                    <th>EBITDA</th>
-                    <th>Sector</th>
-                    <th>Industry</th>
-                    <th>Website</th>
-                  </tr>
-                </thead> 
-                <tbody>                                  
-                  {% for portfolioStock in portfolio.stocks %}
-                    {% for s in stock %}
-                      {% if portfolioStock.symbol in s.symbol %}
-                        <tr>
-                        <td>{{ s.symbol }}</td>    
-                        <td>{{ s.longName }}</td>                    
-                        <td>{{ portfolioStock.quantity }}</td>
-                        <td>{{ s.regularMarketPrice }}</td>
-                        <td>{{ s.regularMarketChange }}</td>
-                        <td>{{ s.regularMarketChangePercent }}</td>
-                        <td>{{ s.regularMarketDayLow }}</td>
-                        <td>{{ s.regularMarketDayHigh }}</td>
-                        <td>{{ s.fiftyTwoWeekLow }}</td>
-                        <td>{{ s.fiftyTwoWeekHigh }}</td>
-                        <td>{{ s.regularMarketVolume }}</td>
-                        <td>{{ s.averageDailyVolume10Day }}</td>
-                        <td>{{ s.averageDailyVolume3Month }}</td>
-                        <td>{{ s.marketCap }}</td>
-                        <td>{{ s.epsTrailingTwelveMonths }}</td>
-                        <td>{{ s.trailingPE }}</td>
-                        <td>{{ s.priceToBook }}</td>
-                        <td>{{ s.enterpriseToEbitda }}</td>
-                        <td>{{ s.trailingAnnualDividendYield }}</td>
-                        <td>{{ s.debtToEquity }}</td>
-                        <td>{{ s.returnOnEquity }}</td>
-                        <td>{{ s.returnOnAssets }}</td>
-                        <td>{{ s.totalRevenue }}</td>
-                        <td>{{ s.ebitda }}</td>
-                        <td>{{ s.sector }}</td>
-                        <td>{{ s.industry }}</td>
-                        <td>{{ s.website }}</td>
-                      </tr>
-                      {% endif %}
-                    {% endfor %}
-                  {% endfor %}                  
-                </tbody>               
-              </table>
-            </div>
-          </div>
-        </div>
+        
+        <table id="table"
+                data-toolbar="#toolbar"
+                data-search="true"
+                data-show-refresh="true"
+                data-show-toggle="true"
+                data-show-fullscreen="true"
+                data-show-columns="true"
+                data-show-columns-toggle-all="true"
+                data-detail-view="true"
+                data-show-export="true"
+                data-click-to-select="true"
+                data-detail-formatter="detailFormatter"
+                data-minimum-count-columns="2"
+                data-show-pagination-switch="true"
+                data-pagination="true"
+                data-id-field="id"
+                data-page-list="[10, 25, 50, 100, all]"
+                data-show-footer="false"
+                data-cookie="true"
+                data-cookie-id-table="saveId"
+                >
+          <thead>
+            <tr>
+              <th>Item ID</th>
+              <th>Item Name</th>
+              <th>Item Price</th>
+              <th>Item Price</th>
+              <th>Item Price</th>
+              <th>Item Price</th>
+              <th>Item Price</th>
+              <th>Item Price</th>
+              <th>Item Name</th>
+              <th>Item Price</th>
+              <th>Item Price</th>
+              <th>Item Price</th>
+              <th>Item Price</th>
+              <th>Item Price</th>
+              <th>Item Price</th>
+              <th>Item Name</th>
+              <th>Item Price</th>
+              <th>Item Price</th>
+              <th>Item Price</th>
+              <th>Item Price</th>
+              <th>Item Price</th>
+              <th>Item Price</th>
+              <th>Item Price</th>
+              <th>Item Name</th>
+              <th>Item Price</th>
+              <th>Item Price</th>
+              <th>Item Price</th>
+              <th>Item Price</th>
+              <th>Item Price</th>
+              <th>Item Price</th>
+              <th>Item Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+            </tr> 
+            <tr>
+              <td>2</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+              <td>Item 1</td>
+              <td>$1</td>
+            </tr>
+          </tbody>
+        </table>
       </div><!-- tab-pane -->
       <div id="tabContSectoralComposition" class="tab-pane">
         <figure class="highcharts-figure">
@@ -490,178 +834,140 @@ tr.shown td.details-control {
           </p>
       </figure>
       </div><!-- tab-pane -->
+
     </div><!-- card-body -->
+    
+  </div>
+
+  <div class="card-body bd bd-t-0 ">
+    <div class="col">
+      <div class="container-fluid">        
+        <div id="container" class="chart"></div>
+      </div>
+    </div>
   </div>
 
   <div class="container-fluid">
     
     <div class="modal" id="modalTransaction">
-      <div class="modal-dialog"  role="document">
+      <div class="modal-dialog modal-lg"  role="document">
         <div class="modal-content" id="modalForm">
-          <div class="modal-header">
-            <h6 class="modal-title">Buy Stock</h6>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">×</span>
-            </button>
-          </div>
-            <form id="myTransactionForm">
-              <div class="modal-body">
-                 <!-- <h6>Let's get you all setup so you can begin tracking your investments.</h6> -->
-                <!-- <p>Some Random Text.Someme Random Text.Some Random Text.Some RRandom Text.Some Random Text. </p> -->
+          <form id="myTransactionForm" action="" method="POST" enctype="application/x-www-form-urlencoded">
+            {% csrf_token %}
+            <div class="modal-header">
+              <h6 class="modal-title">Transaction Details</h6>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+              
+            <div class="modal-body">
+              
 
-                {% crispy form %}
-                <!-- {{ form|crispy }} -->
-              </div>
-              <!-- <div class="modal-footer">
-                <input type="submit" id="submit-id-submit" class="btn btn-indigo">
-              </div> -->
-            </form>
+                <div class="form-row">	                  	
+                  <div class="col">
+                      <label class="az-content-label tx-11 tx-medium tx-gray-600">Portfolio</label>
+                      <input type="text" name="Portfolio" class="form-control" value="{{ portfolio.name }}" disabled>
+                  </div>
+                  <div class="col">
+                      <label class="az-content-label tx-11 tx-medium tx-gray-600">Ticker Symbol</label>
+                      <input type="text" name="symbol" id="symbol_id" class="form-control mb-4" rows="1" placeholder="Search by ticker symbol or company name" autocomplete="off" required>
+                  </div>                                            
+                </div>  
+
+                <div class="form-row">
+
+                  <div class="col"> 
+                    <label class="az-content-label tx-11 tx-medium tx-gray-600">Date</label>                  
+                    <input type="date" name="date" id="date_id" class="form-control">
+                  </div>
+
+                  <div class="col">
+                    <label class="az-content-label tx-11 tx-medium tx-gray-600">Shares</label>
+                      <input type="number" name="shares" id="shares_id" name="Shares" class="form-control mb-4" rows="1" placeholder="0" required>
+                  </div> 
+
+                </div>
+
+                <div class="form-row">		                  
+                  <div class="col">
+                    <label class="az-content-label tx-11 tx-medium tx-gray-600">Type</label>
+                    <select class="form-control mb-4" id="type_id" name="transaction_type">
+                      <option value="BUY">Buy</option>
+                      <option value="SellShort">SellShort</option>
+                      <option value="SharesIn">SharesIn</option>
+                    </select>
+                  </div>
+    
+                  <div class="col">
+                    <label class="az-content-label tx-11 tx-medium tx-gray-600">Price</label>
+                    <div class="input-group">
+                      <input type="number" class="form-control mb-4" name="regularMarketPrice" id="price_id" step="0.01" placeholder="Price" onkeyup="setTotal()">
+                      <span class="input-group-btn">
+                        <button id="getprice_id" class="btn btn-primary" type="button"><i class="fa fa-search"></i>   Get Price</button>
+                      </span>
+                    </div>
+                  </div> 
+
+                </div> 
+                
+                <hr/>
+
+                <div class="form-row">
+                  <div class="col">
+                    <label class="az-content-label tx-11 tx-medium tx-gray-600">Commissions</label>
+                    <input type="number" id="commissions_id" name="commissions" class="form-control mb-4" rows="1" step="0.01" placeholder="0" onkeyup="setTotal()">
+                  </div>
+                  <div class="col">
+                    <label class="az-content-label tx-11 tx-medium tx-gray-600">Fees</label>
+                    <input type="number" id="fees_id" name="fees" class="form-control mb-4" rows="1" step="0.01" placeholder="0" onkeyup="setTotal()" >
+                  </div>
+                  <div class="col">
+                    <label class="az-content-label tx-11 tx-medium tx-gray-600">New Total</label>
+                    <input type="number" id="nettotal_id" name="NetTotal" class="form-control mb-4" rows="1" step="0.01" placeholder="0" disabled>
+                  </div>
+                </div>
+
+
+                
+
+                <br/>
+
+                <div class="form-row">
+                  <div class="col">
+                    <div class="ql-wrapper ql-wrapper">
+                      <label class="az-content-label tx-11 tx-medium tx-gray-600">Comments</label>
+                      <div id="quillEditorTransaction" class="ql-container ql-snow"><div class="ql-editor" data-gramm="false" contenteditable="true" spellcheck="false">
+                        <p></p>
+                      </div>
+                    </div>
+                    </div>
+                  </div>
+                </div>
+
+                <br/>
+                <div class="form-row">
+                  <div class="col">
+                      <input type="checkbox" name="update_cash_balance" id="updatecash_id" checked=""><span> Update the Cash balance</span>
+                  </div>
+                  
+                </div>
+            </div>
+
+              
+            <div class="modal-footer">              
+              <button type="button" class="btn btn-outline-light">Cancel</button>
+              <button type="submit" id="purchasestock_id" class="btn btn-indigo">Add</button>
+            </div>
+
+          </form>
         </div><!-- modal-content -->
+
       </div><!-- modal-dialog -->
     </div><!-- modal -->    
   </div>
 
-  <br/>
   
-  
-  
-
-  <hr/>
-
-  <!-- <h3>Transactions</h3>
-  <div class="row m-3">
-    <div class="col">
-      <div class="container-fluid">
-        <div class="table-responsive">
-          <div class="dataTables_wrapper no-footer" style="width:90%;">
-            <table id="transaction_table" class="table table-striped table-hover nowrap dt-responsive">
-              <thead>
-                <tr>
-                  <th>symbol</th>
-                  <th>name</th>
-                  <th>quantity</th>
-                  <th>adjusted buy price</th>
-                  <th>regularMarketPrice</th>
-                  <th>current value</th>
-                  <th>profit</th>
-                  <th>profit %</th>
-                  <th>portfolio %</th>
-
-                  <th>purchase date</th>
-                  
-                  
-                  <th>purchase cost</th>
-                  <th>commissions</th>
-                  <th>fees</th>
-                  <th>update cash balance</th>
-                  <th>transaction type</th>
-                  <th>days_held</th>
-                  <th>current_value</th>
-                  <th>Day Change</th>
-                  <th>Day Change %</th>
-                  <th>Day Lo</th>
-                  <th>Day Hi</th>
-                  <th>52 Week Lo</th>
-                  <th>52 Week Hi</th>
-                  <th>Volume</th>
-                  <th>Volume Average 10 days</th>
-                  <th>Volume Average 3M</th>
-                  <th>MktCap</th>
-                  <th>EPS</th>
-                  <th>P/E</th>
-                  <th>P/B</th>
-                  <th>EV/EBITDA</th>
-                  <th>Dividend Yield</th>
-                  <th>D/E</th>
-                  <th>ROE</th>
-                  <th>ROA</th>
-                  <th>Revenues</th>
-                  <th>EBITDA</th>
-                  <th>Sector</th>
-                  <th>Industry</th>
-                  <th>Website</th>
-                  <th>created</th>
-                  <th>modified</th>
-                </tr>
-              </thead>
-              <tbody>
-                
-                {% for transaction in transactions %}
-                  <tr>
-                    {% for s in stock %}
-                      {% if transaction.symbol in s.symbol %}
-                      
-                        <td>{{ transaction.symbol }}</td>  
-                        <td>{{ s.longName }}</td>  
-                        <td>{{ transaction.quantity }}</td>
-                        <td>{{ transaction.adjusted_buy_price }}</td>                    
-                        <td>{{ transaction.regularMarketPrice }}</td>
-
-                        <td>{{ transaction.current_value }}</td>
-                        <td>{{ transaction.profit }}</td>
-                        <td>{{ transaction.profit_percentage }}</td>
-                        <td>{{ transaction.portfolio_percentage }}</td>
-
-                        <td>{{ transaction.purchase_date }}</td>
-                        <td>{{ transaction.purchase_cost }}</td>
-                        <td>{{ transaction.commissions }}</td>
-                        <td>{{ transaction.fees }}</td>
-                        <td>{{ transaction.update_cash_balance }}</td>
-                        <td>{{ transaction.transaction_type }}</td>
-
-                        <td>{{ s.days_held }}</td>
-                        <td>{{ s.current_value }}</td>
-                        <td>{{ s.regularMarketChange }}</td>
-                        <td>{{ s.regularMarketChangePercent }}</td>
-                        <td>{{ s.regularMarketDayLow }}</td>
-                        <td>{{ s.regularMarketDayHigh }}</td>
-                        <td>{{ s.fiftyTwoWeekLow }}</td>
-                        <td>{{ s.fiftyTwoWeekHigh }}</td>
-                        <td>{{ s.regularMarketVolume }}</td>
-                        <td>{{ s.averageDailyVolume10Day }}</td>
-                        <td>{{ s.averageDailyVolume3Month }}</td>
-                        <td>{{ s.marketCap }}</td>
-                        <td>{{ s.epsTrailingTwelveMonths }}</td>
-                        <td>{{ s.trailingPE }}</td>
-                        <td>{{ s.priceToBook }}</td>
-                        <td>{{ s.enterpriseToEbitda }}</td>
-                        <td>{{ s.trailingAnnualDividendYield }}</td>
-                        <td>{{ s.debtToEquity }}</td>
-                        <td>{{ s.returnOnEquity }}</td>
-                        <td>{{ s.returnOnAssets }}</td>
-                        <td>{{ s.totalRevenue }}</td>
-                        <td>{{ s.ebitda }}</td>
-                        <td>{{ s.sector }}</td>
-                        <td>{{ s.industry }}</td>
-                        <td>{{ s.website }}</td>
-                        <td>{{ transaction.created }}</td>
-                        <td>{{ transaction.modified }}</td>  
-                      {% endif %}      
-                    {% endfor %}
-                    
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div> -->
-  
-  
-  
-
-  <!-- {{ stock }} -->
-  <!-- <input id="datetimepicker" type="text"> -->
-
-  <!-- <div id="events">
-      Event summary - new events added at the top
-  </div> -->
-
-  
-
-
 
 {% endblock %}  
 
@@ -683,9 +989,38 @@ tr.shown td.details-control {
   
   <script src="https://code.highcharts.com/modules/stock-tools.js"></script>
 
-  <script> //autoComplete
+
+<script> //Modal Transaction Show
+  $(document).on('show.bs.modal', '#modalTransaction', function (e) {
+      console.log('works');
+  });
+  $(document).on('show.bs.modal', '#modalTransaction', function (e) { 
+    var portfolioID = '{{ portfolio.id }}'
+    var URL = window.location.origin + '/api/portfolios/' + portfolioID
+
+    fetch(URL, {
+      headers:{
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+      },
+    })
+    .then(response => {      
+      return response.json() //Convert response to JSON      
+    })
+    .then(data => {
+      //Perform actions with the response data from the view      
+      console.log('GET default_commission Data: ', data.default_commission)
+      document.getElementById('commissions_id').value =  data.default_commission
+
+    })
+  });
+
+  
+</script>
+
+  <script> //autoComplete and price
     // var symbol = document.getElementById('id_symbol').textContent
-    $('#id_symbol').autoComplete({
+    $('#symbol_id').autoComplete({
         resolverSettings: {
             url: window.location.origin + '/api/suggestions/'
         }
@@ -693,9 +1028,30 @@ tr.shown td.details-control {
     });
  
     
-    $('#id_symbol').on('autocomplete.select', function (e) {
+    // $('#symbol').on('autocomplete.select', function (e) {
+    //       // var symbol = $('#id_symbol').val()
+    //       var symbol = document.getElementById('symbol').value
+
+		// 			console.log(symbol);
+    //       $.ajax({
+    //         type: "GET",
+    //         url: window.location.origin + '/api/price/',
+    //         data: { 'q' :  symbol},
+    //         success: function(response) {
+    //           // show response for success
+    //           // console.log(response)
+    //           document.getElementById('Price').value = response
+    //         },
+    //         error:function(e) {
+    //           // show response for success
+    //           console.log(e)
+    //         },
+    //       });
+		// 		});
+    
+        $('#getprice_id').on('click', function (e) {
           // var symbol = $('#id_symbol').val()
-          var symbol = document.getElementById('id_symbol').value
+          var symbol = document.getElementById('symbol_id').value
 
 					console.log(symbol);
           $.ajax({
@@ -705,7 +1061,8 @@ tr.shown td.details-control {
             success: function(response) {
               // show response for success
               // console.log(response)
-              document.getElementById('id_regularMarketPrice').value = response
+              document.getElementById('price_id').value = response
+              setTotal();
             },
             error:function(e) {
               // show response for success
@@ -713,7 +1070,6 @@ tr.shown td.details-control {
             },
           });
 				});
-    
 
 
   </script>
@@ -925,14 +1281,105 @@ tr.shown td.details-control {
   </script>
 
 
-  <script>//default_commission
-    $(function () {
-      var portfolio_default_commission = document.getElementById('portfolio_default_commission').textContent
-      document.getElementById('id_commissions').value =  portfolio_default_commission
-    });
+  <script>//date AND TOTAL
+    
+      
+      var date = new Date();
+
+      var day = date.getDate();
+      var month = date.getMonth() + 1;
+      var year = date.getFullYear();
+
+      if (month < 10) month = "0" + month;
+      if (day < 10) day = "0" + day;
+
+      var today = year + "-" + month + "-" + day;
+
+      document.getElementById('date_id').value = today;
+
+    
+      function setTotal(){
+        var total = document.getElementById('nettotal_id')
+
+        total.value =  +(document.getElementById('commissions_id').value) + +(document.getElementById('fees_id').value) + (document.getElementById('price_id').value * document.getElementById('shares_id').value)
+    
+      }
+
+      
     
   </script>
   
+
+  <script> //Add Transaction
+    //Making a POST/Update request with fetch
+    const transactionForm = document.getElementById('myTransactionForm')
+    
+    transactionForm.addEventListener('submit', function(e){
+      e.preventDefault();
+  
+      console.log('Submitting Transaction - POST')
+  
+      var portfolio_id = document.getElementById('portfolio_id').textContent
+      var URL = window.location.origin + '/api/portfolios/' + portfolio_id + '/transactions/'
+  
+      const data = new FormData(this)
+      const searchParam = new URLSearchParams()
+      
+      for (const pair of data) {
+        searchParam.append(pair[0], pair[1])
+        console.log(pair[0], pair[1])
+      }
+
+      if (searchParam.get('fees')==null || searchParam.get('fees')=="") {
+        searchParam.set('fees', '0')
+      }
+
+      if (searchParam.get('commissions')==null || searchParam.get('commissions')=="") {
+        searchParam.set('commissions', '0')
+      }
+
+      var myEditor = document.querySelector('#quillEditorTransaction')
+      var html = myEditor.children[0].innerHTML
+      searchParam.set('comments', html)
+
+      fetch(URL, {
+        method: 'POST',
+        headers:{
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+            'X-CSRFToken': csrftoken,
+        },
+        body: JSON.stringify({
+          'symbol': searchParam.get('symbol'),
+          'commissions': searchParam.get('commissions'),
+          'fees': searchParam.get('fees'),
+          'comments': searchParam.get('comments'),
+          'transaction_type': searchParam.get('transaction_type'),
+          'regularMarketPrice': searchParam.get('regularMarketPrice'),
+          'quantity': searchParam.get('shares'),
+          'portfolio': portfolio_id,
+          'update_cash_balance': searchParam.get('update_cash_balance'),
+        }) //JavaScript object of data to POST
+      })
+  
+      .then(response => {
+        updateTransactions()
+        document.getElementById('myTransactionForm').reset()
+        $('#modalTransaction').modal('toggle');
+      })
+      .then(data => {
+        console.log('POSTED Transaction DATA', data)      
+        // $('#example').DataTable().draw()
+        //Perform actions with the response data from the view
+      })
+      .catch(error => {
+        console.log('ERROR', error)
+      })
+      
+    });
+  </script>
+
 
   <script> //updateTransactions
 
@@ -962,7 +1409,7 @@ tr.shown td.details-control {
       .then(data => {
         //Perform actions with the response data from the view      
         // console.log('GET Transaction List - : ', data.results)
-        $('#example').DataTable().draw()
+        // $('#example').DataTable().draw()
         
 
         var list = data.results
@@ -974,70 +1421,14 @@ tr.shown td.details-control {
       })
     }
 
-  //Making a POST/Update request with fetch
-  const transactionForm = document.getElementById('myTransactionForm')
-    
-  transactionForm.addEventListener('submit', function(e){
-    e.preventDefault();
-
-    console.log('Submitting Transaction - POST')
-
-    var portfolio_id = document.getElementById('portfolio_id').textContent
-    var URL = window.location.origin + '/api/portfolios/' + portfolio_id + '/transactions/'
-
-    const data = new FormData(this)
-    const searchParam = new URLSearchParams()
-    
-    for (const pair of data) {
-      searchParam.append(pair[0], pair[1])
-      console.log(pair[0], pair[1])
-    }
-
-    fetch(URL, {
-      method: 'POST',
-      headers:{
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
-          'X-CSRFToken': csrftoken,
-      },
-      body: JSON.stringify({
-        'symbol': searchParam.get('symbol'),
-        'commissions': searchParam.get('commissions'),
-        'fees': searchParam.get('fees'),
-        'comments': searchParam.get('comments'),
-        'transaction_type': searchParam.get('transaction_type'),
-        'regularMarketPrice': searchParam.get('regularMarketPrice'),
-        'quantity': searchParam.get('quantity'),
-        'portfolio': portfolio_id,
-        'update_cash_balance': searchParam.get('update_cash_balance'),
-      }) //JavaScript object of data to POST
-    })
-
-    .then(response => {
-      updateTransactions()
-      document.getElementById('myTransactionForm').reset()
-      $('#modalTransaction').modal('toggle');
-    })
-    .then(data => {
-      console.log('POSTED Transaction DATA', data)      
-      $('#example').DataTable().draw()
-      //Perform actions with the response data from the view
-    })
-    .catch(error => {
-      console.log('ERROR', error)
-    })
-    
-  });
-
-
-
   </script>
 
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
 <script src="https://code.highcharts.com/modules/export-data.js"></script>
 <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+
 
   <script>// Build the sectoral chart
     
@@ -1173,7 +1564,9 @@ tr.shown td.details-control {
   });
 </script>
 
-<script>
+
+
+<script> //tables
   /* Formatting function for row details - modify as you need */
 function format ( d ) {
     // `d` is the original data object for the row
@@ -1188,9 +1581,9 @@ function format ( d ) {
               '<table id="transactions_table" class="table table-striped table-hover nowrap dt-responsive">' +
                 '<thead>' +
                   '<tr>' + 
-                    '<th>symbol</th><th>purchase date</th><th>name</th>' +
+                    '<th>symbol</th><th>date</th><th>name</th>' +
                     '<th>transaction type</th><th>quantity</th>' +
-                    '<th>purchase cost</th><th>commissions</th>' +
+                    '<th>cost</th><th>commissions</th>' +
                     '<th>fees</th><th>net value</th>' +
                   '</tr>' +
                 '</thead>' +
@@ -1204,10 +1597,10 @@ function format ( d ) {
         // console.log(s['fields']['symbol'])
         if (transaction['fields']['symbol'] == d[0]) {
           dynamicTemplate += '<td>' +  transaction['fields']['symbol']  + '</td>'  
-          dynamicTemplate += '<td>' +  transaction['fields']['purchase_date'] + '</td>'                        
+          dynamicTemplate += '<td>' +  transaction['fields']['date'] + '</td>'                        
           dynamicTemplate += '<td><label class="badge badge-success">' + transaction['fields']['transaction_type'] + '</label></td>' 
           dynamicTemplate += '<td>' +  transaction['fields']['quantity'] + '</td>'  
-          dynamicTemplate += '<td>' +  transaction['fields']['purchase_cost'] + '</td>'  
+          dynamicTemplate += '<td>' +  transaction['fields']['cost'] + '</td>'  
           dynamicTemplate += '<td>' +  transaction['fields']['commissions'] + '</td>'  
           dynamicTemplate += '<td>' +  transaction['fields']['fees'] + '</td>'  
           dynamicTemplate += '<td>' +  12 + '</td>'  
@@ -1223,25 +1616,52 @@ function format ( d ) {
           '</div>';
 }
 
+
   var collapsedGroups = {};
-  var tableS = $('#stockdetail_table').DataTable({
-        bAutoWidth: false,
+  var tableS = $('#fundamentals_table').DataTable({
+        // bAutoWidth: false,
         responsive: true,
         colReorder: true,
-        stateSave:  false,
-        paging: true,
+        stateSave:  true,
+        // paging: true,
         autoWidth: true,
+
+        dom: 'Bfrtip',
+        
+
+
         select: {
             style: 'single'
         },
         columnDefs: [
-          {"className": "dt-center", 
-          "targets": "_all"}
+            {
+              "className": "dt-center", 
+            "targets": "_all"
+          },
+          //below remove column 32  symbol from button col visibility
+          {
+                targets: 32,
+                className: 'noVis'
+          },
+          
         ],
-        order: [[ 0, "desc" ]],
+
+        buttons: [
+            {
+                extend: 'colvis',
+                columns: ':not(.noVis)', // remove column 32  symbol from button col visibility
+                collectionLayout: 'fixed three-column'
+            }
+        ],
+        language: {
+            buttons: {
+                colvis: 'Configure Columns'
+            }
+        },
+        order: [[ 32, "desc" ]],
 
         rowGroup: {
-          dataSrc: 0,
+          dataSrc: 32,
           startRender: function ( rows, group ) {
             var collapsed = !!collapsedGroups[group];
 
@@ -1249,22 +1669,104 @@ function format ( d ) {
               r.style.display = collapsed ? 'none' : '';
             });
 
+            var totalQunatity = rows
+                        .data()
+                        .pluck(2)
+                        .reduce( function (a, b) {
+                            return a + b*1;
+                        }, 0);
+
+            var avgAdjustedBuyPrice = rows
+                            .data()
+                            .pluck(4)
+                            .reduce( function (a, b) {
+                                return a + b*1;
+                            }, 0) / rows.count();
+            
+
+            var totalCurrentValue = rows
+                            .data()
+                            .pluck(5)
+                            .reduce( function (a, b) {
+                                return a + b*1;
+                            }, 0);
+
+            var totalProfit = rows
+                            .data()
+                            .pluck(6)
+                            .reduce( function (a, b) {
+                                return a + b*1;
+                            }, 0);
+
+            var totalProfitPercent = rows
+                            .data()
+                            .pluck(7)
+                            .reduce( function (a, b) {
+                                return a + b*1;
+                            }, 0);
+
+            var totalPortfolioPercent = rows
+                            .data()
+                            .pluck(8)
+                            .reduce( function (a, b) {
+                                return a + b*1;
+                            }, 0);  
+                            
+            var table = $('#fundamentals_table').DataTable();
+
             return $('<tr/>')
-              .append('<td colspan="27" align="left">' + group + ' (' + rows.count() + ')</td>')
+              .append('<td align="center">' + group + ' (' + rows.count() + ')</td>')
+              .append(table.column(1).visible() ? '<td align="center">'  + rows.data()[0][1] + '</td>' : '') 
+              .append(table.column(2).visible() ? '<td align="center">'  + totalQunatity + '</td>' : '') 
+              .append(table.column(3).visible() ? '<td align="center">'  + rows.data()[0][3] + '</td>' : '') 
+              .append(table.column(4).visible() ? '<td align="center">'  + avgAdjustedBuyPrice.toFixed(2) + '</td>' : '') 
+              .append(table.column(5).visible() ? '<td align="center">'  + totalCurrentValue.toFixed(2) + '</td>' : '') 
+              .append(table.column(6).visible() ? '<td align="center">'  + totalProfit.toFixed(2) + '</td>' : '') 
+              .append(table.column(7).visible() ? '<td align="center">'  + totalProfitPercent.toFixed(2) + '</td>' : '') 
+              .append(table.column(8).visible() ? '<td align="center">'  + totalPortfolioPercent.toFixed(2) + '</td>' : '') 
+              .append(table.column(9).visible() ? '<td align="center">'  + rows.data()[0][9] + '</td>' : '') 
+              .append(table.column(10).visible() ? '<td align="center">'  + rows.data()[0][10] + '</td>' : '') 
+              .append(table.column(11).visible() ? '<td align="center">'  + rows.data()[0][11] + '</td>' : '') 
+              .append(table.column(12).visible() ? '<td align="center">'  + rows.data()[0][12] + '</td>' : '') 
+              .append(table.column(13).visible() ? '<td align="center">'  + rows.data()[0][13] + '</td>' : '') 
+              .append(table.column(14).visible() ? '<td align="center">'  + rows.data()[0][14] + '</td>' : '') 
+              .append(table.column(15).visible() ? '<td align="center">'  + rows.data()[0][15] + '</td>' : '') 
+              .append(table.column(16).visible() ? '<td align="center">'  + rows.data()[0][16] + '</td>' : '') 
+              .append(table.column(17).visible() ? '<td align="center">'  + rows.data()[0][17] + '</td>' : '') 
+              .append(table.column(18).visible() ? '<td align="center">'  + rows.data()[0][18] + '</td>' : '') 
+              .append(table.column(19).visible() ? '<td align="center">'  + rows.data()[0][19] + '</td>' : '') 
+              .append(table.column(20).visible() ? '<td align="center">'  + rows.data()[0][20] + '</td>' : '') 
+              .append(table.column(21).visible() ? '<td align="center">'  + rows.data()[0][21] + '</td>' : '') 
+              .append(table.column(22).visible() ? '<td align="center">'  + rows.data()[0][22] + '</td>' : '') 
+              .append(table.column(23).visible() ? '<td align="center">'  + rows.data()[0][23] + '</td>' : '') 
+              .append(table.column(24).visible() ? '<td align="center">'  + rows.data()[0][24] + '</td>' : '') 
+              .append(table.column(25).visible() ? '<td align="center">'  + rows.data()[0][25] + '</td>' : '') 
+              .append(table.column(26).visible() ? '<td align="center">'  + rows.data()[0][26] + '</td>' : '') 
+              .append(table.column(27).visible() ? '<td align="center">'  + rows.data()[0][27] + '</td>' : '') 
+              .append(table.column(28).visible() ? '<td align="center">'  + rows.data()[0][28] + '</td>' : '') 
+              .append(table.column(29).visible() ? '<td align="center">'  + rows.data()[0][29] + '</td>' : '') 
+              .append(table.column(30).visible() ? '<td align="center">'  + rows.data()[0][30] + '</td>' : '') 
+              .append(table.column(31).visible() ? '<td align="center">'  + rows.data  ()[0][31] + '</td>' : '') 
+              .append(table.column(32).visible() ? '<td align="center">'  + rows.data  ()[0][32] + '</td>' : '') 
               .attr('data-name', group)
               .toggleClass('collapsed', collapsed);
-          },
-        },
+          },  
+          
+        }
+        
         
       })
 
-      $('#stockdetail_table tbody tr.group-start').each(function() {
+
+      tableS.column(32).visible( false );
+
+      $('#fundamentals_table tbody tr.group-start').each(function() {
                 var name = $(this).data('name');
                 collapsedGroups[name] = !collapsedGroups[name];
       });
       tableS.draw(false);
 
-      $('#stockdetail_table tbody').on('click', 'tr.group-start', function () {
+      $('#fundamentals_table tbody').on('click', 'tr.group-start', function () {
                 var name = $(this).data('name');
                 chart_symbol = name
                 collapsedGroups[name] = !collapsedGroups[name];     
@@ -1273,7 +1775,7 @@ function format ( d ) {
       }); 
 
       // Add event listener for opening and closing details
-      $('#stockdetail_table tbody').on('click', 'td.dt-center', function () {
+      $('#fundamentals_table tbody').on('click', 'td.dt-center', function () {
           var tr = $(this).closest('tr');
           var row = tableS.row( tr );
           if ( row.child.isShown() ) {
@@ -1283,11 +1785,595 @@ function format ( d ) {
           }
           else {
               // Open this row
-              row.child( format(row.data()) ).show();
+              // row.child( format(row.data()) ).show();
               tr.addClass('shown');
           }
       } );
+
+      var chart_symbol = 'SYMBOL'
+      tableS
+        .on( 'select', function ( e, dt, type, indexes ) {
+            var rowData = tableS.rows( indexes ).data().toArray();
+            console.log('selected transactio table', rowData)
+            var name = rowData[0][32];
+            chart_symbol = name
+            console.log(chart_symbol)
+            // events.prepend( '<div><b>'+type+' selection</b> - '+JSON.stringify( rowData )+'</div>' );
+
+            if (chart_symbol.includes('.')) {
+              chart_new_symbol = chart_symbol.replace('.', 'DOT')
+            }
+            else{
+              chart_new_symbol = chart_symbol
+            }
+
+            Highcharts.getJSON(window.location.origin + '/api/charts/' + chart_new_symbol + 'delimeter10y/', function (data) {
+
+              // console.log('Highcharts', data)
+
+              // split the data set into ohlc and volume
+              var ohlc = [],
+              volume = [],
+              dataLength = data.length,
+              i = 0;
+
+              for (i; i < dataLength; i += 1) {
+                ohlc.push([
+                  data[i][0], // the date
+                  data[i][1], // open
+                  data[i][2], // high
+                  data[i][3], // low
+                  data[i][4] // close
+                ]);
+
+                volume.push([
+                  data[i][0], // the date
+                  data[i][5] // the volume
+                ]);
+              }
+
+              Highcharts.stockChart('container', {
+              yAxis: [{
+                labels: {
+                  align: 'left'
+                },
+                height: '80%',
+                resize: {
+                  enabled: true
+                }
+              }, {
+                labels: {
+                  align: 'left'
+                },
+                top: '80%',
+                height: '20%',
+                offset: 0
+              }],
+              tooltip: {
+                shape: 'square',
+                headerShape: 'callout',
+                borderWidth: 0,
+                shadow: false,
+                positioner: function (width, height, point) {
+                  var chart = this.chart,
+                    position;
+
+                  if (point.isHeader) {
+                    position = {
+                      x: Math.max(
+                        // Left side limit
+                        chart.plotLeft,
+                        Math.min(
+                          point.plotX + chart.plotLeft - width / 2,
+                          // Right side limit
+                          chart.chartWidth - width - chart.marginRight
+                        )
+                      ),
+                      y: point.plotY
+                    };
+                  } else {
+                    position = {
+                      x: point.series.chart.plotLeft,
+                      y: point.series.yAxis.top - chart.plotTop
+                    };
+                  }
+
+                  return position;
+                }
+              },
+              title: {
+                  text: chart_symbol + ' Stock Price'
+              },
+              series: [{
+                type: 'ohlc',
+                id: 'ohlc',
+                name: chart_symbol + ' Stock Price',
+                data: ohlc
+              }, {
+                type: 'column',
+                id: 'volume',
+                name: chart_symbol + ' Volume',
+                data: volume,
+                yAxis: 1
+              }],
+              responsive: {
+                rules: [{
+                  condition: {
+                    maxWidth: 800
+                  },
+                  chartOptions: {
+                    rangeSelector: {
+                      inputEnabled: false
+                    }
+                  }
+                }]
+              }
+              });
+            });
+        } )
   
+</script>
+
+
+
+<script> //tables
+  /* Formatting function for row details - modify as you need */
+
+
+  var collapsedGroups = {};
+  var activeItem=null
+
+  var tableSumm = $('#summary_table').DataTable({
+        // bAutoWidth: false,
+        responsive: true,
+        colReorder: true,
+        stateSave:  true,
+        // paging: true,
+        autoWidth: true,
+        processing: true,
+
+        // serverSide: true,
+
+        dom: 'Bfrtip',
+
+        select: {
+            style: 'single'
+        },
+        columnDefs: [
+            {
+              "className": "dt-center", 
+            "targets": "_all"
+          },
+          // remove sorting from first column
+          {
+              'targets': [0], /* column index [0,1,2,3]*/
+              'orderable': false, /* true or false */
+          },
+          //below remove column 32  symbol from button col visibility
+          {
+                targets: 32,
+                className: 'noVis'
+          },
+          
+        ],
+
+        buttons: [
+            {
+                extend: 'colvis',
+                columns: ':not(.noVis)', // remove column 32  'symbol' from button col visibility
+                collectionLayout: 'fixed four-column'
+            }
+        ],
+        language: {
+            buttons: {
+                colvis: 'Configure Columns'
+            }
+        },
+        order: [[ 32, "desc" ]],
+
+        stateSave: true, //saves current state of DT (colvis, row order)
+
+        rowGroup: {
+          dataSrc: 32,
+          startRender: function ( rows, group ) {
+            var collapsed = !!collapsedGroups[group];
+
+            rows.nodes().each(function (r) {
+              r.style.display = collapsed ? 'none' : '';
+            });
+
+            var totalQunatity = rows
+                        .data()
+                        .pluck(2)
+                        .reduce( function (a, b) {
+                            return a + b*1;
+                        }, 0);
+
+            var avgAdjustedBuyPrice = rows
+                            .data()
+                            .pluck(4)
+                            .reduce( function (a, b) {
+                                return a + b*1;
+                            }, 0) / rows.count();
+            
+
+            var totalCurrentValue = rows
+                            .data()
+                            .pluck(5)
+                            .reduce( function (a, b) {
+                                return a + b*1;
+                            }, 0);
+
+            var totalProfit = rows
+                            .data()
+                            .pluck(6)
+                            .reduce( function (a, b) {
+                                return a + b*1;
+                            }, 0);
+
+            var totalProfitPercent = rows
+                            .data()
+                            .pluck(7)
+                            .reduce( function (a, b) {
+                                return a + b*1;
+                            }, 0);
+
+            var totalPortfolioPercent = rows
+                            .data()
+                            .pluck(8)
+                            .reduce( function (a, b) {
+                                return a + b*1;
+                            }, 0);  
+                            
+            var table = $('#summary_table').DataTable();
+
+            return $('<tr/>')
+              .append('<td align="center">' + group + ' (' + rows.count() + ')</td>')
+              .append(table.column(1).visible() ? '<td align="center">'  + rows.data()[0][1] + '</td>' : '') 
+              .append(table.column(2).visible() ? '<td align="center">'  + totalQunatity + '</td>' : '') 
+              .append(table.column(3).visible() ? '<td align="center">'  + rows.data()[0][3] + '</td>' : '') 
+              .append(table.column(4).visible() ? '<td align="center">'  + avgAdjustedBuyPrice.toFixed(2) + '</td>' : '') 
+              .append(table.column(5).visible() ? '<td align="center">'  + totalCurrentValue.toFixed(2) + '</td>' : '') 
+              .append(table.column(6).visible() ? '<td align="center">'  + totalProfit.toFixed(2) + '</td>' : '') 
+              .append(table.column(7).visible() ? '<td align="center">'  + totalProfitPercent.toFixed(2) + '</td>' : '') 
+              .append(table.column(8).visible() ? '<td align="center">'  + totalPortfolioPercent.toFixed(2) + '</td>' : '') 
+              .append(table.column(9).visible() ? '<td align="center">'  + rows.data()[0][9] + '</td>' : '') 
+              .append(table.column(10).visible() ? '<td align="center">'  + rows.data()[0][10] + '</td>' : '') 
+              .append(table.column(11).visible() ? '<td align="center">'  + rows.data()[0][11] + '</td>' : '') 
+              .append(table.column(12).visible() ? '<td align="center">'  + rows.data()[0][12] + '</td>' : '') 
+              .append(table.column(13).visible() ? '<td align="center">'  + rows.data()[0][13] + '</td>' : '') 
+              .append(table.column(14).visible() ? '<td align="center">'  + rows.data()[0][14] + '</td>' : '') 
+              .append(table.column(15).visible() ? '<td align="center">'  + rows.data()[0][15] + '</td>' : '') 
+              .append(table.column(16).visible() ? '<td align="center">'  + rows.data()[0][16] + '</td>' : '') 
+              .append(table.column(17).visible() ? '<td align="center">'  + rows.data()[0][17] + '</td>' : '') 
+              .append(table.column(18).visible() ? '<td align="center">'  + rows.data()[0][18] + '</td>' : '') 
+              .append(table.column(19).visible() ? '<td align="center">'  + rows.data()[0][19] + '</td>' : '') 
+              .append(table.column(20).visible() ? '<td align="center">'  + rows.data()[0][20] + '</td>' : '') 
+              .append(table.column(21).visible() ? '<td align="center">'  + rows.data()[0][21] + '</td>' : '') 
+              .append(table.column(22).visible() ? '<td align="center">'  + rows.data()[0][22] + '</td>' : '') 
+              .append(table.column(23).visible() ? '<td align="center">'  + rows.data()[0][23] + '</td>' : '') 
+              .append(table.column(24).visible() ? '<td align="center">'  + rows.data()[0][24] + '</td>' : '') 
+              .append(table.column(25).visible() ? '<td align="center">'  + rows.data()[0][25] + '</td>' : '') 
+              .append(table.column(26).visible() ? '<td align="center">'  + rows.data()[0][26] + '</td>' : '') 
+              .append(table.column(27).visible() ? '<td align="center">'  + rows.data()[0][27] + '</td>' : '') 
+              .append(table.column(28).visible() ? '<td align="center">'  + rows.data()[0][28] + '</td>' : '') 
+              .append(table.column(29).visible() ? '<td align="center">'  + rows.data()[0][29] + '</td>' : '') 
+              .append(table.column(30).visible() ? '<td align="center">'  + rows.data()[0][30] + '</td>' : '') 
+              .append(table.column(31).visible() ? '<td align="center">'  + rows.data()[0][31] + '</td>' : '') 
+              .append(table.column(32).visible() ? '<td align="center">'  + rows.data()[0][32] + '</td>' : '') 
+              .attr('data-name', group)
+              .toggleClass('collapsed', collapsed);
+          },  
+          
+        },
+        
+        stateLoadCallback: function (settings, callback) {
+          console.log('LOAD');
+          var URL = window.location.origin + '/api/state/' + this.attr("id") + '/'
+          // 'http://blakbit.com/dt_test.php?id=example&load'
+          $.ajax( {
+            url: URL,
+            type: "GET",
+            dataType: 'json',
+            async : false,
+            success: function (json) {
+
+              console.log(json);
+              callback( json);  // Simulate empty settings
+            }
+          } );
+
+		    },
+
+
+        stateSaveCallback: function (settings, data) {
+          // console.log(this.attr("id"))
+          console.log('SAVE');
+          // console.log( JSON.stringify(data));
+          var URL = window.location.origin + '/api/state/' + this.attr("id") + '/'
+              fetch(URL, {
+              method: 'POST',
+              dataType: 'json',
+              headers:{
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json',
+                  'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+                  'X-CSRFToken': csrftoken
+              },
+              body:JSON.stringify(data),
+              success: function () {}
+            })
+
+          
+            
+
+        },
+
+
+
+
+
+      })
+
+
+      tableSumm.column(32).visible( false );
+
+      $('#summary_table tbody tr.group-start').each(function() {
+                var name = $(this).data('name');
+                collapsedGroups[name] = !collapsedGroups[name];
+      });
+      tableSumm.draw(false);
+
+      $('#summary_table tbody').on('click', 'tr.group-start', function () {
+                var name = $(this).data('name');
+                chart_symbol = name
+                collapsedGroups[name] = !collapsedGroups[name];     
+
+                tableSumm.draw(false);
+      }); 
+
+      // Add event listener for opening and closing details
+      $('#summary_table tbody').on('click', 'td.dt-center', function () {
+          var tr = $(this).closest('tr');
+          var row = tableSumm.row( tr );
+          if ( row.child.isShown() ) {
+              // This row is already open - close it
+              row.child.hide();
+              tr.removeClass('shown');
+          }
+          else {
+              // Open this row
+              // row.child( format(row.data()) ).show();
+              tr.addClass('shown');
+          }
+      } );
+
+      var chart_symbol = 'SYMBOL'
+      tableSumm
+        .on( 'select', function ( e, dt, type, indexes ) {
+            var rowData = tableSumm.rows( indexes ).data().toArray();
+            console.log('selected transactio table', rowData)
+            var name = rowData[0][32];
+            chart_symbol = name
+            console.log(chart_symbol)
+            // events.prepend( '<div><b>'+type+' selection</b> - '+JSON.stringify( rowData )+'</div>' );
+
+            if (chart_symbol.includes('.')) {
+              chart_new_symbol = chart_symbol.replace('.', 'DOT')
+            }
+            else{
+              chart_new_symbol = chart_symbol
+            }
+
+            Highcharts.getJSON(window.location.origin + '/api/charts/' + chart_new_symbol + 'delimeter10y/', function (data) {
+
+              // console.log('Highcharts', data)
+
+              // split the data set into ohlc and volume
+              var ohlc = [],
+              volume = [],
+              dataLength = data.length,
+              i = 0;
+
+              for (i; i < dataLength; i += 1) {
+                ohlc.push([
+                  data[i][0], // the date
+                  data[i][1], // open
+                  data[i][2], // high
+                  data[i][3], // low
+                  data[i][4] // close
+                ]);
+
+                volume.push([
+                  data[i][0], // the date
+                  data[i][5] // the volume
+                ]);
+              }
+
+              Highcharts.stockChart('container', {
+              yAxis: [{
+                labels: {
+                  align: 'left'
+                },
+                height: '80%',
+                resize: {
+                  enabled: true
+                }
+              }, {
+                labels: {
+                  align: 'left'
+                },
+                top: '80%',
+                height: '20%',
+                offset: 0
+              }],
+              tooltip: {
+                shape: 'square',
+                headerShape: 'callout',
+                borderWidth: 0,
+                shadow: false,
+                positioner: function (width, height, point) {
+                  var chart = this.chart,
+                    position;
+
+                  if (point.isHeader) {
+                    position = {
+                      x: Math.max(
+                        // Left side limit
+                        chart.plotLeft,
+                        Math.min(
+                          point.plotX + chart.plotLeft - width / 2,
+                          // Right side limit
+                          chart.chartWidth - width - chart.marginRight
+                        )
+                      ),
+                      y: point.plotY
+                    };
+                  } else {
+                    position = {
+                      x: point.series.chart.plotLeft,
+                      y: point.series.yAxis.top - chart.plotTop
+                    };
+                  }
+
+                  return position;
+                }
+              },
+              title: {
+                  text: chart_symbol + ' Stock Price'
+              },
+              series: [{
+                type: 'ohlc',
+                id: 'ohlc',
+                name: chart_symbol + ' Stock Price',
+                data: ohlc
+              }, {
+                type: 'column',
+                id: 'volume',
+                name: chart_symbol + ' Volume',
+                data: volume,
+                yAxis: 1
+              }],
+              responsive: {
+                rules: [{
+                  condition: {
+                    maxWidth: 800
+                  },
+                  chartOptions: {
+                    rangeSelector: {
+                      inputEnabled: false
+                    }
+                  }
+                }]
+              }
+              });
+            });
+        } )
+  
+</script>
+
+
+<script src="https://unpkg.com/tableexport.jquery.plugin/tableExport.min.js"></script>
+<script src="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.js"></script>
+<script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/cookie/bootstrap-table-cookie.min.js"></script>
+
+<script>
+  var $table = $('#table')
+  var $remove = $('#remove')
+  var selections = []
+
+  function getIdSelections() {
+    return $.map($table.bootstrapTable('getSelections'), function (row) {
+      return row.id
+    })
+  }
+
+  function responseHandler(res) {
+    $.each(res.rows, function (i, row) {
+      row.state = $.inArray(row.id, selections) !== -1
+    })
+    return res
+  }
+
+  function detailFormatter(index, row) {
+    var html = []
+    $.each(row, function (key, value) {
+      html.push('<p><b>' + key + ':</b> ' + value + '</p>')
+    })
+    return html.join('')
+  }
+
+  function operateFormatter(value, row, index) {
+    return [
+      '<a class="like" href="javascript:void(0)" title="Like">',
+      '<i class="fa fa-heart"></i>',
+      '</a>  ',
+      '<a class="remove" href="javascript:void(0)" title="Remove">',
+      '<i class="fa fa-trash"></i>',
+      '</a>'
+    ].join('')
+  }
+
+  window.operateEvents = {
+    'click .like': function (e, value, row, index) {
+      alert('You click like action, row: ' + JSON.stringify(row))
+    },
+    'click .remove': function (e, value, row, index) {
+      $table.bootstrapTable('remove', {
+        field: 'id',
+        values: [row.id]
+      })
+    }
+  }
+
+  function totalTextFormatter(data) {
+    return 'Total'
+  }
+
+  function totalNameFormatter(data) {
+    return data.length
+  }
+
+  function totalPriceFormatter(data) {
+    var field = this.field
+    return '$' + data.map(function (row) {
+      return +row[field].substring(1)
+    }).reduce(function (sum, i) {
+      return sum + i
+    }, 0)
+  }
+
+  function initTable() {
+    $table.bootstrapTable('destroy').bootstrapTable({
+      height: 550,
+    })
+    $table.on('check.bs.table uncheck.bs.table ' +
+      'check-all.bs.table uncheck-all.bs.table',
+    function () {
+      $remove.prop('disabled', !$table.bootstrapTable('getSelections').length)
+
+      // save your data, here just save the current page
+      selections = getIdSelections()
+      // push or splice the selections if you want to save all data selections
+    })
+    $table.on('all.bs.table', function (e, name, args) {
+      console.log(name, args)
+    })
+    $remove.click(function () {
+      var ids = getIdSelections()
+      $table.bootstrapTable('remove', {
+        field: 'id',
+        values: ids
+      })
+      $remove.prop('disabled', true)
+    })
+  }
+
+  $(function() {
+    initTable()
+
+  })
 </script>
 
 {% endblock %}

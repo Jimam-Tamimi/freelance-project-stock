@@ -34,6 +34,10 @@ urlpatterns = [
     path('api/stocks/', apis.StocksDetailList.as_view()),
     path('api/watchlists/<str:watchlist_id>/stocks/', apis.WatchlistStocksList.as_view()),
     
+    
+    path('api/state/', apis.stateList),
+    path('api/state/<str:table_name>/', apis.stateListDetail),
+    
     # path('api/stock-detail/<str:pk>/', apis.stockDetail),
     # path('api/stock-create/', apis.stockCreate),
     # path('api/stock-update/<str:pk>/', apis.stockUpdate),

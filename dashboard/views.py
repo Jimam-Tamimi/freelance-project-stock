@@ -9,6 +9,14 @@ from . serializers import *
 
 import time
 from django.core import serializers
+import aiohttp
+import asyncio
+
+from django.http import HttpResponseRedirect
+
+
+
+
     
 # Login URL is provided in SETTINGS.py
 @login_required()
@@ -26,26 +34,22 @@ def listView(request):
 
 @login_required()
 def portfolioView(request, pk):
+   
     # for rendering individual portfolio level detail
     portfolio = get_object_or_404(Portfolio, id=pk)
     
-    # stocks_list = portfolio.stocks.filter()
+    stocks_list = portfolio.stocks.filter()
     
     transaction_list = portfolio.transactions.filter().order_by('-created')
     
     transaction_js = serializers.serialize("json", portfolio.transactions.filter().order_by('-created'))
     stock_js = serializers.serialize("json", portfolio.stocks.all())
     
-    # for stock in stocks_list:
-    #     start_time = time.time()        
-    #     stock.update_fields()
-    #     current_time = time.time()
-    #     elapsed_time = current_time - start_time
-    #     # print("Finished Updating Stock in: " + str(int(elapsed_time))  + " seconds")
+    for stock in stocks_list:
+        stock.update_fields()
 
-    #     # stock.save()
-    for t in transaction_list:
-        t.update_fields()
+    # for t in transaction_list:
+    #     t.update_fields()
     
         
     # portfolio = Portfolio.objects.get(id=pk)
@@ -59,6 +63,18 @@ def portfolioView(request, pk):
     transaction = TransactionForm() 
 
     stockdetail = StockDetail.objects.all()
+    
+    # for sd in stockdetail:
+    #     sd.update_fields()
+
+    # https://julien.danjou.info/python-and-fast-http-clients/
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    coroutines = [sd.update_fields() for sd in stockdetail]
+    results = loop.run_until_complete(asyncio.gather(*coroutines))  
+
+    
+    
     stockSerializer = StockDetailSerializer(stockdetail, many=True)
     
     context = {
@@ -91,10 +107,87 @@ def watchlistView(request, pk):
     # for rendering Modal Add Stock Form 
     form = AddToWatchlistForm() 
     
+    stockdetail = StockDetail.objects.all()
+    stockSerializer = StockDetailSerializer(stockdetail, many=True)
+
+    
     context = {'watchlist': serializer.data, 
                 'form': form, 
+                'stock': stockSerializer.data,
                 'modalPortfolioForm': modalPortfolioForm,
                 'modalWatchlistForm': modalWatchlistForm
                 }
     
     return render(request, 'dashboard/watchlist.html', context)
+
+
+@login_required()
+def portfolioView_MODIFIED(request, pk):
+    # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        form = TransactionForm(request.POST)
+        
+        # check whether it's valid:
+        if form.is_valid():
+            # process the data in form.cleaned_data as required
+            # ...
+            # redirect to a new URL:
+            return HttpResponseRedirect('/portfolios/' + request.POST['id'])
+    
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        # for rendering individual portfolio level detail
+        portfolio = get_object_or_404(Portfolio, id=pk)
+        
+        stocks_list = portfolio.stocks.filter()
+        
+        transaction_list = portfolio.transactions.filter().order_by('-created')
+        
+        transaction_js = serializers.serialize("json", portfolio.transactions.filter().order_by('-created'))
+        stock_js = serializers.serialize("json", portfolio.stocks.all())
+        
+        for stock in stocks_list:
+            stock.update_fields()
+
+        # for t in transaction_list:
+        #     t.update_fields()
+        
+            
+        # portfolio = Portfolio.objects.get(id=pk)
+        serializer = PortfolioSerializer(portfolio, many=False)
+        
+        # for rendering Modal Portfolio Create Form from sidebar
+        modalPortfolioForm = PortfolioForm()
+        modalWatchlistForm = WatchlistForm()  
+        
+        # for rendering Modal BuySell Stock Form 
+        transaction = TransactionForm() 
+
+        stockdetail = StockDetail.objects.all()
+        
+        # for sd in stockdetail:
+        #     sd.update_fields()
+
+        # https://julien.danjou.info/python-and-fast-http-clients/
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        coroutines = [sd.update_fields() for sd in stockdetail]
+        results = loop.run_until_complete(asyncio.gather(*coroutines))  
+
+        
+        
+        stockSerializer = StockDetailSerializer(stockdetail, many=True)
+        
+        context = {
+                    'portfolio': serializer.data, 
+                    'transactions': transaction_list,
+                    'transaction_js': transaction_js,
+                    'stock_js': stock_js,
+                    'stock': stockSerializer.data,
+                    'form': transaction, 
+                    'modalPortfolioForm': modalPortfolioForm,
+                    'modalWatchlistForm': modalWatchlistForm
+                }
+        
+        return render(request, 'dashboard/portfolio.html', context)

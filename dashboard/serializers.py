@@ -58,6 +58,11 @@ class WatchlistSerializer(serializers.ModelSerializer):
         model = Watchlist
         fields = '__all__'
         
-        
+class TableStateSerializer(serializers.ModelSerializer):
+    user = serializers.SlugRelatedField(slug_field='username', read_only=True)
+    
+    class Meta:
+        model = TableState
+        fields = '__all__'  
         
         

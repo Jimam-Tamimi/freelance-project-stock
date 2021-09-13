@@ -57,7 +57,7 @@ class PortfolioForm(forms.ModelForm):
 
 class TransactionForm(forms.ModelForm):
     
-    purchase_date = forms.DateField(widget=forms.DateInput(attrs={'class':'datepicker'}))
+    date = forms.DateField(widget=forms.DateInput(attrs={'class':'datepicker'}))
     symbol = forms.CharField(widget=forms.TextInput(attrs={'autocomplete':'off'}))
     
     
@@ -77,21 +77,18 @@ class TransactionForm(forms.ModelForm):
                 css_class='form-row'
             ),
             Row(
-                Column('purchase_date', css_class='form-group col-md-6 mb-0'),
+                Column('date', css_class='form-group col-md-6 mb-0'),
                 Column('regularMarketPrice', css_class='form-group col-md-6 mb-0'),
                 css_class='align-items-center'
             ),
             'update_cash_balance',
-           
-             
-            
 
             Row(
                 Column('fees', css_class='form-group col-md-6 mb-0'),
                 Column('commissions', css_class='form-group col-md-6 mb-0'),
                 css_class='form-row'
             ),
-            
+            'cost', 
             'comments',  
             #  ButtonHolder(
             #     Submit('submit', 'Submit', css_class='button')

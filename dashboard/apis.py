@@ -339,7 +339,7 @@ class TransactionsList(generics.ListCreateAPIView):
     
     
     def perform_create(self, serializer):
-        # print('in POST')
+        print('in POST TRANSACTION')
         # Assign request data to local variables
         portfolio = get_object_or_404(Portfolio, id=self.kwargs['portfolio_id'])
         # print('Portfolio' + portfolio.name)
@@ -363,8 +363,7 @@ class TransactionsList(generics.ListCreateAPIView):
         fees = float(self.request.data['fees'])
         
         transaction_amount = round(float(requested_quantity) * price, 2) + commissions + fees
-        purchase_cost = transaction_amount
-        adjusted_buy_price = transaction_amount
+        cost = transaction_amount
         # print(transaction_amount)
         # print('transaction_amount')
         
@@ -396,16 +395,6 @@ class TransactionsList(generics.ListCreateAPIView):
                     held_stock.save()
                     
             else:  # ticker doesn't exist in portfolio, create new Stock
-                
-                held_stock = Stock(
-                    symbol= symbol,
-                    quantity = requested_quantity,
-                    portfolio = portfolio
-                )
-                held_stock.save()
-                print('New Stock Added in Prtfolio')
-                
-                
                 # check if ticker exists in global stock  create new Stock
                 global_stock = StockDetail.objects.filter(symbol=symbol).first()
                 if global_stock:
@@ -416,6 +405,17 @@ class TransactionsList(generics.ListCreateAPIView):
                     )
                     new_stock.save()
                     print('New Stock Added in Details')
+                    
+                held_stock = Stock(
+                    symbol= symbol,
+                    quantity = requested_quantity,
+                    portfolio = portfolio
+                )
+                held_stock.save()
+                print('New Stock Added in Prtfolio')
+                
+                
+                
             
             portfolio.cash -= transaction_amount
             portfolio.save()   
@@ -456,8 +456,7 @@ class TransactionsList(generics.ListCreateAPIView):
         serializer.save(
                         symbol=symbol, 
                         portfolio=portfolio,
-                        purchase_cost=purchase_cost, 
-                        adjusted_buy_price=adjusted_buy_price
+                        cost=cost, 
                         )
     
     
@@ -614,19 +613,112 @@ class WatchlistStocksList(generics.ListCreateAPIView):
         watchlist = get_object_or_404(Watchlist, id=self.kwargs['watchlist_id'])
         # print('Watchlist - ' + watchlist.watchlist_name)
         symbol = self.request.data['symbol'].upper()
+        start_price = self.request.data['start_price']
+        start_date = self.request.data['start_date']
+        description = self.request.data['description']
         # print(symbol)
-        
-        
-        new_stock = WatchlistStock(
-            symbol=symbol,
-            watchlist=watchlist
-        )
-        new_stock.save()
-           
+
+        # check if ticker exists in global stock create new Stock
+        global_stock = StockDetail.objects.filter(symbol=symbol).first()
+        if global_stock:
+            print('Stock in Stocklist no need to add - Watchlist')
+        else:
+            new_stock = StockDetail(
+                symbol= symbol,
+            )
+            new_stock.save()
+            print('New Stock Added in Global Details')
+
         # print('Stock Saved, now saving details')
 
-        serializer.save(symbol=symbol, watchList=watchlist)
         
         
+        serializer.save(symbol=symbol,
+                watchlist=watchlist,
+                start_price=start_price,
+                start_date=start_date,
+                description=description,
+                )
         
+ 
 
+@api_view(['GET', 'POST'])
+def stateList(request):
+    
+    """
+    /api/state/
+        GET: Get all state.    
+        POST: Create state    
+    """
+    if request.method == 'GET':
+        username = request.user
+        if username:
+            user = User.objects.get(username=username)
+            queryset = TableState.objects.filter(user=user)
+        else:
+            queryset = TableState.objects.all()
+            
+        serializer = TableStateSerializer(queryset, many=True)
+        
+        return Response(serializer.data)
+    
+    elif request.method == 'POST':
+        serializer = TableStateSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'POST', 'DELETE'])
+def stateListDetail(request, table_name):
+
+    if request.method == 'GET':
+        
+        username = request.user
+        if username:
+            user = User.objects.get(username=username)
+            table_state = TableState.objects.filter(user=user, tablename=table_name).first()
+        else:
+             return Response(status=status.HTTP_404_NOT_FOUND)
+            
+        print('IN GET')
+        # print(table_state.statedata)
+
+        return JsonResponse(table_state.statedata, safe=False)
+    
+    
+    elif request.method == 'POST':
+        print('IN POST')
+        username = request.user
+        if username:
+            user = User.objects.get(username=username)
+            tablestate = TableState.objects.filter(user=user, tablename = table_name).first()
+        else:
+             return Response(status=status.HTTP_404_NOT_FOUND)
+            
+        if tablestate:
+            print('Updating Table state') 
+            # print(json.dumps(request.data))
+            tablestate.user = request.user
+            tablestate.tablename = table_name
+            tablestate.statedata = request.data
+            tablestate.save()
+        else:
+            print('Creating New Table state') 
+            state = TableState(
+                user = request.user,
+                tablename = table_name,
+                statedata = request.data,
+            )
+            state.save()
+        return Response(status=status.HTTP_201_CREATED)
+
+    elif request.method == 'DELETE':
+        state = TableState.objects.get(tablename=table_name)
+        state.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+ 

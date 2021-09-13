@@ -17,8 +17,10 @@
     <!-- vendor css -->
     <link href="{% static 'lib/fontawesome-free/css/all.min.css' %}" rel="stylesheet">
     <link href="{% static 'lib/ionicons/css/ionicons.min.css' %}" rel="stylesheet">
-    <link href="{% static 'lib/typicons.font/typicons.css' %}" rel="stylesheet">
-    
+    <link href="{% static 'lib/typicons.font/typicons.css' %}" rel="stylesheet">    
+    <link href="{% static 'lib/line-awesome/css/line-awesome.min.css' %}" rel="stylesheet">
+    <link href="{% static 'lib/quill/quill.snow.css' %}" rel="stylesheet">
+    <link href="{% static 'lib/quill/quill.bubble.css' %}" rel="stylesheet">
 
     <link href="https://nightly.datatables.net/css/jquery.dataTables.css" rel="stylesheet" type="text/css" />
     <link href="https://cdn.datatables.net/rowgroup/1.0.2/css/rowGroup.dataTables.min.css" rel="stylesheet" type="text/css" />
@@ -27,9 +29,17 @@
     <link href="https://cdn.datatables.net/select/1.3.3/css/select.dataTables.min.css" rel="stylesheet" type="text/css" />
     <link href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css" rel="stylesheet" type="text/css" />
 
+    <link href="{% static '/lib/jquery-simple-datetimepicker/jquery.simple-dtpicker.css' %}" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.0.0/css/buttons.bootstrap.min.css">
+
+
+    
+
     <!-- azia CSS -->
     <link rel="stylesheet" href="{% static '/css/azia.css' %}">
-    <script src="{% static '/lib/ionicons/ionicons/ionicons.z18qlu2u.js' %}"></script>
+    <!-- <script src="{% static '/lib/ionicons/ionicons/ionicons.z18qlu2u.js' %}"></script> -->
 
     
  
@@ -95,41 +105,101 @@
                 
               </ul>
 
+              <a href="" class="nav-link with-sub"><i class="typcn typcn-clipboard"></i>Indexes</a>
+              <ul class="nav-sub list-group wd-md">
+                
+                <li class="nav-sub-item"><a href class="nav-sub-link" data-toggle="modal" data-target="#modalIndexes" ><i class="fa fa-plus"></i>Create Indexes</a></li>
+                <div id="list-indexes" class="az-invoice-list ps az-content-left">
+
+                </div>
+                
+              </ul>
+
               <div class="modal" id="modalPortfolio">
-                <div class="modal-dialog"  role="document">
+                <div class="modal-dialog modal-lg"  role="document">
                   <div class="modal-content" id="modalForm">
                     <div class="modal-header">
-                      <h6 class="modal-title">Create Portfoliio</h6>
+                      <h6 class="modal-title" id="modal-title-portfolio">Create Portfoliio</h6>
                       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                       </button>
                     </div>
                       <form id="myForm">
+                        {% csrf_token %}
+
                         <div class="modal-body">
                           <!-- <h6>Let's get you all setup so you can begin tracking your investments.</h6> -->
                           <!-- <p>Some Random Text.Someme Random Text.Some Random Text.Some RRandom Text.Some Random Text. </p> -->
-              
-                          <!-- <div class="form-group">
-                            <input type="text" id="portfolio-name" class="form-control" placeholder="Portfolio Name">
-                          </div> -->
+                          <div class="form-row">	                  	
+                            <div class="col">
+                                <label class="az-content-label tx-11 tx-medium tx-gray-600">Portfolio</label>
+                                <input type="text" name="name" id="portfolioname_id" class="form-control mb-4" placeholder="Portfolio Name" required>
+                            </div>                                           
+                          </div>  
+
+                          <div class="form-row">	                  	
+                            <div class="col">
+                                <label class="az-content-label tx-11 tx-medium tx-gray-600">Commission</label>
+                                <input type="number" id="default_commission_id" name="default_commission" class="form-control mb-4" rows="1" step="0.01" placeholder="0">
+                            </div>
+                            <div class="col">
+                                <label class="az-content-label tx-11 tx-medium tx-gray-600">cash</label>
+                                <input type="number" name="cash" id="cash_id" class="form-control mb-4" rows="1" step="0.01" placeholder="0">
+                            </div>   
+                            <div class="col">
+                                <label class="az-content-label tx-11 tx-medium tx-gray-600">Currency</label>
+                                <input type="text" name="currency" id="currency_id" class="form-control mb-4" value="INR" rows="1" placeholder="INR" disabled>
+                            </div>                                         
+                          </div> 
+
+                          <div class="form-row">	                  	                            
+                            <div class="col">
+                              <div class="form-group mg-b-25">
+                                <label class="ckbox mg-b-20">
+                                  <input type="checkbox" name="live_quotes" id="live_quotes_id"><span class="tx-13">Live Quotes</span>
+                                </label>
+                                <label class="ckbox">
+                                  <input type="checkbox" name="update_cash_balaces" id="update_cash_balaces_id" checked><span class="tx-13">Update the Cash balance</span>
+                                </label>
+                              </div>
+                            </div>
+                            <div class="col">
+                                <label class="az-content-label tx-11 tx-medium tx-gray-600" id="update_every_label_id">update every (in minutes)</label>
+                                <input type="number" name="update_every" id="update_every_id" class="form-control mb-4" rows="1" placeholder="0">
+                            </div>                             
+                          </div> 
+
+                          <div class="form-row">	                  	
+                            <div class="col">
+                              <div class="ql-wrapper ql-wrapper">
+                                <label class="az-content-label tx-11 tx-medium tx-gray-600">Description</label>
+                                <div id="quillEditorPortfolio" class="ql-container ql-snow"><div class="ql-editor" data-gramm="false" contenteditable="true" spellcheck="false">
+                                  <p></p>
+                                </div>
+                              </div>
+                              </div>
+                            </div>
+                                                                        
+                          </div> 
+                          
                           <!-- https://www.youtube.com/watch?v=mF5jzSXb1dc&ab_channel=Codemy.com -->
                           
                           <!-- {{ modalPortfolioForm|crispy }} -->
 
-                          {% crispy modalPortfolioForm %}
+                          <!-- {% crispy modalPortfolioForm %} -->
 
                           <!-- {{ modalPortfolioForm.media }}  -->
                         </div>
-                        <!-- <div class="modal-footer">
+                        <div class="modal-footer">
                           <input type="submit" id="btn-portfolio-submit" class="btn btn-indigo">
-                        </div> -->
+                        </div>
                       </form>
                   </div>
                 </div><!-- modal-dialog -->
               </div>
 
               <div class="modal" id="modalWatchlist">
-                <div class="modal-dialog" role="document">
+                <div class="modal-dialog modal-lg" role="document">
                   <div class="modal-content" id="modalForm">
                     <div class="modal-header">
                       <h6 class="modal-title">Create Watchlist</h6>
@@ -139,8 +209,100 @@
                     </div>
                       <form id="myWatchlistForm">
                         <div class="modal-body">
-                          {% crispy modalWatchlistForm %}
+                          {% csrf_token %}
+                          <div class="form-row">	                  	
+                            <div class="col">
+                                <label class="az-content-label tx-11 tx-medium tx-gray-600">Watchlist Name</label>
+                                <input type="text" name="watchlist_name" id="watchlist_name_id" class="form-control mb-4" placeholder="Watchlist Name" required>
+                            </div>                                           
+                          </div>  
+
+                          <div class="form-row">	                  	                            
+                            <div class="col">
+                                <label class="ckbox mg-b-20">
+                                  <input type="checkbox" name="watchlist_live_quotes" id="watchlist_live_quotes_id"><span class="tx-13">Live Quotes</span>
+                                </label>
+                            </div>
+                            <div class="col">
+                                <label class="az-content-label tx-11 tx-medium tx-gray-600" id="watchlist_update_every_label_id">update every (in minutes)</label>
+                                <input type="number" name="watchlist_update_every" id="watchlist_update_every_id" class="form-control mb-4" rows="1" placeholder="10" disabled>
+                            </div>                             
+                          </div> 
+
+                          <div class="form-row">	                  	
+                            <div class="col">
+                              <div class="ql-wrapper ql-wrapper">
+                                <label class="az-content-label tx-11 tx-medium tx-gray-600">Description</label>
+                                <div id="quillEditorWatchlist" class="ql-container ql-snow"><div class="ql-editor" data-gramm="false" contenteditable="true" spellcheck="false">
+                                  <p></p>
+                                </div>
+                              </div>
+                              </div>
+                            </div>
+                                                                        
+                          </div> 
+
                         </div>
+
+                        <div class="modal-footer">
+                          <input type="submit" id="btn-watchlist-submit" class="btn btn-indigo">
+                        </div>
+
+                      </form>
+                  </div>
+                </div><!-- modal-dialog -->
+              </div>
+
+              <div class="modal" id="modalIndexes">
+                <div class="modal-dialog  modal-lg" role="document">
+                  <div class="modal-content" id="modalForm">
+                    <div class="modal-header">
+                      <h6 class="modal-title">Create Indexes</h6>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                      </button>
+                    </div>
+                      <form id="myIndexForm">
+                        <div class="modal-body">
+                          {% csrf_token %}
+                          <div class="form-row">	                  	
+                            <div class="col">
+                                <label class="az-content-label tx-11 tx-medium tx-gray-600">Index Name</label>
+                                <input type="text" name="index_name" id="index_name_id" class="form-control mb-4" placeholder="Index Name" required>
+                            </div>                                           
+                          </div>  
+
+                          <div class="form-row">	                  	                            
+                            <div class="col">
+                                <label class="ckbox mg-b-20">
+                                  <input type="checkbox" name="index_live_quotes" id="index_live_quotes_id"><span class="tx-13">Live Quotes</span>
+                                </label>
+                            </div>
+                            <div class="col">
+                                <label class="az-content-label tx-11 tx-medium tx-gray-600" id="index_update_every_label_id">update every (in minutes)</label>
+                                <input type="number" name="index_update_every" id="index_update_every_id" class="form-control mb-4" rows="1" placeholder="10" disabled>
+                            </div>                             
+                          </div> 
+
+                          <div class="form-row">	                  	
+                            <div class="col">
+                              <div class="ql-wrapper ql-wrapper">
+                                <label class="az-content-label tx-11 tx-medium tx-gray-600">Description</label>
+                                <div id="quillEditorIndexes" class="ql-container ql-snow"><div class="ql-editor" data-gramm="false" contenteditable="true" spellcheck="false">
+                                  <p></p>
+                                </div>
+                              </div>
+                              </div>
+                            </div>
+                                                                        
+                          </div> 
+
+                        </div>
+
+                        <div class="modal-footer">
+                          <input type="submit" id="btn-index-submit" class="btn btn-indigo">
+                        </div>
+
                       </form>
                   </div>
                 </div><!-- modal-dialog -->
@@ -151,6 +313,7 @@
           </ul><!-- nav -->
         </div><!-- az-sidebar-body -->
       </div><!-- az-sidebar -->
+
       <div class="az-content az-content-dashboard-five">
         <div class="az-header">
           <div class="container-fluid">
@@ -193,20 +356,13 @@
             {% block portfoliodetail %}
 
             {% endblock %}
-
           </div>
-          
-          
         </div>
 
 
         
         <div class="az-content-body">
 
-          
-          
-          
-          
           {% block content %}
 
           {% endblock %}
@@ -218,6 +374,7 @@
             <span>&copy; 2021 Origami IT Lab</span>
           </div><!-- container -->
         </div><!-- az-footer -->
+
       </div><!-- az-content -->
 
       <!-- <script src="{% static '/lib/jquery/jquery.min.js' %}"></script> -->
@@ -226,7 +383,6 @@
 
       <!-- <script src="{% static '/lib/datatables.net/js/jquery.dataTables.min.js' %}"></script> -->
       <!-- <script src="{% static '/lib/datatables.net-dt/js/dataTables.dataTables.min.js' %}"></script> -->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
 
       <script src="https://nightly.datatables.net/js/jquery.dataTables.js"></script>
       <script src="https://cdn.datatables.net/rowgroup/1.0.2/js/dataTables.rowGroup.min.js"></script>
@@ -238,7 +394,8 @@
      
       
       <!-- <script src="{% static '/lib/ionicons/ionicons.js' %}"></script> -->
-      <script src="{% static '/lib/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
+      <script src="{% static '/lib/quill/quill.min.js' %}"></script>
+ 
 
       <script src="{% static '/js/azia.js' %}"></script>
 
@@ -265,14 +422,30 @@
 
       <script> //my_toggle_func - div_id_update_every
 
-        document.getElementById("id_live_quotes").onclick = my_toggle_func; 
+        document.getElementById("live_quotes_id").onclick = my_toggle_func; 
         function my_toggle_func() { 
           if (this.checked) {
-                  document.getElementById("div_id_update_every").style.display = 'none';
+                  document.getElementById("update_every_id").style.display = 'none';
+                  document.getElementById("update_every_label_id").style.display = 'none';
           } else {
-                  document.getElementById("div_id_update_every").style.display = 'block';
+                  document.getElementById("update_every_id").style.display = 'block';
+                  document.getElementById("update_every_label_id").style.display = 'block';
           }
         }
+
+
+        document.getElementById("watchlist_live_quotes_id").onclick = my_toggle_func; 
+        function my_toggle_func() { 
+          if (this.checked) {
+                  document.getElementById("watchlist_update_every_id").style.display = 'none';
+                  document.getElementById("watchlist_update_every_label_id").style.display = 'none';
+          } else {
+                  document.getElementById("watchlist_update_every_id").style.display = 'block';
+                  document.getElementById("watchlist_update_every_label_id").style.display = 'block';
+          }
+        }
+
+
       </script>
 
       <script> //azSidebarToggle
@@ -316,417 +489,523 @@
         });
       </script>
 
-      
-      
-<script> //Portfolio
+      <script> //WYSIWYG
+        $(function(){
+          'use strict'
 
+          var icons = Quill.import('ui/icons');
+          icons['bold'] = '<i class="la la-bold" aria-hidden="true"></i>';
+          icons['italic'] = '<i class="la la-italic" aria-hidden="true"></i>';
+          icons['underline'] = '<i class="la la-underline" aria-hidden="true"></i>';
+          icons['strike'] = '<i class="la la-strikethrough" aria-hidden="true"></i>';
+          icons['list']['ordered'] = '<i class="la la-list-ol" aria-hidden="true"></i>';
+          icons['list']['bullet'] = '<i class="la la-list-ul" aria-hidden="true"></i>';
+
+          icons['link'] = '<i class="la la-link" aria-hidden="true"></i>';
+          icons['image'] = '<i class="la la-image" aria-hidden="true"></i>';
+          icons['video'] = '<i class="la la-film" aria-hidden="true"></i>';
+          icons['code-block'] = '<i class="la la-code" aria-hidden="true"></i>';
+
+          var toolbarOptions = [
+            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            ['link', 'image', 'video']
+          ];
+
+          var quill = new Quill('#quillEditor', {
+            modules: {
+              toolbar: toolbarOptions
+            },
+            theme: 'snow'
+          });
+
+          var quill = new Quill('#quillEditorPortfolio', {
+            modules: {
+              toolbar: toolbarOptions
+            },
+            theme: 'snow'
+          });
+
+          var quill = new Quill('#quillEditorWatchlist', {
+            modules: {
+              toolbar: toolbarOptions
+            },
+            theme: 'snow'
+          });
+
+          var quill = new Quill('#quillEditorWStockAdd', {
+            modules: {
+              toolbar: toolbarOptions
+            },
+            theme: 'snow'
+          });
+
+          var quill = new Quill('#quillEditorIndexes', {
+            modules: {
+              toolbar: toolbarOptions
+            },
+            theme: 'snow'
+          });
+
+          var quill = new Quill('#quillEditorTransaction', {
+            modules: {
+              toolbar: toolbarOptions
+            },
+            theme: 'snow'
+          });
+
+          // var quillModal = new Quill('#quillEditorModal', {
+          //   modules: {
+          //     toolbar: toolbarOptions
+          //   },
+          //   theme: 'snow'
+          // });
+
+          // var quillModal2 = new Quill('#quillEditorModal2', {
+          //   modules: {
+          //     toolbar: toolbarOptions
+          //   },
+          //   theme: 'snow'
+          // });
+
+          var toolbarInlineOptions = [
+            ['bold', 'italic', 'underline'],
+            [{ 'header': 1 }, { 'header': 2 }, 'blockquote'],
+            ['link', 'image', 'code-block'],
+          ];
+
+          // var quillInline = new Quill('#quillInline', {
+          //   modules: {
+          //     toolbar: toolbarInlineOptions
+          //   },
+          //   bounds: '#quillInline',
+          //   scrollingContainer: '#scrolling-container',
+          //   placeholder: 'Write something...',
+          //   theme: 'bubble'
+          // });
+
+          // new PerfectScrollbar('#scrolling-container', {
+          //   suppressScrollX: true
+          // });
+
+        });
+      </script>
+      
+      <script> //Portfolio
+
+              
+        /*
+            KEY COMPONENTS:
+            "activeItem" = null until an edit button is clicked. Will contain object of item we are editing
+            
+            PROCESS:
+            1 - Fetch Data and build rows "buildList()"
+            2 - Create Item on form submit
+            3 - Edit Item click - Prefill form and change submit URL
+            4 - Delete Item - Send item id to delete URL
+            NOTES:
+            -- Add event handlers to "edit", "delete", "title"
+            -- Remove extra data on re-render
+            -- CSRF Token
+          */
+
+
+        var activeItem = null
         
-  /*
-      KEY COMPONENTS:
-      "activeItem" = null until an edit button is clicked. Will contain object of item we are editing
-      
-      PROCESS:
-      1 - Fetch Data and build rows "buildList()"
-      2 - Create Item on form submit
-      3 - Edit Item click - Prefill form and change submit URL
-      4 - Delete Item - Send item id to delete URL
-      NOTES:
-      -- Add event handlers to "edit", "delete", "title"
-      -- Remove extra data on re-render
-      -- CSRF Token
-    */
+        buildList()
 
+        //Making a GET request with fetch
+        function buildList() {
+          var listWrapper = document.getElementById('list-portfolio')
+          listWrapper.innerHTML = ''
 
-  var activeItem = null
-  
-  buildList()
-  buildWatchList()
+          var URL = window.location.origin + '/api/portfolios/'
 
+          fetch(URL, {
+            headers:{
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+            },
+          })
+          .then(response => {
+            
+            return response.json() //Convert response to JSON      
+          })
+          .then(data => {
+            //Perform actions with the response data from the view      
+            console.log('GET Portfolio Data: ', data.name)
+            // $('#portfolio_table').DataTable();
 
-  //Making a GET request with fetch
-  function buildList() {
-    var listWrapper = document.getElementById('list-portfolio')
-    listWrapper.innerHTML = ''
-
-    var URL = window.location.origin + '/api/portfolios/'
-
-    fetch(URL, {
-      headers:{
-          'Accept': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
-      },
-    })
-    .then(response => {
-      
-      return response.json() //Convert response to JSON      
-    })
-    .then(data => {
-      //Perform actions with the response data from the view      
-      console.log('GET Portfolio Data: ', data.name)
-      $('#portfolio_table').DataTable();
-
-      var list = data
-      for (var i in list) {
-        console.log('Each Data Portfolio: ', list[i])
-        var listItem = `
-            <div class="media">
-              <div class="media-icon"><i class="far fa-file-alt"></i></div>
-              <div class="media-body">
-                <h6>
-                  <span><a href="/portfolios/${list[i].id}/" class="nav-sub-link">${list[i].name}</a></span>
-                  <span>$25</span>
-                </h6>
-                <div>
-                  <p><span>Date:</span> Oct 25</p>
-                  <div class="ed-btn" style="display: block">
-                    <p><span><a href class="linkEdit" data-toggle="modal" data-target="#modalPortfolio"><i class="fas fa-edit fa-fw"></i></a>
-                      </span><a href class="linkDelete"><i class="fas fa-trash-alt fa-fw"></i></a>
-                    </p>                    
+            var list = data
+            for (var i in list) {
+              console.log('Each Data Portfolio: ', list[i])
+              var listItem = `
+                  <div class="media">
+                    <div class="media-icon"><i class="far fa-file-alt"></i></div>
+                    <div class="media-body">
+                      <h6>
+                        <span><a href="/portfolios/${list[i].id}/" class="nav-sub-link">${list[i].name}</a></span>
+                        <span>${ list[i].cash }</span>
+                      </h6>
+                      <div>
+                        <p><span>Date:</span> ${list[i].created.split('T')[0]}</p>
+                        <div class="ed-btn" style="display: block">
+                          <p><span><a href class="linkEdit" data-toggle="modal" data-target="#modalPortfolio"><i class="fas fa-edit fa-fw"></i></a>
+                            </span><a href class="linkDelete"><i class="fas fa-trash-alt fa-fw"></i></a>
+                          </p>                    
+                        </div>
+                      </div>
+                    </div><!-- media-body -->
                   </div>
-                </div>
-              </div><!-- media-body -->
-            </div>
-          `
+                `
 
-        
-        listWrapper.innerHTML += listItem
-        // portfolioWrapper.innerHTML += item
+              
+              listWrapper.innerHTML += listItem
+              // portfolioWrapper.innerHTML += item
 
-        
+              
 
-      }
+            }
 
-      for (var i in list) {
-        var editItem = document.getElementsByClassName('linkEdit')[i]
-        var deleteItem = document.getElementsByClassName('linkDelete')[i]
+            for (var i in list) {
+              var editItem = document.getElementsByClassName('linkEdit')[i]
+              var deleteItem = document.getElementsByClassName('linkDelete')[i]
 
-        editItem.addEventListener('click', (function(item){
-          return function(){
-            console.log('When click on Edit link, status of live quotes', item.cash)
-            editPortfolio(item);
+              editItem.addEventListener('click', (function(item){
+                return function(){
+                  console.log('When click on Edit link, status of live quotes', item.cash)
+                  editPortfolio(item);            
+                }
+              })(list[i]))
+
+
+              deleteItem.addEventListener('click', (function(item){
+                return function(){
+                  deletePortfolio(item);
+                }
+              })(list[i]))
+
+            }
+
+            
+          })
+
+
+        }
+
+
+
+
+        //Making a POST/Update request with fetch
+        const form = document.getElementById('myForm')
+
+        form.addEventListener('submit', function(e){
+          e.preventDefault();
+
+          console.log('Form Submitted')
+          var URL = window.location.origin + '/api/portfolios/' 
+
+          if(activeItem!=null){
+            var URL = window.location.origin + `/api/portfolios/${activeItem.id}/`
+            
+            activeItem=null
           }
-        })(list[i]))
-
-
-        deleteItem.addEventListener('click', (function(item){
-          return function(){
-            deletePortfolio(item);
+          
+          const data = new FormData(this)
+          const searchParam = new URLSearchParams()
+          
+          for (const pair of data) {
+            searchParam.append(pair[0], pair[1])
+            console.log(pair[0], pair[1])
           }
-        })(list[i]))
 
-      }
-    })
+          if (searchParam.get('live_quotes')==null) {
+              searchParam.set('live_quotes', false)
+              searchParam.set('update_every', '0')
+            }
+            else{
+              searchParam.set('update_every', '0')
+            }
 
+            if (searchParam.get('default_commission')==null || searchParam.get('default_commission')=="") {
+              searchParam.set('default_commission', '0')
+            }
+            if (searchParam.get('cash')==null || searchParam.get('cash')=="") {
+              searchParam.set('cash', '0')
+            }
+            if (searchParam.get('update_cash_balaces')==null || searchParam.get('update_cash_balaces')=="") {
+              searchParam.set('update_cash_balaces', false)
+            }
 
-  }
+            var myEditor = document.querySelector('#quillEditorPortfolio')
+            var html = myEditor.children[0].innerHTML
+            searchParam.set('description', html)
 
+          fetch(URL, {
+            method: 'POST',
+            headers:{
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+                'X-CSRFToken': csrftoken,
+            },
+            body: JSON.stringify({
+              'name': searchParam.get('name'),
+              'description': searchParam.get('description'),
+              'live_quotes': searchParam.get('live_quotes'),
+              'update_every': searchParam.get('update_every'),
+              'default_commission': searchParam.get('default_commission'),
+              'cash': searchParam.get('cash'),
+              'update_cash_balaces': searchParam.get('update_cash_balaces'),
+            }) //JavaScript object of data to POST
+          })
 
-
-
-  //Making a POST/Update request with fetch
-  const form = document.getElementById('myForm')
-
-  form.addEventListener('submit', function(e){
-    e.preventDefault();
-
-    console.log('Form Submitted')
-    var URL = window.location.origin + '/api/portfolios/' 
-
-    if(activeItem!=null){
-      var URL = window.location.origin + `/api/portfolios/${activeItem.id}/`
-      
-      activeItem=null
-    }
-    
-    const data = new FormData(this)
-    const searchParam = new URLSearchParams()
-    
-    for (const pair of data) {
-      searchParam.append(pair[0], pair[1])
-      console.log(pair[0], pair[1])
-
-      
-    }
-
-    if (searchParam.get('live_quotes')==null) {
-        searchParam.set('live_quotes', false)
-      }
-      else{
-        searchParam.set('update_every', '0')
-      }
-      // if (searchParam.get('include_cash_balance')==null) {
-      //   searchParam.set('include_cash_balance', false)
-      // }
-
-    fetch(URL, {
-      method: 'POST',
-      headers:{
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
-          'X-CSRFToken': csrftoken,
-      },
-      body: JSON.stringify({
-        'name': searchParam.get('name'),
-        'description': searchParam.get('description'),
-        'live_quotes': searchParam.get('live_quotes'),
-        'update_every': searchParam.get('update_every'),
-        'default_commission': searchParam.get('default_commission'),
-        'cash': searchParam.get('cash'),
-        // 'include_cash_balance': searchParam.get('include_cash_balance'),
-      }) //JavaScript object of data to POST
-    })
-
-    .then(response => {
-      buildList();
-      document.getElementById('myForm').reset()
-      $('#modalPortfolio').modal('toggle');
-    })
-    .then(data => {
-      console.log('POST DATA', data)
-      $('#portfolio_table').DataTable().draw()
-      //Perform actions with the response data from the view
-    })
-    .catch(error => {
-      console.log('ERROR', error)
-    })
-    
-  });
+          .then(response => {
+            buildList();
+            document.getElementById('myForm').reset()
+            $('#modalPortfolio').modal('toggle');
+          })
+          .then(data => {
+            console.log('POST DATA', data)
+            // $('#portfolio_table').DataTable().draw()
+            //Perform actions with the response data from the view
+            
+          })
+          .catch(error => {
+            console.log('ERROR', error)
+          })
+          
+        });
 
 
 
-  function editPortfolio(item) {    
-    activeItem = item
-    document.getElementById('id_name').value = activeItem.name
-    document.getElementById('id_description').value = activeItem.description
-    document.getElementById('id_live_quotes').checked = activeItem.live_quotes
-    document.getElementById('id_update_every').value = activeItem.update_every
-    document.getElementById('id_default_commission').value = activeItem.default_commission
-    document.getElementById('id_cash').value = activeItem.cash
-
-    
-  }
-
-
-  function deletePortfolio(item){
-    var URL = window.location.origin + `/api/portfolios/${item.id}/` 
-    console.log('DELETE', item.id)
-    fetch(URL, {
-      method: 'DELETE',
-      headers:{
-          'Content-Type': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
-          'X-CSRFToken': csrftoken,
-      }
-    })
-    .then((response)=>{
-      
-      if (window.location.href != window.location.origin) {
-            window.location.href = window.location.origin;
-      }
-
-      buildList();
-    })
+        function editPortfolio(item) {    
+          activeItem = item
+          document.getElementById('modal-title-portfolio').value = 'Edit Portfolio'
+          document.getElementById('portfolioname_id').value = activeItem.name
+          document.querySelector('#quillEditorPortfolio').children[0].innerHTML = activeItem.description
+          document.getElementById('live_quotes_id').checked = activeItem.live_quotes
+          document.getElementById('update_cash_balaces_id').checked = activeItem.update_cash_balaces
+          document.getElementById('update_every_id').value = activeItem.update_every
+          document.getElementById('default_commission_id').value = activeItem.default_commission
+          document.getElementById('cash_id').value = activeItem.cash
+          
+        }
 
 
-  }
+        function deletePortfolio(item){
+          var URL = window.location.origin + `/api/portfolios/${item.id}/` 
+          console.log('DELETE', item.id)
+          fetch(URL, {
+            method: 'DELETE',
+            headers:{
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+                'X-CSRFToken': csrftoken,
+            }
+          })
+          .then((response)=>{
+            
+            if (window.location.href != window.location.origin) {
+                  window.location.href = window.location.origin;
+            }
+
+            buildList();
+          })
 
 
+        }
 
 
-
-
+      </script>
 
 
 
+      <script> // Watchlist
 
 
+        var activeWItem = null
+        
+        buildWatchList()
 
-  var activeWItem = null
-  
-  
-  console.log('GET Watchlist Data: ')
-  //Making a GET request with fetch
-  function buildWatchList() {
-    var listWWrapper = document.getElementById('list-watchlist')
-    listWWrapper.innerHTML = ''
+        console.log('GET Watchlist Data: ')
+        //Making a GET request with fetch
+        function buildWatchList() {
+          var listWWrapper = document.getElementById('list-watchlist')
+          listWWrapper.innerHTML = ''
 
-    var URL = window.location.origin + '/api/watchlists/'
+          var URL = window.location.origin + '/api/watchlists/'
 
-    fetch(URL, {
-      headers:{
-          'Accept': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
-      },
-    })
-    .then(response => {
-      
-      return response.json() //Convert response to JSON      
-    })
-    .then(data => {
-      //Perform actions with the response data from the view      
-      console.log('GET Watchlist Data: ', data.name)
-      $('#watchlist_table').DataTable();
+          fetch(URL, {
+            headers:{
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+            },
+          })
+          .then(response => {
+            
+            return response.json() //Convert response to JSON      
+          })
+          .then(data => {
+            //Perform actions with the response data from the view      
+            console.log('GET Watchlist Data: ', data.name)
+            // $('#watchlist_table').DataTable();	
 
-      var list = data
-      for (var i in list) {
-        console.log('Each Data watchlist: ', list[i])
-        var listWItem = `
-            <div class="media">
-              <div class="media-icon"><i class="far fa-file-alt"></i></div>
-              <div class="media-body">
-                <h6>
-                  <span><a href="/watchlists/${list[i].id}/" class="nav-sub-link">${list[i].watchlist_name}</a></span>
-                  <span>$25</span>
-                </h6>
-                <div>
-                  <p><span>Date:</span> Oct 25</p>
-                  <div class="ed-btn" style="display: block">
-                    <p><span><a href class="linkWEdit" data-toggle="modal" data-target="#modalWatchlist"><i class="fas fa-edit fa-fw"></i></a>
-                      </span><a href class="linkWDelete"><i class="fas fa-trash-alt fa-fw"></i></a>
-                    </p>                    
+            var list = data
+            for (var i in list) {
+              console.log('Each Data watchlist: ', list[i])
+              var listWItem = `
+                  <div class="media">
+                    <div class="media-body">
+                      <h6>
+                        <span><a href="/watchlists/${list[i].id}/" class="nav-sub-link">${list[i].watchlist_name}</a></span>
+                        <div class="ed-btn" style="display: block">
+                          <p><span><a href class="linkWEdit" data-toggle="modal" data-target="#modalWatchlist"><i class="fas fa-edit fa-fw"></i></a>
+                            </span><a href class="linkWDelete"><i class="fas fa-trash-alt fa-fw"></i></a>
+                          </p>                    
+                        </div>
+                      </h6>            
+                    </div><!-- media-body -->
                   </div>
-                </div>
-              </div><!-- media-body -->
-            </div>
-          `
+                `
 
-        
-        listWWrapper.innerHTML += listWItem
-        // portfolioWrapper.innerHTML += item
+              
+              listWWrapper.innerHTML += listWItem
+              // portfolioWrapper.innerHTML += item
 
-        
+              
 
-      }
+            }
 
-      for (var i in list) {
-        var editItem = document.getElementsByClassName('linkWEdit')[i]
-        var deleteItem = document.getElementsByClassName('linkWDelete')[i]
+            for (var i in list) {
+              var editItem = document.getElementsByClassName('linkWEdit')[i]
+              var deleteItem = document.getElementsByClassName('linkWDelete')[i]
 
-        editItem.addEventListener('click', (function(item){
-          return function(){
-            console.log('When click on Edit link, status of live quotes', item.cash)
-            editWatchlist(item);
+              editItem.addEventListener('click', (function(item){
+                return function(){
+                  console.log('When click on Edit link, status of live quotes', item.id)
+                  editWatchlist(item);
+                }
+              })(list[i]))
+
+
+              deleteItem.addEventListener('click', (function(item){
+                return function(){
+                  deleteWatchlist(item);
+                }
+              })(list[i]))
+
+            }
+          })
+
+
+        }
+
+
+        //Making a POST/Update request with fetch
+        const formW = document.getElementById('myWatchlistForm')
+
+        formW.addEventListener('submit', function(e){
+          e.preventDefault();
+
+          console.log('watchlist Form Submitted')
+          var URL = window.location.origin + '/api/watchlists/' 
+
+          if(activeWItem!=null){
+            var URL = window.location.origin + `/api/watchlists/${activeWItem.id}/`
+            
+            activeWItem=null
           }
-        })(list[i]))
+          
+          const dataW = new FormData(this)
+          const searchParamW = new URLSearchParams()
+          
+          for (const pair of dataW) {
+            searchParamW.append(pair[0], pair[1])
+            console.log(pair[0], pair[1])
 
-
-        deleteItem.addEventListener('click', (function(item){
-          return function(){
-            deleteWatchlist(item);
+            
           }
-        })(list[i]))
 
-      }
-    })
-
-
-  }
-
-
-
-
-  //Making a POST/Update request with fetch
-  const formW = document.getElementById('myWatchlistForm')
-
-  formW.addEventListener('submit', function(e){
-    e.preventDefault();
-
-    console.log('watchlist Form Submitted')
-    var URL = window.location.origin + '/api/watchlists/' 
-
-    if(activeWItem!=null){
-      var URL = window.location.origin + `/api/watchlists/${activeWItem.id}/`
-      
-      activeWItem=null
-    }
-    
-    const dataW = new FormData(this)
-    const searchParamW = new URLSearchParams()
-    
-    for (const pair of dataW) {
-      searchParamW.append(pair[0], pair[1])
-      console.log(pair[0], pair[1])
-
-      
-    }
-
-    if (searchParamW.get('live_quotes')==null) {
-        searchParamW.set('live_quotes', false)
-      }
-      else{
-        searchParamW.set('update_every', '0')
-      }
+          if (searchParamW.get('watchlist_live_quotes')==null) {
+              searchParamW.set('watchlist_live_quotes', false)
+              searchParamW.set('watchlist_update_every', '0')
+            }
+            else{
+              searchParamW.set('watchlist_live_quotes', true)
+              searchParamW.set('watchlist_update_every', '10')
+            }
 
 
-    fetch(URL, {
-      method: 'POST',
-      headers:{
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
-          'X-CSRFToken': csrftoken,
-      },
-      body: JSON.stringify({
-        'watchlist_name': searchParamW.get('watchlist_name'),
-        'watchlist_description': searchParamW.get('watchlist_description'),
-        'watchlist_live_quotes': searchParamW.get('watchlist_live_quotes'),
-        'watchlist_update_every': searchParamW.get('watchlist_update_every'),
-      }) //JavaScript object of data to POST
-    })
+          fetch(URL, {
+            method: 'POST',
+            headers:{
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+                'X-CSRFToken': csrftoken,
+            },
+            body: JSON.stringify({
+              'watchlist_name': searchParamW.get('watchlist_name'),
+              'watchlist_description': searchParamW.get('watchlist_description'),
+              'watchlist_live_quotes': searchParamW.get('watchlist_live_quotes'),
+              'watchlist_update_every': searchParamW.get('watchlist_update_every'),
+            }) //JavaScript object of data to POST
+          })
 
-    .then(response => {
-      buildWatchList();
-      document.getElementById('myWatchlistForm').reset()
-      $('#modalWatchlist').modal('toggle');
-    })
-    .then(data => {
-      console.log('POST DATA', data)
-      $('#watchlist_table').DataTable().draw()
-      //Perform actions with the response data from the view
-    })
-    .catch(error => {
-      console.log('ERROR', error)
-    })
-    
-  });
+          .then(response => {
+            buildWatchList();
+            document.getElementById('myWatchlistForm').reset()
+            $('#modalWatchlist').modal('toggle');
+          })
+          .then(data => {
+            console.log('POST DATA', data)
+            // $('#watchlist_table').DataTable().draw()
+            //Perform actions with the response data from the view
+          })
+          .catch(error => {
+            console.log('ERROR', error)
+          })
+          
+        });
 
 
 
-  function editWatchlist(item) {    
-    activeWItem = item
-    document.getElementById('id_watchlist_name').value = activeWItem.watchlist_name
-    document.getElementById('id_watchlist_description').value = activeWItem.watchlist_description
-    document.getElementById('id_watchlist_live_quotes').checked = activeWItem.watchlist_live_quotes
-    document.getElementById('id_watchlist_update_every').value = activeWItem.watchlist_update_every
+        function editWatchlist(item) {    
+          activeWItem = item
+          document.getElementById('watchlist_name_id').value = activeWItem.watchlist_name
+          document.querySelector('#quillEditorWatchlist').children[0].innerHTML = activeWItem.watchlist_description
+          document.getElementById('watchlist_live_quotes_id').checked = activeWItem.watchlist_live_quotes
+          document.getElementById('watchlist_update_every_id').value = activeWItem.watchlist_update_every
 
-    
-  }
-
-
-  function deleteWatchlist(item){
-    var URL = window.location.origin + `/api/watchlists/${item.id}/` 
-    console.log('DELETE', item.id)
-    fetch(URL, {
-      method: 'DELETE',
-      headers:{
-          'Content-Type': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
-          'X-CSRFToken': csrftoken,
-      }
-    })
-    .then((response)=>{
-      
-      if (window.location.href != window.location.origin) {
-            window.location.href = window.location.origin;
-      }
-
-      buildWatchList();
-    })
+          
+        }
 
 
-  }
-</script>
+        function deleteWatchlist(item){
+          var URL = window.location.origin + `/api/watchlists/${item.id}/` 
+          console.log('DELETE', item.id)
+          fetch(URL, {
+            method: 'DELETE',
+            headers:{
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+                'X-CSRFToken': csrftoken,
+            }
+          })
+          .then((response)=>{
+            
+            if (window.location.href != window.location.origin) {
+                  window.location.href = window.location.origin;
+            }
+
+            buildWatchList();
+          })
+
+
+        }
+      </script>
 
     
     {% block javascript %}
