@@ -5,3 +5,4 @@ from . models import *
 admin.site.register(Portfolio)
 admin.site.register(Stock)
 admin.site.register(Transaction)
+admin.site.register(Column)

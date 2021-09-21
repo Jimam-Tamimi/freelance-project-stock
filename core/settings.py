@@ -171,3 +171,9 @@ REST_FRAMEWORK = {
 }
 
 LOGIN_URL = 'login/'
+
+
+AUTH_USER_MODEL = 'account.MyUser'
+
+
+# what ever to solve this error  ihave to delete the database and mirgate it from start but when i do that i was not able to add data any more

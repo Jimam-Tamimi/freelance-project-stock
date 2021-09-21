@@ -1,6 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import User
 from ckeditor.fields import RichTextField
+from django.contrib.auth import get_user_model
 
 import requests
 import datetime
@@ -16,6 +16,10 @@ import aiohttp
 
 
 from decimal import *
+
+
+User = get_user_model()
+
 
 def get_all_stockDetails_max10(symbols):
         # print(symbols)
@@ -616,4 +620,15 @@ class TableState(models.Model):
         '''The ForeignKey i.e. user and tablename name must be unique'''
         unique_together = ('user', 'tablename')
         
+
+
+    
+class Column(models.Model):
+    # Columns data will be deleted, if user is deleted
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False)
+    data = models.JSONField('Data', null=True)
+    
+    def __str__(self):
+        return str(self.user)
+    
 

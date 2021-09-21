@@ -2068,8 +2068,8 @@ function format ( d ) {
         },
         
         stateLoadCallback: function (settings, callback) {
-          console.log('LOAD');
-          var URL = window.location.origin + '/api/state/' + this.attr("id") + '/'
+          {% comment %} var URL = window.location.origin + '/api/state/' + this.attr("id") + '/' {% endcomment %}
+          var URL = window.location.origin + '/api/columns/'
           // 'http://blakbit.com/dt_test.php?id=example&load'
           $.ajax( {
             url: URL,
@@ -2077,9 +2077,11 @@ function format ( d ) {
             dataType: 'json',
             async : false,
             success: function (json) {
-
+            console.log('LOAD');
               console.log(json);
-              callback( json);  // Simulate empty settings
+              callback( 
+                    json          
+              );  // Simulate empty settings
             }
           } );
 
@@ -2089,8 +2091,9 @@ function format ( d ) {
         stateSaveCallback: function (settings, data) {
           // console.log(this.attr("id"))
           console.log('SAVE');
-          // console.log( JSON.stringify(data));
-          var URL = window.location.origin + '/api/state/' + this.attr("id") + '/'
+          console.log(data);
+          // var URL = window.location.origin + '/api/state/' + this.attr("id") + '/'
+          var URL = window.location.origin + '/api/columns/'
               fetch(URL, {
               method: 'POST',
               dataType: 'json',

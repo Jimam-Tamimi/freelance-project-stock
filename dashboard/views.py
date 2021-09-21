@@ -13,6 +13,11 @@ import aiohttp
 import asyncio
 
 from django.http import HttpResponseRedirect
+from django.contrib.auth import get_user_model
+
+
+
+User = get_user_model()
 
 
 
@@ -191,3 +196,5 @@ def portfolioView_MODIFIED(request, pk):
                 }
         
         return render(request, 'dashboard/portfolio.html', context)
+
+

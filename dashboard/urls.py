@@ -35,6 +35,8 @@ urlpatterns = [
     path('api/watchlists/<str:watchlist_id>/stocks/', apis.WatchlistStocksList.as_view()),
     
     
+    path('api/columns/', apis.listColumn), # on this url | haveyou got it?
+
     path('api/state/', apis.stateList),
     path('api/state/<str:table_name>/', apis.stateListDetail),
     

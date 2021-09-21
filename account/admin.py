@@ -9,4 +9,4 @@ from .models import *
 
 
 
-# admin.site.register(User, UserAdmin)
+admin.site.register(MyUser)

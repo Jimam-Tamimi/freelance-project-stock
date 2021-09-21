@@ -722,3 +722,20 @@ def stateListDetail(request, table_name):
 
 
  
+@api_view(['GET', 'POST'])
+def listColumn(request):
+    if(request.method == 'GET'):
+        try:
+            column = Column.objects.get(user=request.user)
+        except Column.DoesNotExist :
+            column = Column.objects.create(user=request.user)
+        return Response(column.data, status.HTTP_200_OK)
+    elif(request.method == 'POST'):
+        data = request.data
+        try:
+            column = Column.objects.get(user=request.user)
+        except Column.DoesNotExist :
+            column = Column.objects.create(user=request.user)
+        column.data = data
+        column.save()
+        return Response(column.data, status.HTTP_200_OK)
