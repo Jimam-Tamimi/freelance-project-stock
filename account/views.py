@@ -16,7 +16,6 @@ from django.contrib.auth  import authenticate,  login, logout
     
 #     def get_success_url(self):
 #         return reverse_lazy('portfolios')
-    
 def AccountLogin(request):
     if(request.user.is_authenticated):
         return redirect('/')

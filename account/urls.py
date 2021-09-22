@@ -16,7 +16,6 @@ urlpatterns = [
     # url(r'^login/$', apis.LoginView.as_view(), name='login'),
     # url(r'^user/$', apis.UserDetailsAPI.as_view(), name='users'),
     
-    
     # Ui Views
     # path('signup/', CustomLoginView.as_view(), name="login"),    
     # path('login/', CustomLoginView.as_view(), name="login"),    
@@ -25,7 +24,5 @@ urlpatterns = [
     path('login/',AccountLogin, name="login"),    
     path('logout/', AccountLogout, name="logout"),    
     path('activate/<int:id>/<str:token>/', AccountActivate, name="logout"),
-    
-    
     
 ]
