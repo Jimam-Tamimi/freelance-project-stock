@@ -3,6 +3,19 @@ from rest_framework import serializers
 from .models import *
 import django.contrib.auth.password_validation as validators
 
+from djoser.serializers import UserCreateSerializer
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+class UserSerializer(UserCreateSerializer):
+    class Meta(UserCreateSerializer.Meta):
+        model = User
+        fields = ['id', 'email', 'username', 'password']
+
+
+
+
 
 # class CustomEmailSerializerField(serializers.EmailField):
     

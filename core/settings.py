@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_datatables',
     'ckeditor',
+
 ]
 
 MIDDLEWARE = [
@@ -168,7 +169,9 @@ REST_FRAMEWORK = {
 
     'DEFAULT_PAGINATION_CLASS': 'rest_framework_datatables.pagination.DatatablesPageNumberPagination',
     'PAGE_SIZE': 50,
+
 }
+
 
 LOGIN_URL = 'login/'
 
@@ -176,4 +179,12 @@ LOGIN_URL = 'login/'
 AUTH_USER_MODEL = 'account.MyUser'
 
 
-# what ever to solve this error  ihave to delete the database and mirgate it from start but when i do that i was not able to add data any more
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'jimamdrive.vid@gmail.com'
+EMAIL_HOST_PASSWORD = 'google.drive.jimam.storage'
+EMAIL_USE_TLS = True
+

@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, AnonymousUser, PermissionsMixin,BaseUserManager
+import random
+import string
+
 
 
 
@@ -112,6 +115,7 @@ class CustomUserManager(BaseUserManager):
         user = self.model(email=email, **other_fields)
         user.set_password(password)
         user.save()
+        Token.objects.create(user=user)
         return user
         
         
@@ -129,8 +133,9 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=90, blank=False, unique=True)
     username = models.CharField(max_length=90, default="u",  blank=True)
     timeStamp=models.DateTimeField(auto_now_add=True, blank=True)
-# i have created a costom user model with email as username_field   but now if i try to migrate it shows error
-    is_active = models.BooleanField(default=True)
+
+    
+    is_active = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     
@@ -142,4 +147,18 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.username
+
+
+class Token(models.Model):
+    
+    def get_random_alphanumeric_string():
+        letters_and_digits = string.ascii_letters + string.digits
+        result_str = ''.join((random.choice(letters_and_digits) for i in range(15)))
+        return result_str
+    user = models.ForeignKey(MyUser, on_delete=models.CASCADE, null=False, blank=False)
+    token = models.CharField('Token', default=get_random_alphanumeric_string, max_length=100)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.user)
 

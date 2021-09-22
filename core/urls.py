@@ -23,5 +23,8 @@ urlpatterns = [
     path('', include('account.urls')),
     #path('', TemplateView.as_view(template_name='dashboard.html')),
     path('admin/', admin.site.urls),
+
+    path(r'auth/', include('djoser.urls')),
+    path(r'auth/', include('djoser.urls.jwt')),
     
 ]

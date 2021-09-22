@@ -1,7 +1,8 @@
 from django.urls import path
 from django.conf.urls import url, include
-from .views import CustomLoginView
+# from .views import CustomLoginView
 from django.contrib.auth.views import LogoutView
+from .views import *
 # from rest_framework.routers import DefaultRouter
 
 # from . import apis
@@ -17,8 +18,13 @@ urlpatterns = [
     
     
     # Ui Views
-    path('login/', CustomLoginView.as_view(), name="login"),    
-    path('logout/', LogoutView.as_view(next_page='login'), name="logout"),    
+    # path('signup/', CustomLoginView.as_view(), name="login"),    
+    # path('login/', CustomLoginView.as_view(), name="login"),    
+    # path('logout/', LogoutView.as_view(next_page='login'), name="logout"),    
+    path('signup/', AccountSignup, name="login"),    
+    path('login/',AccountLogin, name="login"),    
+    path('logout/', AccountLogout, name="logout"),    
+    path('activate/<int:id>/<str:token>/', AccountActivate, name="logout"),
     
     
     
